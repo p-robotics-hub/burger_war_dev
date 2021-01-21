@@ -56,13 +56,31 @@ do
 done
 shift $((OPTIND - 1))
 
+# 既にワークスペースが存在する場合は、ユーザーに確認して削除
+#------------------------------------------------
+if [ -L "${HOST_WS_DIR}/src/CMakeLists.txt" ]; then
+  echo "${HOST_WS_DIR}/src/CMakeLists.txtは既に存在します。"
+  read -p "削除して再度ワークスペースの初期化を行いますか？(yes/no): " yesno
+  case "$yesno" in
+    yes ) rm -vf "${HOST_WS_DIR}/.catkin_workspace"
+          rm -vf "${HOST_WS_DIR}/src/CMakeLists.txt"
+          rm -vrf "${HOST_WS_DIR}/build"
+          rm -vrf "${HOST_WS_DIR}/devel"
+          echo "古いワークスペースを削除しました"
+          ;;
+      * ) echo "ワークスペースの作成を中断しました。"
+          exit 1
+          ;;
+  esac
+fi
+
 # ワークスペースの作成とビルド
 #------------------------------------------------
 docker exec \
   -it \
   ${EXEC_OPTION} \
   ${DEV_DOCKER_CONTAINER_NAME} \
-  bash -l -c "ws-init.sh ${CONTAINER_WS_DIR}"
+  bash -l -c "ws-init.sh -w ${CONTAINER_WS_DIR}"
 
 echo "#--------------------------------------------------------------------"
 echo "# ワークスペースを以下に作成しました"

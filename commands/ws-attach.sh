@@ -1,12 +1,13 @@
 #!/bin/bash
 ###############################################################################
-#-burger-war-devのコンテナから対話モードでbashを起動する
+#-burger-war-devのコンテナからbashを起動する
 #-
 #+[USAGE]
-#+  $0 [-a EXECオプション] [-h] -- [bashオプション]
+#+  $0 [-a EXECオプション] [-c bashオプション] [-h]
 #+
 #-[OPTIONS]
 #-  -a options    'docker exec'に追加で渡す引数を指定（複数回指定可能）
+#-  -c command    'bash -c'に渡す引数を指定
 #-  -h            このヘルプを表示
 #-
 #-[ARGUMENTS]
@@ -42,12 +43,16 @@ source "${SCRIPT_DIR}/config.sh"
 # オプション・引数解析
 #------------------------------------------------
 EXEC_OPTION=
+BASH_ARGS=
 IMAGE_VERSION=latest
-while getopts a:v:w:h OPT
+while getopts a:c:h OPT
 do
   case $OPT in
     a  ) # docker execへの追加オプション引数指定
       EXEC_OPTION="${EXEC_OPTION} ${OPTARG}"
+      ;;
+    c  ) # bashに渡すオプション引数指定
+      BASH_ARGS="-l -c ${OPTARG}"
       ;;
     h  ) # ヘルプの表示
       help_exit
@@ -57,16 +62,17 @@ do
       ;;
   esac
 done
-shift $((OPTIND - 1))
+shift $((OPTIND - 1)) 
 
 # 対話モードでbashを起動
 #------------------------------------------------
 echo "#--------------------------------------------------------------------"
 echo "# 以下のコンテナでbashを起動します"
 echo "# CONTAINER NAME: ${DEV_DOCKER_CONTAINER_NAME}"
+echo "# EXEC COMMAND  : bash ${BASH_ARGS}"
 echo "#--------------------------------------------------------------------"
 docker exec \
   -it \
   ${EXEC_OPTION} \
   ${DEV_DOCKER_CONTAINER_NAME} \
-  bash "$@"
+  bash ${BASH_ARGS}

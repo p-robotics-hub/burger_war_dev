@@ -43,7 +43,7 @@ source "${SCRIPT_DIR}/config.sh"
 #------------------------------------------------
 EXEC_OPTION=
 IMAGE_VERSION=latest
-while getopts a:v:w:h OPT
+while getopts a:h OPT
 do
   case $OPT in
     a  ) # docker execへの追加オプション引数指定
@@ -58,6 +58,7 @@ do
   esac
 done
 shift $((OPTIND - 1))
+MAKE_OPTION="$@"
 
 # ワークスペースのビルド
 #------------------------------------------------
@@ -65,4 +66,5 @@ docker exec \
   -it \
   ${EXEC_OPTION} \
   ${DEV_DOCKER_CONTAINER_NAME} \
-  bash -l -c "cd ${CONTAINER_WS_DIR} && catkin_make $@"
+  bash -l -c "ws-build.sh -w ${CONTAINER_WS_DIR} --  ${MAKE_OPTION}"
+ 
