@@ -2,7 +2,7 @@ FROM burger-war-core:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# keyboard-configuarationのインストールで止まる為、予めインストールして設定
+# keyboard-configurationのインストールが入力待ちで止まる為、予め自動でインストール
 COPY ./dev/install-key-config.sh /install-key-config.sh
 RUN sudo /install-key-config.sh
 

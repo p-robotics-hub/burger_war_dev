@@ -1,4 +1,0 @@
-#!/bin/bash
-
-source /home/developer/.bashrc
-/bin/bash "$@"
