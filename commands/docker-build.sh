@@ -74,17 +74,22 @@ shift $((OPTIND - 1))
 # コアイメージ用のDockerfileのビルド
 #------------------------------------------------
 set -x
-docker build ${CORE_BUILD_OPTION} \
+docker build \
+  ${CORE_BUILD_OPTION} \
   -f ${CORE_DOCKER_FILE_PATH} \
-  -t ${CORE_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} ${DOCKER_ROOT_DIR}
+  -t ${CORE_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
+  ${DOCKER_ROOT_DIR}
 set +x
 
 # 開発環境用のDockerfileのビルド
 #------------------------------------------------
 set -x
-docker build ${DEV_BUILD_OPTION} \
+docker build \
+  ${DEV_BUILD_OPTION} \
+  --build-arg CORE_VERSION=${IMAGE_VERSION} \
   -f ${DEV_DOCKER_FILE_PATH} \
-  -t ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} ${DOCKER_ROOT_DIR}
+  -t ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
+  ${DOCKER_ROOT_DIR}
 set +x
 
 echo "#--------------------------------------------------------------------"

@@ -1,4 +1,5 @@
-FROM burger-war-core:latest
+ARG CORE_VERSION=latest
+FROM burger-war-core:$CORE_VERSION
 
 ARG DEBIAN_FRONTEND=noninteractive
 
