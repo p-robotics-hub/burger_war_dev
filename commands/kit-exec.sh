@@ -1,12 +1,13 @@
 #!/bin/bash
 ###############################################################################
-#-burger-war-kit/scripts/配下のスクリプトをコンテナ上で実行する
+#-開発用コンテナ上でburger-war-kitディレクトリに移動してコマンドを実行する
 #-
 #+[USAGE]
-#+  $0 [-a EXECオプション] [-h] -- スクリプト名
+#+  $0 [-a EXECオプション] [-s] [-h] -- 実行コマンド
 #+
 #-[OPTIONS]
 #-  -a options    'docker exec'に追加で渡す引数を指定（複数回指定可能）
+#-  -s            burger-war-kit/scripts/以下のスクリプトを実行する
 #-  -h            このヘルプを表示
 #-
 #-[ARGUMENTS]
@@ -43,11 +44,15 @@ source "${SCRIPT_DIR}/config.sh"
 #------------------------------------------------
 EXEC_OPTION=
 IMAGE_VERSION=latest
-while getopts a:h OPT
+EXEC_COMMAND=
+while getopts a:sh OPT
 do
   case $OPT in
     a  ) # docker execへの追加オプション引数指定
       EXEC_OPTION="${EXEC_OPTION} ${OPTARG}"
+      ;;
+    s  ) # docker execへの追加オプション引数指定
+      EXEC_COMMAND="bash scripts/"
       ;;
     h  ) # ヘルプの表示
       help_exit
@@ -59,14 +64,16 @@ do
 done
 shift $((OPTIND - 1))
 
+EXEC_COMMAND="${EXEC_COMMAND}$@"
+
 # 対話モードでbashを起動
 #------------------------------------------------
 echo "#--------------------------------------------------------------------"
-echo "# 以下のコンテナで'$@'を実行します"
+echo "# 以下のコンテナで'${EXEC_COMMAND}'を実行します"
 echo "# CONTAINER NAME: ${DEV_DOCKER_CONTAINER_NAME}"
 echo "#--------------------------------------------------------------------"
 docker exec \
   -it \
   ${EXEC_OPTION} \
   ${DEV_DOCKER_CONTAINER_NAME} \
-  bash -l -c "cd ${CONTAINER_WS_DIR}/src/burger_war_kit && bash scripts/$@"
+  bash -l -c "cd ${CONTAINER_WS_DIR}/src/burger_war_kit && ${EXEC_COMMAND}"
