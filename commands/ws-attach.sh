@@ -1,16 +1,16 @@
 #!/bin/bash
 ###############################################################################
-#-ワークスペースのビルド(catkin_make)を実行する
+#-burger-war-devのコンテナから対話モードでbashを起動する
 #-
 #+[USAGE]
-#+  $0 [-a EXECオプション] [-h] -- [catkin_makeオプション]
+#+  $0 [-a EXECオプション] [-h] -- [bashオプション]
 #+
 #-[OPTIONS]
 #-  -a options    'docker exec'に追加で渡す引数を指定（複数回指定可能）
 #-  -h            このヘルプを表示
 #-
 #-[ARGUMENTS]
-#-  options       catkin_makeに渡す引数
+#-  options       bash起動時に渡す引数
 #-
 ###############################################################################
 set -e
@@ -59,10 +59,14 @@ do
 done
 shift $((OPTIND - 1))
 
-# ワークスペースのビルド
+# 対話モードでbashを起動
 #------------------------------------------------
+echo "#--------------------------------------------------------------------"
+echo "# 以下のコンテナでbashを起動します"
+echo "# CONTAINER NAME: ${DEV_DOCKER_CONTAINER_NAME}"
+echo "#--------------------------------------------------------------------"
 docker exec \
   -it \
   ${EXEC_OPTION} \
   ${DEV_DOCKER_CONTAINER_NAME} \
-  bash -l -c "cd ${CONTAINER_WS_DIR} && catkin_make $@"
+  bash "$@"

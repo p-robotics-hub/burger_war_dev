@@ -1,16 +1,16 @@
 #!/bin/bash
 ###############################################################################
-#-ワークスペースのビルド(catkin_make)を実行する
+#-burger-war-kit/scripts/配下のスクリプトをコンテナ上で実行する
 #-
 #+[USAGE]
-#+  $0 [-a EXECオプション] [-h] -- [catkin_makeオプション]
+#+  $0 [-a EXECオプション] [-h] -- スクリプト名
 #+
 #-[OPTIONS]
 #-  -a options    'docker exec'に追加で渡す引数を指定（複数回指定可能）
 #-  -h            このヘルプを表示
 #-
 #-[ARGUMENTS]
-#-  options       catkin_makeに渡す引数
+#-  script-name  実行するスクリプト名を指定する
 #-
 ###############################################################################
 set -e
@@ -43,7 +43,7 @@ source "${SCRIPT_DIR}/config.sh"
 #------------------------------------------------
 EXEC_OPTION=
 IMAGE_VERSION=latest
-while getopts a:v:w:h OPT
+while getopts a:h OPT
 do
   case $OPT in
     a  ) # docker execへの追加オプション引数指定
@@ -59,10 +59,14 @@ do
 done
 shift $((OPTIND - 1))
 
-# ワークスペースのビルド
+# 対話モードでbashを起動
 #------------------------------------------------
+echo "#--------------------------------------------------------------------"
+echo "# 以下のコンテナで'$@'を実行します"
+echo "# CONTAINER NAME: ${DEV_DOCKER_CONTAINER_NAME}"
+echo "#--------------------------------------------------------------------"
 docker exec \
   -it \
   ${EXEC_OPTION} \
   ${DEV_DOCKER_CONTAINER_NAME} \
-  bash -l -c "cd ${CONTAINER_WS_DIR} && catkin_make $@"
+  bash -l -c "cd ${CONTAINER_WS_DIR}/src/burger_war_kit && bash scripts/$@"

@@ -2,7 +2,7 @@
 # Repository config values
 #----------------------------------------------------------
 # GitHubのユーザ名
-GITHUB_USER=k0inoue
+GITHUB_USER=$(git config user.email)
 
 # Dockerイメージを登録するレジストリのURL
 REGISTRY_ROOT=ghcr.io
@@ -14,6 +14,7 @@ DOCKER_IMAGE_NAME=burger-war
 # Dockerイメージ名(ローカルパッケージ名)
 CORE_DOCKER_IMAGE_NAME=burger-war-core
 DEV_DOCKER_IMAGE_NAME=burger-war-dev
+DEV_DOCKER_CONTAINER_NAME=${DEV_DOCKER_IMAGE_NAME}
 
 #----------------------------------------------------------
 # Local config values

@@ -1,40 +1,106 @@
-#!/bin/bash -eu
+#!/bin/bash
+###############################################################################
+#-burger-war-kitのDockerコンテナを起動する
+#-
+#+[USAGE]
+#+  $0 [-a RUNオプション] [-v イメージのバージョン] [-w WSディレクトリ][-h]
+#+
+#-[OPTIONS]
+#-  -a options    'docker run'に追加で渡す引数を指定（複数回指定可能）
+#-  -w dir-path   ホストPCのロボコンワークスペースのパスを指定 (default: $HOME/catkin_ws)
+#-  -v version    'docker run'で起動するイメージの'version'を指定 (default: latest)
+#-  -h            このヘルプを表示
+#-
+###############################################################################
+set -e
+set -u
+CMD_NAME=$(basename $0)
+
+# 関数定義
+#------------------------------------------------
+usage_exit() {
+  # ファイル冒頭のコメントからUSAGEを出力
+  sed '/^[^#]/q' "$0"             \
+  | sed -n '/^#+/s/^#+//p'        \
+  | sed "s/\$0/${CMD_NAME}/g"     1>&2
+  exit 1
+}
+help_exit() {
+  # ファイル冒頭のコメントからヘルプを出力
+  sed '/^[^#]/q' "$0"             \
+  | sed -n '/^#[-+]/s/^#[-+]//p'  \
+  | sed "s/\$0/${CMD_NAME}/g"     1>&2
+  exit 0
+}
+
 # 設定値読み込み
+#------------------------------------------------
 SCRIPT_DIR=$(cd "$(dirname $0)"; pwd)
 source "${SCRIPT_DIR}/config.sh"
 
 # オプション・引数解析
-ARGS=
+#------------------------------------------------
+RUN_OPTION=
 IMAGE_VERSION=latest
-while getopts a:w:v: OPT
+while getopts a:v:w:h OPT
 do
   case $OPT in
-    "a" ) ARGS="${ARGS} ${OPTARG}" ;;
-    "w" ) HOST_WS="${OPTARG}" ;;
-    "v" ) IMAGE_VERSION="${OPTARG}" ;;
-      * ) echo "USAGE: ${CMD_NAME} [-b docker-build-args] [-v version]" 1>&2
-          exit 1 ;;
+    a  ) # docker runへの追加オプション引数指定
+      RUN_OPTION="${RUN_OPTION} ${OPTARG}"
+      ;;
+    w  ) # ホストのワークスペースの指定
+      HOST_WS_DIR="${OPTARG}"
+      ;;
+    v  ) # Dockerイメージのバージョン指定
+      IMAGE_VERSION="${OPTARG}"
+      ;;
+    h  ) # ヘルプの表示
+      help_exit
+      ;;
+    \? ) # 不正オプション時のUSAGE表示
+      usage_exit
+      ;;
   esac
 done
+shift $((OPTIND - 1))
 
-echo "#--------------------------------------------------------------------"
-echo "# 開発用のコンテナを起動します"
-echo "# IMAGE NAME: ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}"
-echo "# CONTAINER NAME: ${DEV_DOCKER_IMAGE_NAME}"
-echo "#--------------------------------------------------------------------"
-# 同名のコンテナが存在する場合は、停止＆削除する
-docker container stop ${DEV_DOCKER_IMAGE_NAME}
-docker rm ${DEV_DOCKER_IMAGE_NAME}
+# 同名のコンテナが存在する場合は停止する
+#------------------------------------------------
+if docker container ls --format '{{.Names}}' | grep -q -e "^${DEV_DOCKER_CONTAINER_NAME}$" ; then
+  echo "${DEV_DOCKER_CONTAINER_NAME} コンテナを停止します..."
+  docker container stop ${DEV_DOCKER_CONTAINER_NAME} >/dev/null
+  echo "${DEV_DOCKER_CONTAINER_NAME} コンテナを停止しました"
+fi
+
+# 同名のコンテナが存在する場合は削除する
+#------------------------------------------------
+if docker container ls -a --format '{{.Names}}' | grep -q -e "^${DEV_DOCKER_CONTAINER_NAME}$" ; then
+  echo "${DEV_DOCKER_CONTAINER_NAME} コンテナを削除します..."
+  docker rm ${DEV_DOCKER_CONTAINER_NAME} >/dev/null
+  echo "${DEV_DOCKER_CONTAINER_NAME} コンテナを削除しました"
+fi
 
 # 新たにコンテナを起動する
-docker run -d --privileged --net host \
-    --name ${DEV_DOCKER_IMAGE_NAME} \
-    -e DISPLAY=${DISPLAY} \
-    -e HOST_USER_ID=$(id -u) \
-    -e HOST_GROUP_ID=$(id -g) \
-    --mount type=bind,src=/tmp/.X11-unix/,dst=/tmp/.X11-unix \
-    --mount type=bind,src=${HOST_WS_DIR},dst=${CONTAINER_WS_DIR} \
-    --device /dev/snd \
-    ${ARGS} \
-    ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
-    tail -f /dev/null
+#------------------------------------------------
+set -x
+docker run \
+  --name ${DEV_DOCKER_CONTAINER_NAME} \
+  -d \
+  --privileged \
+  --net host \
+  --mount type=bind,src=/tmp/.X11-unix/,dst=/tmp/.X11-unix \
+  --mount type=bind,src=${HOST_WS_DIR},dst=${CONTAINER_WS_DIR} \
+  --device /dev/snd \
+  -e DISPLAY=${DISPLAY} \
+  -e HOST_USER_ID=$(id -u) \
+  -e HOST_GROUP_ID=$(id -g) \
+  ${RUN_OPTION} \
+  ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
+  tail -f /dev/null
+set +x
+
+echo "#--------------------------------------------------------------------"
+echo "# 開発用のコンテナを起動しました"
+echo "# USE IMAGE NAME: ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}"
+echo "# CONTAINER NAME: ${DEV_DOCKER_IMAGE_NAME}"
+echo "#--------------------------------------------------------------------"

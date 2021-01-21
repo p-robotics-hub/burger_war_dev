@@ -25,8 +25,8 @@ RUN sudo /install-key-config.sh
 
 # NVIDIAのドライバをインストールする例
 #-------------------------------------------------
-RUN sudo apt-get update -q && sudo apt-get install -y \
-    nvidia-driver-450
+# RUN sudo apt-get update -q && sudo apt-get install -y \
+#    nvidia-driver-450
 
 
 # Intelのドライバをインストールする例
@@ -50,6 +50,3 @@ RUN sudo apt-get update -q && sudo apt-get install -y \
 #RUN sudo chown ${USERNAME}:${USERNAME} /mybash \
 #    && sudo chmod +x /mybash
 
-# 起動時の実行コマンドの指定
-ENTRYPOINT [ "/entrypoint.sh" ]
-CMD [ "/bash" ]

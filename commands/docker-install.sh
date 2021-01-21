@@ -1,16 +1,70 @@
-#!/bin/bash -eu
-#
-# USAGE: $0 [amd64|armhf|arm64]
-#
-# ref: https://docs.docker.com/engine/install/ubuntu/ 
+#!/bin/bash
+###############################################################################
+#-dockerとdocker-composeをインストールする
+#-
+#+[USAGE]
+#+  $0 [-h] [amd64|armhf|arm64]
+#+
+#-[OPTIONS]
+#-  -h            このヘルプを表示
+#-
+#-[ARGUMENTS]
+#-  amd64         x86_64/amd64環境用のdockerをインストールする
+#-  armhf         ARM32bit環境用のdockerをインストールする
+#-  arm64         ARM64bit環境用のdockerをインストールする
+#-
+#-[REFERENCES]
+#-  docker  :     https://docs.docker.com/engine/install/ubuntu/
+#-  compose :     https://docs.docker.com/compose/install/
+#-
+###############################################################################
+set -e
+set -u
+CMD_NAME=$(basename $0)
+
+# 設定値
+#------------------------------------------------
 # docker-compose version
 DC_VERSION=1.27.4
 
-#--------------------------------------
-# Parameters
-#--------------------------------------
-ARCH=${1:-amd64}
 
+# 関数定義
+#------------------------------------------------
+usage_exit() {
+  # ファイル冒頭のコメントからUSAGEを出力
+  sed '/^[^#]/q' "$0"             \
+  | sed -n '/^#+/s/^#+//p'        \
+  | sed "s/\$0/${CMD_NAME}/g"     1>&2
+  exit 1
+}
+help_exit() {
+  # ファイル冒頭のコメントからヘルプを出力
+  sed '/^[^#]/q' "$0"             \
+  | sed -n '/^#[-+]/s/^#[-+]//p'  \
+  | sed "s/\$0/${CMD_NAME}/g"     1>&2
+  exit 0
+}
+err_exit(){
+  echo $1
+  exit 1
+}
+
+# オプション・引数解析
+#------------------------------------------------
+while getopts h OPT
+do
+  case $OPT in
+    h  ) # ヘルプの表示
+      help_exit
+      ;;
+    \? ) # 不正オプション時のUSAGE表示
+      usage_exit
+      ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+ARCH=${1:-amd64}
 case ${ARCH} in
   amd64 | armhf | arm64 ) ;;
   * ) echo "${ARCH} is invalid architecture!"
@@ -19,24 +73,14 @@ case ${ARCH} in
 esac
 
 
-#--------------------------------------
-# Functions
-#--------------------------------------
-err_exit(){
-  echo $1
-  exit 1
-}
-
-#--------------------------------------
-# Set up the repository
-#--------------------------------------
-# Update the apt package index and install packages
-
+# dockerのインストール
+#------------------------------------------------
 if !(type "docker" > /dev/null 2>&1); then
   # when not installed docker
   echo "#------------------------------------------------------------------"
-  echo "# Start install docker"
+  echo "# ${ARCH}用のdockerをインストールします"
   echo "#------------------------------------------------------------------"
+  # Update the apt package index and install packages
   sudo apt-get update
   sudo apt-get install -y \
       apt-transport-https \
@@ -66,26 +110,25 @@ if !(type "docker" > /dev/null 2>&1); then
   sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
   # Add user group docker
-  sudo usermod -aG docker $USER
+  sudo usermod -aG docker ${USER}
 else
   echo "#------------------------------------------------------------------"
-  echo "# Already installed docker, skip install process"
+  echo "# dockerがインストール済みのため、処理をスキップしました"
   echo "#------------------------------------------------------------------"
 fi
 
-#--------------------------------------
-# Install Docker Compose
-#--------------------------------------
+# docker-composeのインストール
+#------------------------------------------------
 if !(type "docker-compose" > /dev/null 2>&1); then
   echo "#------------------------------------------------------------------"
-  echo "# Start install docker-compose"
+  echo "# docker-composeをインストールします"
   echo "#------------------------------------------------------------------"
   sudo curl -L "https://github.com/docker/compose/releases/download/${DC_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   sudo chmod +x /usr/local/bin/docker-compose
   sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 else
   echo "#------------------------------------------------------------------"
-  echo "# Already installed docker-compose, skip install process"
+  echo "# docker-composeがインストール済みのため、処理をスキップしました"
   echo "#------------------------------------------------------------------"
 fi
 
