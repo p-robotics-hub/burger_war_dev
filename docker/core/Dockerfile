@@ -1,7 +1,7 @@
 FROM ghcr.io/p-robotics-hub/burger-war-kit:latest
 
 #-------------------------------------------------------------------------------------------------
-# シミュレーション環境/実機環境での実行に必要なパッケージをインストールする
+# シミュレーション対戦環境/実機環境での実行に必要なパッケージをインストールする
 #-------------------------------------------------------------------------------------------------
 
 # RUN sudo apt-get install -y --no-install-recommends \
@@ -11,7 +11,3 @@ FROM ghcr.io/p-robotics-hub/burger-war-kit:latest
 # RUN yes | pip install \
 #     requests \
 #     flask
-
-# 起動時の実行コマンドの指定
-ENTRYPOINT [ "/entrypoint.sh" ]
-CMD [ "bash" ]
