@@ -25,7 +25,7 @@ CMD_NAME=$(basename $0)
 # 設定値
 #------------------------------------------------
 # docker-compose version
-DC_VERSION=1.27.4
+DC_VERSION=$(curl -s https://github.com/docker/compose/releases/latest|sed -e 's@^.*/releases/tag/\(.*\)">.*$@\1@')
 
 
 # 関数定義
