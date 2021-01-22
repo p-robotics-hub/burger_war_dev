@@ -73,6 +73,7 @@ echo "# EXEC COMMAND  : bash ${BASH_ARGS}"
 echo "#--------------------------------------------------------------------"
 docker exec \
   -it \
+  --user $(id -u) \
   ${EXEC_OPTION} \
   ${DEV_DOCKER_CONTAINER_NAME} \
   bash ${BASH_ARGS}

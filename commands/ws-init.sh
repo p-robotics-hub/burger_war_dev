@@ -78,6 +78,7 @@ fi
 #------------------------------------------------
 docker exec \
   -it \
+  --user $(id -u) \
   ${EXEC_OPTION} \
   ${DEV_DOCKER_CONTAINER_NAME} \
   bash -l -c "ws-init.sh -w ${CONTAINER_WS_DIR}"

@@ -64,6 +64,7 @@ MAKE_OPTION="$@"
 #------------------------------------------------
 docker exec \
   -it \
+  --user $(id -u) \
   ${EXEC_OPTION} \
   ${DEV_DOCKER_CONTAINER_NAME} \
   bash -l -c "ws-build.sh -w ${CONTAINER_WS_DIR} -- ${MAKE_OPTION}"

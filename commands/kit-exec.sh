@@ -74,6 +74,7 @@ echo "# CONTAINER NAME: ${DEV_DOCKER_CONTAINER_NAME}"
 echo "#--------------------------------------------------------------------"
 docker exec \
   -it \
+  --user $(id -u) \
   ${EXEC_OPTION} \
   ${DEV_DOCKER_CONTAINER_NAME} \
   bash -l -c "cd ${CONTAINER_WS_DIR}/src/burger_war_kit && ${EXEC_COMMAND}"
