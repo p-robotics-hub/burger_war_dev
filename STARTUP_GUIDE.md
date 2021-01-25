@@ -168,13 +168,117 @@ burger_war_dev
 #### Dockerfileの修正例
 
 ##### ライブラリをインストールする場合
+ロボコン用に作成するプログラムで使いたいライブラリがある場合、`docker/core/Dockerfile`に必要なインストール処理を追加して下さい。
 
-[TODO:core/Dockerfileの記載例を追加]
+###### apt-get
+apt-getでインストールする場合の例は、以下になります。  
 
-<br />
+```
+# apt-getで必要なパッケージをインストールする例
+#-------------------------------------------------
+RUN apt-get update -q && apt-get install -y --no-install-recommends \
+    ros-${ROS_DISTRO}-dwa-local-planner \
+    ros-${ROS_DISTRO}-global-planner \
+    libarmadillo-dev \
+    libarmadillo8 \
+    && rm -rf /var/lib/apt/lists/*
+```
 
-##### ドライバをインストールする場合
-Ubuntuには、対応するドライバを自動で検出してインストールするツールが用意されています。  
+`ros-${ROS_DISTRO}-dwa-local-planner \`などを、必要なパッケージ名に置き換えて下さい。  
+※`${ROS_DISTRO}`の実際の値は`melodic`となります。
+
+Dockerfileを変更したらファイルを保存後、ビルドしてコンテナを起動して下さい。
+
+```
+bash commands/docker-build.sh
+bash commands/docker-launch.sh
+```
+
+インストールできているか確認するには、以下のコマンドを実行して下さい。
+
+```
+bash commands/kit.sh -c apt list インストールしたパッケージ名
+```
+
+例えば「ros-${ROS_DISTRO}-dwa-local-planner」がインストールされたか確認する場合は、以下となります。
+
+```
+$ bash commands/kit.sh -c apt list ros-*-global-planner
+#--------------------------------------------------------------------
+# 以下のコンテナでコマンドを実行します
+# CONTAINER NAME: burger-war-dev
+# EXEC COMMAND  : bash -l -c apt list ros-*-global-planner
+#--------------------------------------------------------------------
+++ id -u
++ docker exec -it --user 1000 burger-war-dev bash -l -c 'apt list ros-*-global-planner'
+Listing... Done
+ros-melodic-global-planner/now 1.16.7-1bionic.20201103.003153 amd64 [installed,local]
+```
+
+###### pip
+pipでインストールする場合の例は、以下となります。  
+`transitions \`などを、必要なパッケージ名に置き換えて下さい。(最後の行には`\`は不要です)  
+
+```
+# pipで必要なパッケージをインストールする例
+#-------------------------------------------------
+RUN yes | pip install \
+    transitions \
+    pygraphviz
+```
+
+Dockerfileを変更したらファイルを保存後、ビルドしてコンテナを起動して下さい。
+
+```
+bash commands/docker-build.sh
+bash commands/docker-launch.sh
+```
+
+インストールできているか確認するには、以下のコマンドを実行して下さい。
+
+```
+bash commands/kit.sh -c pip list | grep transitions
+```
+
+インストールされている場合、以下のようにパッケージ名とバージョンが出力されます。
+
+```
+++ id -u
++ docker exec -it --user 1000 burger-war-dev bash -l -c 'pip list'
+transitions                   0.8.6
+```
+
+###### ホストPCで用意した実行ファイルをインストールする場合
+ホストPCで用意した実行ファイルやスクリプトなどをインストールするには、DockerfileのCOPY命令でPATHが通ったディレクトリにコピーして下さい。  
+
+例えば、`docker/core/myexec`以下にコピーする実行ファイルを用意した場合、以下のような記載になります。
+(インストール先の`/usr/local/bin/myexec`は、必要であれば置き換えて下さい)
+
+```
+COPY core/myexec /usr/local/bin/myexec
+RUN chmod +x /usr/local/bin/myexec
+```
+
+Dockerfileを変更したらファイルを保存後、ビルドしてコンテナを起動して下さい。
+
+```
+bash commands/docker-build.sh
+bash commands/docker-launch.sh
+```
+
+動作確認はインストールしたものに合わせて実施して下さい。
+PATHが通った場所にインストールできていれば、以下のような形で実行できます。
+
+```
+bash commands/kit.sh -c myexec
+```
+
+##### 開発環境に必要なパッケージ(ドライバなど)をインストールする場合
+開発用のパソコンでのみ使いたいツールや、ドライバがある場合、`docker/dev/Dockerfile`に必要なインストール処理を追加して下さい。
+
+ここでは、Gazeboが起動しなかった為、グラフィックボードのドライバをインストールする場合を想定して説明します。
+
+Ubuntuには対応するドライバを自動で検出してインストールする`ubuntu-drivers`というツールが用意されています。  
 Gazeboが起動しないときは、まずはこれを試してみましょう。
 
 `docker/dev/Dokcerfile`の以下の箇所から行頭の#を削除後、ファイルを保存してビルドして下さい。
@@ -190,14 +294,11 @@ RUN apt-get update -q && apt-get install -y --no-install-recommends \
 
 ビルドが終わったら、[バージョンを指定せずにコンテナを起動](#バージョンを指定せずにコンテナを起動)の手順に従って、コンテナを起動して動作確認をして下さい。
 
-
-
 もし起動しない場合は、[グラフィックボードのドライバの補足](#グラフィックボードのドライバの補足)を参考に、ホストPCと同じドライバをインストールして試して下さい。
 
 <br />
 
 #### バージョンを指定してDockerイメージを作成する
-
 Dockerfileを修正したら、ビルドするにはデフォルト状態のビルドと同じコマンドを使います。  
 生成されるDockerイメージ名とバージョンも同じになります。
 
