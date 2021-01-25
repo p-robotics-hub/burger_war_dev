@@ -99,8 +99,10 @@ docker run \
   tail -f /dev/null
 set +x
 
-echo "#--------------------------------------------------------------------"
-echo "# 開発用のコンテナを起動しました"
-echo "# USE IMAGE NAME: ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}"
-echo "# CONTAINER NAME: ${DEV_DOCKER_IMAGE_NAME}"
-echo "#--------------------------------------------------------------------"
+cat <<-EOM
+#--------------------------------------------------------------------
+# 開発用のコンテナを起動しました
+# USE IMAGE NAME: ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}
+# CONTAINER NAME: ${DEV_DOCKER_IMAGE_NAME}
+#--------------------------------------------------------------------
+EOM

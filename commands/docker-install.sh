@@ -125,7 +125,7 @@ if !(type "docker-compose" > /dev/null 2>&1); then
   echo "#------------------------------------------------------------------"
   sudo curl -L "https://github.com/docker/compose/releases/download/${DC_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   sudo chmod +x /usr/local/bin/docker-compose
-  sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+  sudo ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
 else
   echo "#------------------------------------------------------------------"
   echo "# docker-composeがインストール済みのため、処理をスキップしました"
