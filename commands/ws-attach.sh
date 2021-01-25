@@ -43,16 +43,17 @@ source "${SCRIPT_DIR}/config.sh"
 # オプション・引数解析
 #------------------------------------------------
 EXEC_OPTION=
-BASH_ARGS=
+BASH_OPTION=
 IMAGE_VERSION=latest
-while getopts a:c:h OPT
+while getopts a:ch OPT
 do
   case $OPT in
     a  ) # docker execへの追加オプション引数指定
       EXEC_OPTION="${EXEC_OPTION} ${OPTARG}"
       ;;
-    c  ) # bashに渡すオプション引数指定
-      BASH_ARGS="-l -c ${OPTARG}"
+    c  ) # bashにコマンドを渡して実行する場合
+      BASH_OPTION="-l -c"
+      break
       ;;
     h  ) # ヘルプの表示
       help_exit
@@ -64,7 +65,11 @@ do
 done
 shift $((OPTIND - 1)) 
 
-# 対話モードでbashを起動
+# bashに渡す引数を設定
+BASH_ARGS="--"
+[ $# -ne 0 ] && BASH_ARGS="$*"
+
+# 開発用コンテナ上でコマンドを実行
 #------------------------------------------------
 echo "#--------------------------------------------------------------------"
 echo "# 以下のコンテナでbashを起動します"
@@ -76,4 +81,4 @@ docker exec \
   --user $(id -u) \
   ${EXEC_OPTION} \
   ${DEV_DOCKER_CONTAINER_NAME} \
-  bash ${BASH_ARGS}
+  bash ${BASH_OPTION} "${BASH_ARGS}"
