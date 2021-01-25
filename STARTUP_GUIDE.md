@@ -26,8 +26,14 @@ burger_warの開発環境を構築する手順について説明します。
 - [起動したコンテナの中で操作をしたい場合](#%E8%B5%B7%E5%8B%95%E3%81%97%E3%81%9F%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AE%E4%B8%AD%E3%81%A7%E6%93%8D%E4%BD%9C%E3%82%92%E3%81%97%E3%81%9F%E3%81%84%E5%A0%B4%E5%90%88)
 - [短縮コマンドの設定例](#%E7%9F%AD%E7%B8%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E8%A8%AD%E5%AE%9A%E4%BE%8B)
 - [Dockerfileの構成について](#dockerfile%E3%81%AE%E6%A7%8B%E6%88%90%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
+- [グラフィックボードのドライバの補足](#%E3%82%B0%E3%83%A9%E3%83%95%E3%82%A3%E3%83%83%E3%82%AF%E3%83%9C%E3%83%BC%E3%83%89%E3%81%AE%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AE%E8%A3%9C%E8%B6%B3)
+    - [ホストPCと同じドライバをインストール](#%E3%83%9B%E3%82%B9%E3%83%88pc%E3%81%A8%E5%90%8C%E3%81%98%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
+        - [ホストPCが利用中のドライバの確認方法](#%E3%83%9B%E3%82%B9%E3%83%88pc%E3%81%8C%E5%88%A9%E7%94%A8%E4%B8%AD%E3%81%AE%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AE%E7%A2%BA%E8%AA%8D%E6%96%B9%E6%B3%95)
+        - [NVIDIAの場合](#nvidia%E3%81%AE%E5%A0%B4%E5%90%88)
+        - [Intelの場合](#intel%E3%81%AE%E5%A0%B4%E5%90%88)
+        - [AMDの場合](#amd%E3%81%AE%E5%A0%B4%E5%90%88)
+        - [参考サイト](#%E5%8F%82%E8%80%83%E3%82%B5%E3%82%A4%E3%83%88)
 - [その他](#%E3%81%9D%E3%81%AE%E4%BB%96)
-    - [グラフィックボードのドライバの補足](#%E3%82%B0%E3%83%A9%E3%83%95%E3%82%A3%E3%83%83%E3%82%AF%E3%83%9C%E3%83%BC%E3%83%89%E3%81%AE%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AE%E8%A3%9C%E8%B6%B3)
     - [PROXYの設定について](#proxy%E3%81%AE%E8%A8%AD%E5%AE%9A%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
 
 <!-- /TOC -->
@@ -84,7 +90,7 @@ cd ~/catkin_ws/src/burger_war_dev
 bash commands/docker-install.sh amd64
 ```
 
-もし、CPUがARM32bitかARM64bitの環境にインストールする場合は、`amd64`の代わりに以下の引数を指定して下さい。
+もし、CPUが ARM32bit か ARM64bit の環境にインストールする場合は、`amd64`の代わりに以下の引数を指定して下さい。
 
 ```
 bash commands/docker-install.sh armhf       # ARM32bit環境の場合
@@ -97,7 +103,7 @@ Ubuntu以外のLinuxディストリビューションの場合は、以下の公
 - [docker-composeのインストール](https://docs.docker.com/compose/install/)
 
 
-インストール完了後、一度パソコンを再起動して下さい。
+<span style="color: red;">インストール完了後、一度パソコンを再起動して下さい。</span>
 
 
 <br />
@@ -169,10 +175,25 @@ burger_war_dev
 <br />
 
 ##### ドライバをインストールする場合
+Ubuntuには、対応するドライバを自動で検出してインストールするツールが用意されています。  
+Gazeboが起動しないときは、まずはこれを試してみましょう。
 
-[TODO:dev/Dockerfileの記載例を追加]
+`docker/dev/Dokcerfile`を以下のように行頭の#を削除してファイルを保存し、ビルドして下さい。
 
-[TODO:参考サイトへの参照を追加]
+```
+# ubuntu-driversによる自動インストールの例
+#-------------------------------------------------
+RUN apt-get update -q && apt-get install -y --no-install-recommends \
+    ubuntu-drivers-common \
+    && rm -rf /var/lib/apt/lists/* \
+    && ubuntu-drivers autoinstall
+```
+
+ビルドが終わったら、[バージョンを指定せずにコンテナを起動](#バージョンを指定せずにコンテナを起動)の手順に従って、コンテナを起動して動作確認をして下さい。
+
+
+
+もし起動しない場合は、[グラフィックボードのドライバの補足](#グラフィックボードのドライバの補足)を参考に、ホストPCと同じドライバをインストールして試して下さい。
 
 <br />
 
@@ -241,9 +262,14 @@ bash commands/docker-launch.sh
 bash commands/ws-attach.sh -c gazebo
 ```
 
-以下のようなGazeboの画面が表示されれば成功です。
+以下のようなGazeboの画面が表示されれば成功です。  
+右上の×ボタンからGazeboを終了して下さい。
 
-[TODO:Gazeboの起動画面の画像を追加]
+※Gazeboの初回立ち上げには数分かかることもあります（その間、画面は黒いままです）
+
+
+![gazebo起動](https://user-images.githubusercontent.com/76457573/105619906-8bb5e580-5e3a-11eb-8385-10eaa31e0133.png)
+
 
 <br />
 
@@ -251,7 +277,7 @@ bash commands/ws-attach.sh -c gazebo
 --------------------------------------------------------------------
 お使いのパソコンによっては、以下のようなエラーが表示されて、Gazeboが起動しないかもしれません。
 
-その場合は、[カスタマイズしたDockerイメージの作成](#カスタマイズしたDockerイメージの作成)によって、お使いのパソコンに合ったドライバをインストールしたDockerイメージの作成して下さい。
+その場合は、[カスタマイズしたDockerイメージの作成](#カスタマイズしたDockerイメージの作成)によって、お使いのパソコンに合ったドライバをインストールしたDockerイメージを作成して下さい。
 
 ```
 libGL error: No matching fbConfigs or visuals found
@@ -338,7 +364,6 @@ bash commands/ws-init.sh
 
 ### ワークスペースのビルド
 --------------------------------------------------------------------
-
 ROSワークスペースのビルド(catkin_make)のみを行いたい場合は、以下のコマンドを実行して下さい。
 
 ```
@@ -361,7 +386,7 @@ bash commands/ws-build.sh -- -j8 -DCMAKE_CXX_FLAGS=-O0
 
 ## シミュレーションの実行
 
-以下のコマンドで、シミュレータ､ロボット(turtle_bot),審判サーバー､観戦画面が起動します。
+以下のコマンドで、シミュレータ､ロボット(turtle_bot)、審判サーバー､観戦画面が起動します。
 
 ```
 bash commands/kit-exec.sh -s sim_with_judge.sh
@@ -455,19 +480,154 @@ bash commands/ws-attach.sh -c gazebo
 
 <br />
 
-## その他
+## グラフィックボードのドライバの補足
+Gazeboを起動しようとしたときに、以下のようなエラーメッセージが出てGazeboが起動しない場合、ドライバのインストールが必要です。
+
+```
+libGL error: No matching fbConfigs or visuals found
+libGL error: failed to load driver: swrast
+X Error of failed request:  GLXBadContext
+  Major opcode of failed request:  152 (GLX)
+  Minor opcode of failed request:  6 (X_GLXIsDirect)
+  Serial number of failed request:  44
+  Current serial number in output stream:  43
+```
+
+その場合は、以下の順番でGazeboが動くか試しながら、環境構築をされるのが良いでしょう。
+
+1. ubuntu-driversによる自動インストールを試す
+2. ホストPCのドライバを調べて、同じドライバをインストールを試す
+
+いずれの手順でも、Dockerfileの修正が終わったら、以下のDockerイメージを再作成し、Gazeboが起動するか確認して下さい。
+
+```
+bash commands/docker-build.sh
+bash coomands/docker-launch.sh
+bash commands/ws-attach.sh -c gazebo
+```
+
+### ホストPCと同じドライバをインストール
+#### ホストPCが利用中のドライバの確認方法
+以下のコマンドで、使用しているホストPCがどのドライバを使っているか確認して下さい。
+
+```
+software-properties-gtk
+```
+
+表示されたウィンドウの「追加のドライバー」タブを選択すると、以下のように現在利用しているドライバが分かります。
+
+![software-properties-gtk](https://user-images.githubusercontent.com/76457573/105653173-74d8c700-5efe-11eb-9d57-902ac7f79aa3.png)
+
+この例では「nvidia-driver-450」というパッケージのドライバを使用していることがわかります。  
+
+Dockerfileの修正が終わったら、以下でDockerイメージを再作成し、gazeboが起動するか確認して下さい。
+
+#### NVIDIAの場合
+NVIDIAのドライバの場合、以下のいずれかの方法でインストールして下さい。
+
+##### Ubuntuの標準バージョンのドライバのインストール
+`docker/dev/Dokcerfile`の以下のように行頭の#を削除して、`nvidia-driver-450`の部分を[ホストPCが利用中のドライバの確認方法](#ホストPCが利用中のドライバの確認方法)調べたドライバに書き換えて下さい。
+
+```
+# NVIDIAのドライバをインストールする例１) Ubuntのデフォルトバージョンをインストール
+#-------------------------------------------------
+RUN apt-get update -q && apt-get install -y \
+	nvidia-driver-450 \
+    && rm -rf /var/lib/apt/lists/* \
+```
+
+Dockerfileの修正が終わったら、Dockerイメージを再作成し、Gazeboが起動するか確認して下さい。
+
+##### 詳細なバージョンを指定してインストール
+もし、[Ubuntuの標準バージョンのドライバのインストール)](#Ubuntuの標準バージョンのドライバのインストール)で動かない場合、マイナーバージョン違いが原因かもしれません。
+
+以下のコマンドで詳細なバージョンを確認して下さい。
+
+```
+apt list --installed nvidia-driver-*                    # NVIDIAの場合
+apt list --installed xserver-xorg-video-intel**         # Intel(内蔵)の場合
+```
+
+例えば、以下のような出力になります。
+
+```
+一覧表示... 完了
+nvidia-driver-440/bionic-updates,bionic-security,now 450.102.04-0ubuntu0.18.04.1 amd64 [インストール済み]
+nvidia-driver-450/bionic-updates,bionic-security,now 450.102.04-0ubuntu0.18.04.1 amd64 [インストール済み、自動]
+```
+
+この例では、「450.102.04」というバージョンであることが分かります。
 
 
-### グラフィックボードのドライバの補足
+`docker/dev/Dokcerfile`の以下のように行頭の#を削除して、`ARG DRIVER_VERSION=450.80.02`の部分を調べたバージョンに変更して下さい。
+
+```
+# NVIDIAのドライバをインストールする例２) バージョンを指定してインストール
+# 参考：https://gitlab.com/nvidia/container-images/driver/-/blob/master/ubuntu18.04/Dockerfile
+#-------------------------------------------------
+ARG BASE_URL=https://us.download.nvidia.com/tesla
+ARG DRIVER_VERSION=450.80.02
+ENV DRIVER_VERSION=$DRIVER_VERSION
+
+RUN cd /tmp && \
+    curl -fSsl -O $BASE_URL/$DRIVER_VERSION/NVIDIA-Linux-x86_64-$DRIVER_VERSION.run && \
+    sh NVIDIA-Linux-x86_64-$DRIVER_VERSION.run -x && \
+    cd NVIDIA-Linux-x86_64-$DRIVER_VERSION* && \
+    ./nvidia-installer --silent \
+                       --no-kernel-module \
+                       --install-compat32-libs \
+                       --no-nouveau-check \
+                       --no-nvidia-modprobe \
+                       --no-rpms \
+                       --no-backup \
+                       --no-check-for-alternate-installs \
+                       --no-libglx-indirect \
+                       --no-install-libglvnd \
+                       --x-prefix=/tmp/null \
+                       --x-module-path=/tmp/null \
+                       --x-library-path=/tmp/null \
+                       --x-sysconfig-path=/tmp/null && \
+    rm -rf /tmp/*
+```
+
+Dockerfileの修正が終わったら、Dockerイメージを再作成し、Gazeboが起動するか確認して下さい。
+
+#### Intelの場合
+追加のグラフィックボードがないPCの場合、Intelのデフォルトドライバで動くかと思います。  
+ただし、Intel GPUのハードウェアアクセラレーションを有効にする場合は、追加でドライバをインストールします。
+(もし、追加のグラフィックボードがないIntel CPUのパソコンでGazeboが起動しない場合も、本手順を試してみて下さい)
+
+`docker/dev/Dokcerfile`の以下のように行頭の#を削除して下さい。
+
+```
+# Intel(VAAPI)のドライバをインストールする例
+#-------------------------------------------------
+RUN apt-get update -q && apt-get install -y \
+    i965-va-driver \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+Dockerfileの修正が終わったら、Dockerイメージを再作成し、Gazeboが起動するか確認して下さい。
+
+
+#### AMDの場合
 
 [TODO:各メーカー別の補足情報を記載する]
 
 
+#### 参考サイト
+
+- [Ubuntuで最新のNVIDIA、AMD、またはIntelグラフィックスドライバを入手する方法](https://ja.compozi.com/1404-how-to-get-the-latest-nvidia-amd-or-intel-graphics-drivers-on-ubuntu)
+- [Linuxデバイス・ハードウェア関連まとめ - Qiita](https://qiita.com/aosho235/items/079b37a9485041b96ed0)
+- [Linux mint , ubuntu で Intel GPU によるVAAPI（ ハードウェアアクセラレーション ） を使用できるようにする](https://2sc380.hatenablog.com/entry/2019/01/20/223311#f-98f0f069)
+
+
+## その他
 
 ### PROXYの設定について
+--------------------------------------------------------------------
 
 [TODO:PROXYの設定例を記載する]
-
 
 
 
