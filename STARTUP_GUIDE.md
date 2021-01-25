@@ -18,21 +18,20 @@ burger_warの開発環境を構築する手順について説明します。
     - [バージョンを指定せずにコンテナを起動](#%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%9B%E3%81%9A%E3%81%AB%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E8%B5%B7%E5%8B%95)
         - [Gazeboが起動しない場合](#gazebo%E3%81%8C%E8%B5%B7%E5%8B%95%E3%81%97%E3%81%AA%E3%81%84%E5%A0%B4%E5%90%88)
     - [バージョンを指定してコンテナを起動](#%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%A6%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E8%B5%B7%E5%8B%95)
-- [ワークスペースの作成とビルド](#%E3%83%AF%E3%83%BC%E3%82%AF%E3%82%B9%E3%83%9A%E3%83%BC%E3%82%B9%E3%81%AE%E4%BD%9C%E6%88%90%E3%81%A8%E3%83%93%E3%83%AB%E3%83%89)
-    - [ワークスペースの作成（初期化）](#%E3%83%AF%E3%83%BC%E3%82%AF%E3%82%B9%E3%83%9A%E3%83%BC%E3%82%B9%E3%81%AE%E4%BD%9C%E6%88%90%E5%88%9D%E6%9C%9F%E5%8C%96)
-    - [ワークスペースのビルド](#%E3%83%AF%E3%83%BC%E3%82%AF%E3%82%B9%E3%83%9A%E3%83%BC%E3%82%B9%E3%81%AE%E3%83%93%E3%83%AB%E3%83%89)
+- [ワークスペースのビルド](#%E3%83%AF%E3%83%BC%E3%82%AF%E3%82%B9%E3%83%9A%E3%83%BC%E3%82%B9%E3%81%AE%E3%83%93%E3%83%AB%E3%83%89)
 - [シミュレーションの実行](#%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E5%AE%9F%E8%A1%8C)
     - [審判サーバーを立ち上げずにシミュレータとロボットのみ立ち上げる場合](#%E5%AF%A9%E5%88%A4%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%82%92%E7%AB%8B%E3%81%A1%E4%B8%8A%E3%81%92%E3%81%9A%E3%81%AB%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%BF%E3%81%A8%E3%83%AD%E3%83%9C%E3%83%83%E3%83%88%E3%81%AE%E3%81%BF%E7%AB%8B%E3%81%A1%E4%B8%8A%E3%81%92%E3%82%8B%E5%A0%B4%E5%90%88)
 - [起動したコンテナの中で操作をしたい場合](#%E8%B5%B7%E5%8B%95%E3%81%97%E3%81%9F%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AE%E4%B8%AD%E3%81%A7%E6%93%8D%E4%BD%9C%E3%82%92%E3%81%97%E3%81%9F%E3%81%84%E5%A0%B4%E5%90%88)
 - [短縮コマンドの設定例](#%E7%9F%AD%E7%B8%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E8%A8%AD%E5%AE%9A%E4%BE%8B)
 - [Dockerfileの構成について](#dockerfile%E3%81%AE%E6%A7%8B%E6%88%90%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
 - [グラフィックボードのドライバの補足](#%E3%82%B0%E3%83%A9%E3%83%95%E3%82%A3%E3%83%83%E3%82%AF%E3%83%9C%E3%83%BC%E3%83%89%E3%81%AE%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AE%E8%A3%9C%E8%B6%B3)
-    - [ホストPCと同じドライバをインストール](#%E3%83%9B%E3%82%B9%E3%83%88pc%E3%81%A8%E5%90%8C%E3%81%98%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
-        - [ホストPCが利用中のドライバの確認方法](#%E3%83%9B%E3%82%B9%E3%83%88pc%E3%81%8C%E5%88%A9%E7%94%A8%E4%B8%AD%E3%81%AE%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AE%E7%A2%BA%E8%AA%8D%E6%96%B9%E6%B3%95)
-        - [NVIDIAの場合](#nvidia%E3%81%AE%E5%A0%B4%E5%90%88)
-        - [Intelの場合](#intel%E3%81%AE%E5%A0%B4%E5%90%88)
-        - [AMDの場合](#amd%E3%81%AE%E5%A0%B4%E5%90%88)
-        - [参考サイト](#%E5%8F%82%E8%80%83%E3%82%B5%E3%82%A4%E3%83%88)
+    - [ホストPCが利用中のドライバの確認方法](#%E3%83%9B%E3%82%B9%E3%83%88pc%E3%81%8C%E5%88%A9%E7%94%A8%E4%B8%AD%E3%81%AE%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AE%E7%A2%BA%E8%AA%8D%E6%96%B9%E6%B3%95)
+    - [NVIDIAの場合](#nvidia%E3%81%AE%E5%A0%B4%E5%90%88)
+        - [Ubuntuの標準バージョンのドライバのインストール](#ubuntu%E3%81%AE%E6%A8%99%E6%BA%96%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%81%AE%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
+        - [詳細なバージョンを指定してインストール](#%E8%A9%B3%E7%B4%B0%E3%81%AA%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%A6%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
+    - [Intelの場合](#intel%E3%81%AE%E5%A0%B4%E5%90%88)
+    - [AMDの場合](#amd%E3%81%AE%E5%A0%B4%E5%90%88)
+    - [参考サイト](#%E5%8F%82%E8%80%83%E3%82%B5%E3%82%A4%E3%83%88)
 - [その他](#%E3%81%9D%E3%81%AE%E4%BB%96)
     - [PROXYの設定について](#proxy%E3%81%AE%E8%A8%AD%E5%AE%9A%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
 
@@ -178,7 +177,7 @@ burger_war_dev
 Ubuntuには、対応するドライバを自動で検出してインストールするツールが用意されています。  
 Gazeboが起動しないときは、まずはこれを試してみましょう。
 
-`docker/dev/Dokcerfile`を以下のように行頭の#を削除してファイルを保存し、ビルドして下さい。
+`docker/dev/Dokcerfile`の以下の箇所から行頭の#を削除後、ファイルを保存してビルドして下さい。
 
 ```
 # ubuntu-driversによる自動インストールの例
@@ -313,74 +312,20 @@ bash commands/docker-launch.sh -v test
 <br />
 
 
-## ワークスペースの作成とビルド
+## ワークスペースのビルド
 
-ROSワークスペースの初期化(catkin_init_workspace)と初回のビルド(catkin_make)を行います。
-
-以下のコマンドでディレクトリを移動してから、以降の手順を実施して下さい。
 
 ```
-cd ~/catkin_ws/src/burger_war_dev
+bash commands/kit.sh -c catkin build
 ```
 
-### ワークスペースの作成（初期化）
---------------------------------------------------------------------
-
-開発用のコンテナを起動した状態で、以下のコマンドを実行して下さい。
+もし、catkin  buildコマンドに引数を渡したい場合は、以下のようにbuildの後に続けて渡して下さい。
 
 ```
-bash commands/ws-init.sh
+bash commands/kit.sh -c catkin build -j8 -DCMAKE_CXX_FLAGS=-O0
 ```
 
-成功すれば、以下のようなメッセージが表示されます。
-
-```
-#--------------------------------------------------------------------
-# ワークスペースを以下に作成しました
-# PATH(host)  : /home/username/catkin_ws
-# PATH(docker): /home/developer/catkin_ws
-#--------------------------------------------------------------------
-```
-
-もし、既にワークスペースが存在する場合は、以下のようなメッセージが表示されます。
-
-```
-/home/developer/catkin_ws/CMakeLists.txtが既に存在します。
-削除して再度ワークスペースの初期化を行いますか？(yes/no): 
-```
-
-既存のワークスペースを削除して、新しくワークスペースを削除したい場合は`yes`を入力してEnterキーを押して下さい。  
-このとき削除するのは、以下のファイルとディレクトリです。  
-`~/catkin_ws/src/`配下の`burger_war_dev`と`burger_war_kit`は削除しません。
-
-```
-~/catkin_ws/.catkin_workspace
-~/catkin_ws/src/CMakeLists.txt
-~/catkin_ws/build
-~/catkin_ws/devel
-```
-
-<br />
-
-### ワークスペースのビルド
---------------------------------------------------------------------
-ROSワークスペースのビルド(catkin_make)のみを行いたい場合は、以下のコマンドを実行して下さい。
-
-```
-bash commands/ws-build.sh
-```
-
-もし、catkin_makeコマンドに引数を渡したい場合は、`--`の後に引数を渡して下さい。
-
-```
-bash commands/ws-build.sh -- -j8 -DCMAKE_CXX_FLAGS=-O0
-```
-
-コマンドの出力結果はcatkin_makeの出力そのままですが、一番最初の行に以下のように実行したコマンドが出力されます。
-
-```
-+ catkin_make -j8 -DCMAKE_CXX_FLAGS=-O0
-```
+コマンドの出力結果はcatkin buildの出力そのままになります。
 
 <br />
 
@@ -389,17 +334,18 @@ bash commands/ws-build.sh -- -j8 -DCMAKE_CXX_FLAGS=-O0
 以下のコマンドで、シミュレータ､ロボット(turtle_bot)、審判サーバー､観戦画面が起動します。
 
 ```
-bash commands/kit-exec.sh -s sim_with_judge.sh
+bash commands/kit.sh -s sim_with_judge.sh
 ```
 
 以下のようなフィールドが現れロボットが2台出現し、審判画面も表示されます。
 
-[TODO:シミュレータ起動画面の画像を追加]
+![sim_with_judge](https://user-images.githubusercontent.com/76457573/105665129-aad77480-5f19-11eb-985c-49ac2f3bfb9e.png)
 
-フィールドとロボットが立ち上がったら、別のターミナルで以下のマンドを実行して下さい。
+フィールドとロボットが立ち上がったら、別のターミナルで以下のマンドを実行して下さい。  
+ロボットが動き出します。  
 
 ```
-bash commands/kit-exec.sh -s start.sh
+bash commands/kit.sh -s start.sh
 ```
 
 敵プログラムはレベル１−３まで３種類用意しています。（デフォルトではレベル１）  
@@ -408,13 +354,13 @@ bash commands/kit-exec.sh -s start.sh
 level 2
 
 ```
-bash commands/kit-exec.sh -s start.sh -l 2
+bash commands/kit.sh -s start.sh -l 2
 ```
 
 level 3
 
 ```
-bash commands/kit-exec.sh -s start.sh -l 3
+bash commands/kit.sh -s start.sh -l 3
 ```
 
 <br />
@@ -423,20 +369,20 @@ bash commands/kit-exec.sh -s start.sh -l 3
 --------------------------------------------------------------------
 
 ```
-bash commands/kit-exec.sh roslaunch burger_war setup_sim.launch
+bash commands/kit.sh roslaunch burger_war setup_sim.launch
 ```
 
 フィールドとロボットが立ち上がったら、別のターミナルで以下のマンドを実行して下さい。
 
 ```
-bash commands/kit-exec.sh -s start.sh
+bash commands/kit.sh -s start.sh
 ```
 
 審判サーバーが必要ない場合は直接launch ファイルを実行しても走行可能です。  
 上記と同様にレベル設定も可能です。(defaunt 1)
 
 ```
-bash commands/kit-exec.sh roslaunch burger_war sim_robot_run.launch enemy_level:=1
+bash commands/kit.sh roslaunch burger_war sim_robot_run.launch enemy_level:=1
 ```
 
 <br />
@@ -498,6 +444,9 @@ X Error of failed request:  GLXBadContext
 1. ubuntu-driversによる自動インストールを試す
 2. ホストPCのドライバを調べて、同じドライバをインストールを試す
 
+ドライバのインストール方法は、お使いのグラフィックボードによって変わってきます。  
+お使いのグラフィックボード用の手順を参考に、ドライバをインストールして下さい。
+
 いずれの手順でも、Dockerfileの修正が終わったら、以下のDockerイメージを再作成し、Gazeboが起動するか確認して下さい。
 
 ```
@@ -506,27 +455,23 @@ bash coomands/docker-launch.sh
 bash commands/ws-attach.sh -c gazebo
 ```
 
-### ホストPCと同じドライバをインストール
-#### ホストPCが利用中のドライバの確認方法
+### ホストPCが利用中のドライバの確認方法
 以下のコマンドで、使用しているホストPCがどのドライバを使っているか確認して下さい。
 
 ```
 software-properties-gtk
 ```
 
-表示されたウィンドウの「追加のドライバー」タブを選択すると、以下のように現在利用しているドライバが分かります。
+表示されたウィンドウの「追加のドライバー」タブを選択すると、以下のように現在利用しているドライバが選択されている状態になっており、この例では「nvidia-driver-450」というパッケージのドライバを使用していることが分かります。  
 
 ![software-properties-gtk](https://user-images.githubusercontent.com/76457573/105653173-74d8c700-5efe-11eb-9d57-902ac7f79aa3.png)
 
-この例では「nvidia-driver-450」というパッケージのドライバを使用していることがわかります。  
-
-Dockerfileの修正が終わったら、以下でDockerイメージを再作成し、gazeboが起動するか確認して下さい。
-
-#### NVIDIAの場合
+### NVIDIAの場合
 NVIDIAのドライバの場合、以下のいずれかの方法でインストールして下さい。
 
-##### Ubuntuの標準バージョンのドライバのインストール
-`docker/dev/Dokcerfile`の以下のように行頭の#を削除して、`nvidia-driver-450`の部分を[ホストPCが利用中のドライバの確認方法](#ホストPCが利用中のドライバの確認方法)調べたドライバに書き換えて下さい。
+#### Ubuntuの標準バージョンのドライバのインストール
+--------------------------------------------------------------------
+`docker/dev/Dokcerfile`を以下の部分の行頭の#を削除して、`nvidia-driver-450`の部分を[ホストPCが利用中のドライバの確認方法](#ホストPCが利用中のドライバの確認方法)調べたドライバに書き換えて下さい。
 
 ```
 # NVIDIAのドライバをインストールする例１) Ubuntのデフォルトバージョンをインストール
@@ -538,8 +483,9 @@ RUN apt-get update -q && apt-get install -y \
 
 Dockerfileの修正が終わったら、Dockerイメージを再作成し、Gazeboが起動するか確認して下さい。
 
-##### 詳細なバージョンを指定してインストール
-もし、[Ubuntuの標準バージョンのドライバのインストール)](#Ubuntuの標準バージョンのドライバのインストール)で動かない場合、マイナーバージョン違いが原因かもしれません。
+#### 詳細なバージョンを指定してインストール
+--------------------------------------------------------------------
+もし、[Ubuntuの標準バージョンのドライバのインストール)](#Ubuntuの標準バージョンのドライバのインストール)で動かない場合、ホストPCにインストールされているドライバのマイナーバージョンの違いが原因かもしれません。
 
 以下のコマンドで詳細なバージョンを確認して下さい。
 
@@ -559,7 +505,7 @@ nvidia-driver-450/bionic-updates,bionic-security,now 450.102.04-0ubuntu0.18.04.1
 この例では、「450.102.04」というバージョンであることが分かります。
 
 
-`docker/dev/Dokcerfile`の以下のように行頭の#を削除して、`ARG DRIVER_VERSION=450.80.02`の部分を調べたバージョンに変更して下さい。
+`docker/dev/Dokcerfile`の以下の箇所から行頭の#を削除して、`ARG DRIVER_VERSION=450.80.02`の部分を調べたバージョンに変更して下さい。
 
 ```
 # NVIDIAのドライバをインストールする例２) バージョンを指定してインストール
@@ -592,12 +538,13 @@ RUN cd /tmp && \
 
 Dockerfileの修正が終わったら、Dockerイメージを再作成し、Gazeboが起動するか確認して下さい。
 
-#### Intelの場合
+### Intelの場合
+--------------------------------------------------------------------
 追加のグラフィックボードがないPCの場合、Intelのデフォルトドライバで動くかと思います。  
-ただし、Intel GPUのハードウェアアクセラレーションを有効にする場合は、追加でドライバをインストールします。
+ただし、Intel GPUのハードウェアアクセラレーションを有効にする場合は、追加でドライバをインストールします。  
 (もし、追加のグラフィックボードがないIntel CPUのパソコンでGazeboが起動しない場合も、本手順を試してみて下さい)
 
-`docker/dev/Dokcerfile`の以下のように行頭の#を削除して下さい。
+`docker/dev/Dokcerfile`の以下の箇所から行頭の#を削除して下さい。
 
 ```
 # Intel(VAAPI)のドライバをインストールする例
@@ -610,12 +557,14 @@ RUN apt-get update -q && apt-get install -y \
 Dockerfileの修正が終わったら、Dockerイメージを再作成し、Gazeboが起動するか確認して下さい。
 
 
-#### AMDの場合
+### AMDの場合
+--------------------------------------------------------------------
 
 [TODO:各メーカー別の補足情報を記載する]
 
 
-#### 参考サイト
+### 参考サイト
+--------------------------------------------------------------------
 
 - [Ubuntuで最新のNVIDIA、AMD、またはIntelグラフィックスドライバを入手する方法](https://ja.compozi.com/1404-how-to-get-the-latest-nvidia-amd-or-intel-graphics-drivers-on-ubuntu)
 - [Linuxデバイス・ハードウェア関連まとめ - Qiita](https://qiita.com/aosho235/items/079b37a9485041b96ed0)
