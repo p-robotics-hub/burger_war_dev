@@ -258,7 +258,7 @@ bash commands/docker-launch.sh
 試しに以下のコマンドで、開発用のDockerコンテナにインストールされたGazeboを起動してみましょう。
 
 ```
-bash commands/ws-attach.sh -c gazebo
+bash commands/kit.sh -c gazebo
 ```
 
 以下のようなGazeboの画面が表示されれば成功です。  
@@ -394,7 +394,7 @@ bash commands/kit.sh roslaunch burger_war sim_robot_run.launch enemy_level:=1
 その場合は、以下のコマンドを実行して下さい。
 
 ```
-bash commands/ws-attach.sh 
+bash commands/kit.sh 
 ```
 
 以下のように開発用コンテナの中で対話モードでbashが起動します。
@@ -411,7 +411,7 @@ developer@hostname:~/catkin_ws$
 対話的に起動する必要がない場合は、以下のように`-c`の後に実行したいコマンドを渡して下さい。
 
 ```
-bash commands/ws-attach.sh -c gazebo
+bash commands/kit.sh -c gazebo
 ```
 
 ## 短縮コマンドの設定例
@@ -452,7 +452,7 @@ X Error of failed request:  GLXBadContext
 ```
 bash commands/docker-build.sh
 bash coomands/docker-launch.sh
-bash commands/ws-attach.sh -c gazebo
+bash commands/kit.sh -c gazebo
 ```
 
 ### ホストPCが利用中のドライバの確認方法
