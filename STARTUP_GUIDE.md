@@ -415,8 +415,45 @@ bash commands/kit.sh -c gazebo
 ```
 
 ## 短縮コマンドの設定例
+Dockerコンテナの中でコマンドを実行する場合、以下のようにコマンドが長くなり入力が大変です。  
+また、現在のディレクトリの位置にも配慮しなければなりません。
 
-[TODO:commands/*を実行するためのbashrcのalias設定例を追記]
+```
+bash commands/kit.sh -s sim_with_judge.sh
+```
+
+そこで、エイリアスというbashの機能でコマンドの別名を`$HOME/.bashrc`に定義しておけば、実行が楽になります。
+
+以下は設定例です。
+
+```
+# robocon aliases
+kitsh=$HOME/catkin_ws/src/burger_war_dev/commands/kit.sh
+alias kit="bash ${kitsh} $@"
+alias kitc="bash ${kitsh} -c $@"
+alias ws-build="bash ${kitsh} -c catkin build"
+alias sim-launch="bash ${kitsh} -s sim_with_judge.sh"
+alias sim-start="bash ${kitsh} -s start.sh"
+```
+
+`$HOME/.bashrc`を修正後、以下のコマンドで設定を反映させて下さい。  
+(修正後に新しく起動したbashには自動で反映されます)
+
+```
+source ~/.bashrc
+```
+
+上記サンプルの設定後は、以下のように短いコマンドでそれぞれ実行できるようになります。
+
+```
+kit         # コンテナの中のbashを対話モードで起動
+kitc        # コンテナの中の"bash -c 引数"でコマンドを実行(kitc envなど)
+ws-build    # ワークスペースのビルド
+sim-launch  # シミュレータの起動
+sim-start   # シミュレーションの開始
+```
+
+エイリアスは、既存のコマンドと名前が被らないように注意して下さい。
 
 <br />
 
