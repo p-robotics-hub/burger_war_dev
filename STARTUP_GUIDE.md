@@ -30,8 +30,8 @@ burger_warの開発環境を構築する手順について説明します。
         - [Ubuntuの標準バージョンのドライバのインストール](#ubuntu%E3%81%AE%E6%A8%99%E6%BA%96%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%81%AE%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
         - [詳細なバージョンを指定してインストール](#%E8%A9%B3%E7%B4%B0%E3%81%AA%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%A6%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
     - [Intelの場合](#intel%E3%81%AE%E5%A0%B4%E5%90%88)
-    - [AMDの場合](#amd%E3%81%AE%E5%A0%B4%E5%90%88)
-    - [参考サイト](#%E5%8F%82%E8%80%83%E3%82%B5%E3%82%A4%E3%83%88)
+    - [AMD/ATIの場合](#amdati%E3%81%AE%E5%A0%B4%E5%90%88)
+    - [グラフィックスドライバ関連の参考サイト](#%E3%82%B0%E3%83%A9%E3%83%95%E3%82%A3%E3%83%83%E3%82%AF%E3%82%B9%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E9%96%A2%E9%80%A3%E3%81%AE%E5%8F%82%E8%80%83%E3%82%B5%E3%82%A4%E3%83%88)
 - [その他](#%E3%81%9D%E3%81%AE%E4%BB%96)
     - [PROXYの設定について](#proxy%E3%81%AE%E8%A8%AD%E5%AE%9A%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
 
@@ -299,10 +299,9 @@ Dockerfileの修正が終わったらファイルを保存し、以下のコマ�
 bash commands/docker-build.sh
 ```
 
-ビルドが終わったら、[バージョンを指定せずにコンテナを起動](#バージョンを指定せずにコンテナを起動)の手順に従って、コンテナを起動してga
-起動するか確認をして下さい。
+ビルドが終わったら、[バージョンを指定せずにコンテナを起動](#バージョンを指定せずにコンテナを起動)の手順に従って、コンテナを起動してが起動するか確認をして下さい。
 
-もしGazeoboが起動しない場合は、[グラフィックボードのドライバの補足](#グラフィックボードのドライバの補足)を参考に、ホストPCと同じドライバをインストールして試して下さい。
+もしGazeboが起動しない場合は、[グラフィックボードのドライバの補足](#グラフィックボードのドライバの補足)を参考に、ホストPCと同じドライバをインストールして試して下さい。
 
 <br />
 
@@ -567,8 +566,12 @@ sim-start   # シミュレーションの開始
 <br />
 
 ## Dockerfileの構成について
+Dockerfileの構成は以下のようになっています。
 
-[TODO:Dockerfileの継承図を追加する]
+![Dockerfileの継承図](https://user-images.githubusercontent.com/76457573/105800339-d7eb5c00-5fd9-11eb-9890-9e426c6893c4.png)
+
+参加者の方が修正するDockerfileは、黄色の「burger-war-core」と「burger-war-dev」になります。
+他のファイルは修正しないで下さい。
 
 <br />
 
@@ -623,7 +626,7 @@ NVIDIAのドライバの場合、以下のいずれかの方法でインスト�
 # NVIDIAのドライバをインストールする例１) Ubuntのデフォルトバージョンをインストール
 #-------------------------------------------------
 RUN apt-get update -q && apt-get install -y \
-	nvidia-driver-450 \
+    nvidia-driver-450 \
     && rm -rf /var/lib/apt/lists/* \
 ```
 
@@ -638,6 +641,7 @@ Dockerfileの修正が終わったら、Dockerイメージを再作成し、Gaze
 ```
 apt list --installed nvidia-driver-*                    # NVIDIAの場合
 apt list --installed xserver-xorg-video-intel*          # Intel(内蔵)の場合
+apt list --installed xserver-xorg-video-radeon*         # AMD/ATI(Radeon)の場合
 ```
 
 例えば、以下のような出力になります。
@@ -703,18 +707,25 @@ RUN apt-get update -q && apt-get install -y \
 Dockerfileの修正が終わったら、Dockerイメージを再作成し、Gazeboが起動するか確認して下さい。
 
 
-### AMDの場合
+### AMD/ATIの場合
 --------------------------------------------------------------------
+AMD/ATIのグラフィックボードを載せている場合、標準でインストールされるオープンソース版のドライバで動く可能性が高いようです。  
+※本リポジトリでは、AMD/ATIのグラフィックボード搭載環境での動作確認は実施できておりません
 
-[TODO:各メーカー別の補足情報を記載する]
+もしGazeboが起動しない場合は、[ホストPCが利用中のドライバの確認方法](#ホストPCが利用中のドライバの確認方法)の手順でホストPCのドライバを確認して、以下のサイトなどを参考にDockerfileでドライバをインストールして下さい。  
+
+- [Nvidia以外のカードでVDPAUハードウェアビデオアクセラレーションサポートを有効にするにはどうすればよいですか？](https://qastack.jp/ubuntu/88847/how-do-i-enable-vdpau-hardware-video-acceleration-support-for-non-nvidia-cards)
+
+- [Ubuntu 18.04にAMDグラフィックドライバーをインストールする方法](https://www.it-swarm-ja.tech/ja/drivers/ubuntu-1804%E3%81%ABamd%E3%82%B0%E3%83%A9%E3%83%95%E3%82%A3%E3%83%83%E3%82%AF%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%83%BC%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B%E6%96%B9%E6%B3%95/998272373/)
 
 
-### 参考サイト
+
+### グラフィックスドライバ関連の参考サイト
 --------------------------------------------------------------------
 
 - [Ubuntuで最新のNVIDIA、AMD、またはIntelグラフィックスドライバを入手する方法](https://ja.compozi.com/1404-how-to-get-the-latest-nvidia-amd-or-intel-graphics-drivers-on-ubuntu)
-- [Linuxデバイス・ハードウェア関連まとめ - Qiita](https://qiita.com/aosho235/items/079b37a9485041b96ed0)
 - [Linux mint , ubuntu で Intel GPU によるVAAPI（ ハードウェアアクセラレーション ） を使用できるようにする](https://2sc380.hatenablog.com/entry/2019/01/20/223311#f-98f0f069)
+- [Linuxデバイス・ハードウェア関連まとめ - Qiita](https://qiita.com/aosho235/items/079b37a9485041b96ed0)
 
 
 ## その他
