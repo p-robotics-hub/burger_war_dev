@@ -200,7 +200,8 @@ bash commands/docker-launch.sh
 bash commands/kit.sh -c apt list インストールしたパッケージ名
 ```
 
-例えば「ros-${ROS_DISTRO}-dwa-local-planner」がインストールされたか確認する場合は、以下となります。
+例えば「ros-${ROS_DISTRO}-dwa-local-planner」がインストールされたか確認する場合は、以下となります。  
+最後の行から、バージョンは「1.16.7」であることが分かります。
 
 ```
 $ bash commands/kit.sh -c apt list ros-*-global-planner
@@ -281,7 +282,7 @@ bash commands/kit.sh -c myexec
 Ubuntuには対応するドライバを自動で検出してインストールする`ubuntu-drivers`というツールが用意されています。  
 Gazeboが起動しないときは、まずはこれを試してみましょう。
 
-`docker/dev/Dokcerfile`の以下の箇所から行頭の#を削除後、ファイルを保存してビルドして下さい。
+`docker/dev/Dokcerfile`の以下の箇所から行頭の#を削除して下さい。
 
 ```
 # ubuntu-driversによる自動インストールの例
@@ -292,9 +293,16 @@ RUN apt-get update -q && apt-get install -y --no-install-recommends \
     && ubuntu-drivers autoinstall
 ```
 
-ビルドが終わったら、[バージョンを指定せずにコンテナを起動](#バージョンを指定せずにコンテナを起動)の手順に従って、コンテナを起動して動作確認をして下さい。
+Dockerfileの修正が終わったらファイルを保存し、以下のコマンドでビルドして下さい。
 
-もし起動しない場合は、[グラフィックボードのドライバの補足](#グラフィックボードのドライバの補足)を参考に、ホストPCと同じドライバをインストールして試して下さい。
+```
+bash commands/docker-build.sh
+```
+
+ビルドが終わったら、[バージョンを指定せずにコンテナを起動](#バージョンを指定せずにコンテナを起動)の手順に従って、コンテナを起動してga
+起動するか確認をして下さい。
+
+もしGazeoboが起動しない場合は、[グラフィックボードのドライバの補足](#グラフィックボードのドライバの補足)を参考に、ホストPCと同じドライバをインストールして試して下さい。
 
 <br />
 
@@ -629,7 +637,7 @@ Dockerfileの修正が終わったら、Dockerイメージを再作成し、Gaze
 
 ```
 apt list --installed nvidia-driver-*                    # NVIDIAの場合
-apt list --installed xserver-xorg-video-intel**         # Intel(内蔵)の場合
+apt list --installed xserver-xorg-video-intel*          # Intel(内蔵)の場合
 ```
 
 例えば、以下のような出力になります。

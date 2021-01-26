@@ -7,7 +7,7 @@
 #+
 #-[OPTIONS]
 #-  -a options    'docker exec'に追加で渡す引数を指定（複数回指定可能）
-#-  -c command    'bash -c'に渡す引数を指定
+#-  -c            'bash -c'により引数のコマンドを実行する
 #-  -s            burger-war-kit/scripts/以下のスクリプトを実行する
 #-  -h            このヘルプを表示
 #-

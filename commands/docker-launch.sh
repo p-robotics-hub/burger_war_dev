@@ -67,17 +67,17 @@ shift $((OPTIND - 1))
 # 同名のコンテナが存在する場合は停止する
 #------------------------------------------------
 if docker container ls --format '{{.Names}}' | grep -q -e "^${DEV_DOCKER_CONTAINER_NAME}$" ; then
-  echo "${DEV_DOCKER_CONTAINER_NAME} コンテナを停止します..."
+  echo "起動中の ${DEV_DOCKER_CONTAINER_NAME} コンテナを停止します..."
   docker container stop ${DEV_DOCKER_CONTAINER_NAME} >/dev/null
-  echo "${DEV_DOCKER_CONTAINER_NAME} コンテナを停止しました"
+  echo "起動中の ${DEV_DOCKER_CONTAINER_NAME} コンテナを停止しました"
 fi
 
 # 同名のコンテナが存在する場合は削除する
 #------------------------------------------------
 if docker container ls -a --format '{{.Names}}' | grep -q -e "^${DEV_DOCKER_CONTAINER_NAME}$" ; then
-  echo "${DEV_DOCKER_CONTAINER_NAME} コンテナを削除します..."
+  echo "既存の ${DEV_DOCKER_CONTAINER_NAME} コンテナを削除します..."
   docker rm ${DEV_DOCKER_CONTAINER_NAME} >/dev/null
-  echo "${DEV_DOCKER_CONTAINER_NAME} コンテナを削除しました"
+  echo "既存の ${DEV_DOCKER_CONTAINER_NAME} コンテナを削除しました"
 fi
 
 # 新たにコンテナを起動する
