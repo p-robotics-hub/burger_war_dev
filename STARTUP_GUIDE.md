@@ -39,19 +39,19 @@ Dockerとは、仮想化技術の１つです。
 
 コンテナを作成するには、Dockerイメージというコンテナのもとになる仮想ファイルイメージが必要になります。
 
-[burger_war_kit](https://github.com/p-robotics-hub/burger_war_kit)には、burger_warに最低限必要なツールとライブラリをインストールしたDockerイメージを提供しています。
+[burger_war_kit](https://github.com/p-robotics-hub/burger_war_kit)では、burger_warに最低限必要なツールとライブラリをインストールしたDockerイメージを提供しています。
 
 このリポジトリでは、burger_war_kitのDockerイメージを元に、開発者が必要なライブラリやツールをインストールしたDockerイメージを用意して開発を進める形になります。
 
-もし、Dockerを使ったことない人は、以下のサイトに目を通しておくと概要と基本的な用語を把握できるかと思います。
+もし、Dockerを使ったことがない人は、以下のサイトに目を通しておくと概要と基本的な用語を把握できるかと思います。
 
 - [Dockerとは何かを入門者向けに解説！基本コマンドも](https://udemy.benesse.co.jp/development/system/docker.html)
 
 
 もっと深くDockerについて学びたい場合は、以下のサイトを参考にされると良いでしょう。
 
-- [いまさらだけどDockerに入門したので分かりやすくまとめてみた](https://qiita.com/gold-kou/items/44860fbda1a34a001fc1)
 - [Dockerイメージの理解を目指すチュートリアル](https://qiita.com/zembutsu/items/24558f9d0d254e33088f)
+- [いまさらだけどDockerに入門したので分かりやすくまとめてみた](https://qiita.com/gold-kou/items/44860fbda1a34a001fc1)
 
 
 ## ■1. ホストPCで必要なツールのインストール
