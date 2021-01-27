@@ -75,9 +75,31 @@ fi
 # 同名のコンテナが存在する場合は削除する
 #------------------------------------------------
 if docker container ls -a --format '{{.Names}}' | grep -q -e "^${DEV_DOCKER_CONTAINER_NAME}$" ; then
-  echo "既存の ${DEV_DOCKER_CONTAINER_NAME} コンテナを削除します..."
-  docker rm ${DEV_DOCKER_CONTAINER_NAME} >/dev/null
-  echo "既存の ${DEV_DOCKER_CONTAINER_NAME} コンテナを削除しました"
+  echo -e "\e[33mWARNING: 前回起動していた ${DEV_DOCKER_CONTAINER_NAME} コンテナが存在します"
+  read -p "既存のコンテナを削除して、新しいコンテナを起動しますか？(yes/no): " yesno
+  echo -e "\e[m"
+  case $yesno in
+    yes ) # 既存のコンテナ
+      echo "既存の ${DEV_DOCKER_CONTAINER_NAME} コンテナを削除します..."
+      docker rm ${DEV_DOCKER_CONTAINER_NAME} >/dev/null
+      echo "既存の ${DEV_DOCKER_CONTAINER_NAME} コンテナを削除しました"
+      ;;
+    * ) # 既存のコンテナを別名で保存
+      read -p "既存のコンテナをイメージとして保存します。保存するバージョン名を入力して下さい: " backup_version
+      if [ -z "${backup_version}" ]; then
+        echo "バージョン名が不正です。起動処理を中断します"
+      fi
+      docker commit ${DEV_DOCKER_CONTAINER_NAME} ${DEV_DOCKER_IMAGE_NAME}:${backup_version} >/dev/null
+      echo -e "\e[33m#--------------------------------------------------------------------"
+      echo -e "# 既存のコンテナを以下のイメージとして保存しました"
+      echo -e "# SAVE IMAGE NAME: ${DEV_DOCKER_IMAGE_NAME}:${backup_version}"
+      echo -e "# "
+      echo -e "# 保存したイメージからコンテナを起動するには、以下のコマンドを実行して下さい"
+      echo -e "# RUN COMMAND    : bash commands/docker-launch.sh -v ${backup_version}"
+      echo -e "#--------------------------------------------------------------------\e[m"
+      docker rm ${DEV_DOCKER_CONTAINER_NAME} >/dev/null
+      ;;
+  esac
 fi
 
 # 新たにコンテナを起動する
