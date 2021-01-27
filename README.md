@@ -5,7 +5,7 @@
 https://github.com/p-robotics-hub/burger_war_kit/blob/main/README.md
 
 Dockerコンテナを使った開発環境構築の方法については、このレポジトリの
-[STARTUP_GUIDE](STARTUP_GIDE.md)
+[STARTUP_GUIDE](STARTUP_GUIDE.md)
 に記述しています。
 
 このファイルは自由に編集いただいて構いません。ただし、上記の記述は残してください。
