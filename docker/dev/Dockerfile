@@ -13,6 +13,22 @@ RUN apt-get update -q && sudo apt-get install -y --no-install-recommends \
     kmod \
     && rm -rf /var/lib/apt/lists/*
 
+# VNCサーバーのインストール
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ubuntu-desktop \
+    && apt-get install -y gnome-panel gnome-settings-daemon metacity nautilus \
+    && apt-get install -y tightvncserver
+
+# 必要なファイルのコピー
+RUN mkdir /home/developer/.vnc
+ADD dev/xstartup /home/developer/.vnc/xstartup
+ADD dev/passwd /home/developer/.vnc/passwd
+RUN chown developer -R /home/developer/.vnc
+
+CMD sudo /usr/bin/vncserver :1 -geometry 1280x800 -depth 24 && tail -f /home/developer/.vnc/*:1.log
+
+EXPOSE 5901
+
 #-------------------------------------------------------------------------------------------------
 # 開発PC用のドライバをインストールする
 # （Gazeboが起動しない場合やGPUを使いたい場合は、ここで必要なドライバをインストールして下さい）

@@ -109,13 +109,13 @@ docker run \
   --name ${DEV_DOCKER_CONTAINER_NAME} \
   -d \
   --privileged \
-  --net host \
   --mount type=bind,src=/tmp/.X11-unix/,dst=/tmp/.X11-unix \
   --mount type=bind,src=${HOST_WS_DIR},dst=${CONTAINER_WS_DIR} \
   --device /dev/snd \
   -e DISPLAY=${DISPLAY} \
   -e HOST_USER_ID=$(id -u) \
   -e HOST_GROUP_ID=$(id -g) \
+  -p 5901:5901 \
   ${RUN_OPTION} \
   ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
   tail -f /dev/null
