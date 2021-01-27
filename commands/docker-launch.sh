@@ -7,6 +7,7 @@
 #+
 #-[OPTIONS]
 #-  -a options    'docker run'に追加で渡す引数を指定（複数回指定可能）
+#-  -r            リモートデスクトップモード(VNC)として起動
 #-  -w dir-path   ホストPCのロボコンワークスペースのパスを指定 (default: $HOME/catkin_ws)
 #-  -v version    'docker run'で起動するイメージの'version'を指定 (default: latest)
 #-  -h            このヘルプを表示
@@ -42,7 +43,8 @@ source "${SCRIPT_DIR}/config.sh"
 #------------------------------------------------
 RUN_OPTION=
 IMAGE_VERSION=latest
-while getopts a:v:w:h OPT
+VNC_MODE=
+while getopts a:v:w:rh OPT
 do
   case $OPT in
     a  ) # docker runへの追加オプション引数指定
@@ -53,6 +55,9 @@ do
       ;;
     v  ) # Dockerイメージのバージョン指定
       IMAGE_VERSION="${OPTARG}"
+      ;;
+    r  ) # VNCモードで起動
+      VNC_MODE=1
       ;;
     h  ) # ヘルプの表示
       help_exit
@@ -104,23 +109,41 @@ fi
 
 # 新たにコンテナを起動する
 #------------------------------------------------
-set -x
-docker run \
-  --name ${DEV_DOCKER_CONTAINER_NAME} \
-  -d \
-  --privileged \
-  --mount type=bind,src=/tmp/.X11-unix/,dst=/tmp/.X11-unix \
-  --mount type=bind,src=${HOST_WS_DIR},dst=${CONTAINER_WS_DIR} \
-  --device /dev/snd \
-  -e DISPLAY=${DISPLAY} \
-  -e HOST_USER_ID=$(id -u) \
-  -e HOST_GROUP_ID=$(id -g) \
-  -p 5901:5901 \
-  ${RUN_OPTION} \
-  ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
-  tail -f /dev/null
-set +x
-
+if [ -z "$VNC_MODE"]; then
+  set -x
+  docker run \
+    --name ${DEV_DOCKER_CONTAINER_NAME} \
+    -d \
+    --privileged \
+    --net host \
+    --mount type=bind,src=/tmp/.X11-unix/,dst=/tmp/.X11-unix \
+    --mount type=bind,src=${HOST_WS_DIR},dst=${CONTAINER_WS_DIR} \
+    --device /dev/snd \
+    -e DISPLAY=${DISPLAY} \
+    -e HOST_USER_ID=$(id -u) \
+    -e HOST_GROUP_ID=$(id -g) \
+    ${RUN_OPTION} \
+    ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
+    tail -f /dev/null
+  set +x
+else
+  set -x
+  docker run \
+    --name ${DEV_DOCKER_CONTAINER_NAME} \
+    -d \
+    --privileged \
+    --mount type=bind,src=${HOST_WS_DIR},dst=${CONTAINER_WS_DIR} \
+    --device /dev/snd \
+    -e DISPLAY=${DISPLAY} \
+    -e HOST_USER_ID=$(id -u) \
+    -e HOST_GROUP_ID=$(id -g) \
+    -p 5901:5901 \
+    ${RUN_OPTION} \
+    ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
+    'export USER=developer && vncserver :1 -geometry 1280x800 -depth 24 && tail -f /home/developer/.vnc/*:1.log
+'
+  set +x
+fi
 cat <<-EOM
 #--------------------------------------------------------------------
 # 開発用のコンテナを起動しました
