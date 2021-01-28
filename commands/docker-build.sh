@@ -3,12 +3,13 @@
 #-burger-war-core/burger-war-devのDockerfileをビルドする
 #-
 #+[USAGE]
-#+  $0 [-a BUILDオプション(core/dev)] [-c BUILDオプション(core)] [-d BUILDオプション(dev)] [-v イメージのバージョン] [-h]
+#+  $0 [-a BUILDオプション(core/dev)] [-c BUILDオプション(core)] [-d BUILDオプション(dev)] [-t BUILDターゲット][-v イメージのバージョン] [-h]
 #+
 #-[OPTIONS]
 #-  -a options    burger-war-core/burger-war-devの'docker build'に追加で渡す引数を指定（複数回指定可能）
 #-  -c options    burger-war-coreの'docker build'に追加で渡す引数を指定（複数回指定可能）
 #-  -d options    burger-war-devの'docker build'に追加で渡す引数を指定（複数回指定可能）
+#-  -t target     ビルドするターゲットの指定(dev|robo|sim|vnc) *coreは常にビルドされる
 #-  -v version    'docker build -t'で指定するイメージのバージョンを指定 (default: latest)
 #-  -h            このヘルプを表示
 #-
@@ -45,7 +46,9 @@ source "${SCRIPT_DIR}/config.sh"
 DEV_BUILD_OPTION=
 CORE_BUILD_OPTION=
 IMAGE_VERSION=latest
-while getopts a:c:d:v:h OPT
+BUILD_TARGET=dev
+BUILD_DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${BUILD_TARGET}
+while getopts a:c:d:t:v:h OPT
 do
   case $OPT in
     a  ) # burger-war-core/burger-war-devのdocker buildへの追加オプション引数指定
@@ -57,6 +60,10 @@ do
       ;;
     d  ) # burger-war-devのdocker buildへの追加オプション引数指定
       DEV_BUILD_OPTION="${DEV_BUILD_OPTION} ${OPTARG}"
+      ;;
+    t  ) # ビルドするターゲットを指定
+      BUILD_TARGET="${OPTARG}"
+      BUILD_DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${BUILD_TARGET}
       ;;
     v  ) # Dockerイメージのバージョン指定
       IMAGE_VERSION="${OPTARG}"
@@ -76,9 +83,9 @@ shift $((OPTIND - 1))
 set -x
 docker build \
   ${CORE_BUILD_OPTION} \
-  -f ${CORE_DOCKER_FILE_PATH} \
+  -f "${CORE_DOCKER_FILE_PATH}" \
   -t ${CORE_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
-  ${DOCKER_ROOT_DIR}
+  "${DOCKER_ROOT_DIR}"
 set +x
 
 # 開発環境用のDockerfileのビルド
@@ -87,15 +94,15 @@ set -x
 docker build \
   ${DEV_BUILD_OPTION} \
   --build-arg CORE_VERSION=${IMAGE_VERSION} \
-  -f ${DEV_DOCKER_FILE_PATH} \
-  -t ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
-  ${DOCKER_ROOT_DIR}
+  -f "${DOCKER_ROOT_DIR}/${BUILD_TARGET}/Dockerfile" \
+  -t ${BUILD_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
+  "${DOCKER_ROOT_DIR}"
 set +x
 
 cat <<-EOM
 #--------------------------------------------------------------------
 # 以下のイメージを作成しました
 # カスタマイズ用: ${CORE_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}
-# 開発環境用　　: ${DEV_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}
+# 開発環境用　　: ${BUILD_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}
 #--------------------------------------------------------------------
 EOM

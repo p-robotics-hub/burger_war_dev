@@ -5,13 +5,17 @@
 DOCKER_IMAGE_NAME=burger-war
 
 # Dockerイメージ名(ローカルパッケージ名)
-CORE_DOCKER_IMAGE_NAME=burger-war-core
-DEV_DOCKER_IMAGE_NAME=burger-war-dev
-DEV_DOCKER_CONTAINER_NAME=${DEV_DOCKER_IMAGE_NAME}
+DOCKER_IMAGE_PREFIX=burger-war
+CORE_DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-core
 
 #----------------------------------------------------------
 # Local config values
 #----------------------------------------------------------
+# VNCのポート番号
+VNC_PORT=5900
+# VNCログイン時のパスワード
+VNC_PASSWORD=pass
+
 # ワークスペースのrootディレクトリのパス
 HOST_WS_DIR=${HOME}/catkin_ws
 # コンテナ上のワークスペースディレクトリ
@@ -24,4 +28,3 @@ BURGER_WAR_DEV_DIR=${HOST_WS_DIR}/src/burger_war_dev
 # ビルドするDockerfileパス
 DOCKER_ROOT_DIR=${BURGER_WAR_DEV_DIR}/docker
 CORE_DOCKER_FILE_PATH=${DOCKER_ROOT_DIR}/core/Dockerfile
-DEV_DOCKER_FILE_PATH=${DOCKER_ROOT_DIR}/dev/Dockerfile

@@ -9,6 +9,7 @@
 #-  -a options    'docker exec'に追加で渡す引数を指定（複数回指定可能）
 #-  -c            'bash -c'により引数のコマンドを実行する
 #-  -s            burger-war-kit/scripts/以下のスクリプトを実行する
+#-  -t target     コマンドを実行するターゲットの指定(core|dev|robo|sim|vnc)
 #-  -h            このヘルプを表示
 #-
 #-[ARGUMENTS]
@@ -48,7 +49,7 @@ IMAGE_VERSION=latest
 BASH_OPTION=
 BASH_ARGS=
 EXEC_SCRIPT=
-while getopts a:csh OPT
+while getopts a:cst:h OPT
 do
   case $OPT in
     a  ) # docker execへの追加オプション引数指定
@@ -62,6 +63,10 @@ do
       EXEC_SCRIPT=1
       BASH_OPTION="-l -c"
       break
+      ;;
+    t  ) # コマンドを実行するターゲットを指定
+      RUN_TARGET="${OPTARG}"
+      RUN_DOCKER_CONTAINER_NAME=${DOCKER_IMAGE_PREFIX}-${RUN_TARGET}
       ;;
     h  ) # ヘルプの表示
       help_exit
@@ -86,7 +91,7 @@ fi
 cat <<-EOM
 #--------------------------------------------------------------------
 # 以下のコンテナでコマンドを実行します
-# CONTAINER NAME: ${DEV_DOCKER_CONTAINER_NAME}
+# CONTAINER NAME: ${RUN_DOCKER_CONTAINER_NAME}
 # EXEC COMMAND  : bash ${BASH_OPTION} ${EXEC_COMMAND}
 #--------------------------------------------------------------------
 EOM
@@ -95,5 +100,5 @@ docker exec \
   -it \
   --user $(id -u) \
   ${EXEC_OPTION} \
-  ${DEV_DOCKER_CONTAINER_NAME} \
+  ${RUN_DOCKER_CONTAINER_NAME} \
   bash ${BASH_OPTION} "${EXEC_COMMAND}"
