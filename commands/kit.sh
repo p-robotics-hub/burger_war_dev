@@ -3,7 +3,7 @@
 #-開発用コンテナ上でburger-war-kitディレクトリに移動してコマンドを実行する
 #-
 #+[USAGE]
-#+  $0 [-a EXECオプション] [-c] [-s] [-h] 実行コマンド
+#+  $0 [-a EXECオプション] [-h] [-s] [-c] 実行コマンド
 #+
 #-[OPTIONS]
 #-  -a options    'docker exec'に追加で渡す引数を指定（複数回指定可能）
@@ -49,6 +49,8 @@ IMAGE_VERSION=latest
 BASH_OPTION=
 BASH_ARGS=
 EXEC_SCRIPT=
+RUN_TARGET=dev
+RUN_DOCKER_CONTAINER_NAME=${DOCKER_IMAGE_PREFIX}-${RUN_TARGET}
 while getopts a:cst:h OPT
 do
   case $OPT in
