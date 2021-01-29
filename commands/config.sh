@@ -11,6 +11,15 @@ CORE_DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-core
 #----------------------------------------------------------
 # Local config values
 #----------------------------------------------------------
+# PROXY設定
+HOST_http_proxy=${http_proxy:-}
+HOST_https_proxy=${https_proxy:-}
+HOST_HTTP_PROXY=${HTTP_PROXY:-}
+HOST_HTTPS_PROXY=${HTTPS_PROXY:-}
+HOST_HTTPS_PROXY=${HTTPS_PROXY:-}
+HOST_ftp_proxy=${ftp_proxy:-}
+HOST_FTP_PROXY=${FTP_PROXY:-}
+
 # VNCサーバのポート番号
 VNC_PORT=5900
 # VNCログイン時のパスワード(空文字の場合はパスワードなし)
