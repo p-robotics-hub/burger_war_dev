@@ -2,6 +2,7 @@
 
 DEVELOPER_NAME=developer
 DEV_HOME=/home/${DEVELOPER_NAME}
+
 # x11vncへの追加引数
 if [ -n "$X11VNC_ARGS" ]; then
     sed -i "s/^command=gosu {{USER}} x11vnc.*/& ${X11VNC_ARGS}/" /etc/supervisor/conf.d/supervisord.conf
@@ -27,25 +28,12 @@ if [ -n "$OPENBOX_ARGS" ]; then
     sed -i "s#^command=/usr/bin/openbox\$#& ${OPENBOX_ARGS}#" /etc/supervisor/conf.d/supervisord.conf
 fi
 
-# if [ "$DEVELOPER_NAME" != "root" ]; then
-#     echo "* enable custom user: ${DEVELOPER_NAME}"
-#     useradd --create-home --shell /bin/bash --user-group --groups adm,sudo ${DEVELOPER_NAME}
-#     if [ -z "$PASSWORD" ]; then
-#         echo "  set default password to \"ubuntu\""
-#         PASSWORD=ubuntu
-#     fi
-#     HOME=/home/${DEVELOPER_NAME}
-#     echo "${DEVELOPER_NAME}:$PASSWORD" | chpasswd
-#     cp -r /root/{.config,.gtkrc-2.0,.asoundrc} ${DEV_HOME}
-#     chown -R ${DEVELOPER_NAME}:${DEVELOPER_NAME} ${DEV_HOME}
-#     [ -d "/dev/snd" ] && chgrp -R adm /dev/snd
-# fi
 sed -i -e "s|{{USER}}|${DEVELOPER_NAME}|" -e "s|{{HOME}}|${DEV_HOME}|" /etc/supervisor/conf.d/supervisord.conf
 
 # home folder
 if [ ! -x "${DEV_HOME}/.config/pcmanfm/LXDE/" ]; then
     mkdir -p ${DEV_HOME}/.config/pcmanfm/LXDE/
-    ln -sf /usr/local/share/doro-lxde-wallpapers/desktop-items-0.conf ${DEV_HOME}/.config/pcmanfm/LXDE/
+    ln -sf /usr/local/share/lxde/desktop-items-0.conf ${DEV_HOME}/.config/pcmanfm/LXDE/
     chown -R ${DEVELOPER_NAME}:${DEVELOPER_NAME} ${DEV_HOME}
 fi
 
