@@ -83,9 +83,6 @@ RUN echo "NO_AT_BRIDGE=1" >> /home/developer/.bashrc
 COPY vnc/rootfs /
 RUN chown developer -R /home/developer
 
-# デフォルトのワークスペース作成
-WORKDIR /home/developer
-
 ENTRYPOINT ["/entrypoint_vnc.sh"]
 
 ENV DEBIAN_FRONTEND=newt

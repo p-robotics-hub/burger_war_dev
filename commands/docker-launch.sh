@@ -122,6 +122,7 @@ if [ "${RUN_TARGET}" == "vnc" ]; then
     --privileged \
     --mount type=bind,src=${HOST_WS_DIR},dst=${CONTAINER_WS_DIR} \
     -v /dev/shm \
+    -e DISPLAY=:1 \
     -e HOST_USER_ID=$(id -u) \
     -e HOST_GROUP_ID=$(id -g) \
     -e PASSWORD=${VNC_PASSWORD} \

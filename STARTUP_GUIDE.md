@@ -673,9 +673,23 @@ VNCクライアントソフトの１つである`Remmina`の場合、設定例�
 
 ![vnc_remmina](https://user-images.githubusercontent.com/76457573/106171246-ac809100-61d4-11eb-9084-c14dd9ce3e82.png)
 
+### 8.4 VNCでのシミュレーション実行
+VNC接続後、[burger_war_kitの手順書](https://github.com/p-robotics-hub/burger_war_kit/blob/main/README.md)に記載された操作でビルドやシミュレータの起動などを行うことができます。
+
+また、ホストPCから任意のコマンドを実行することもできます。  
+以下のように、`kit.sh`の引数に`-t vnc`をつけて、その後ろに`-c 任意のコマンド`や`-s スクリプト名`を指定して下さい。
+
+```
+bash commands/kit.sh -t vnc -c catkin build         # 任意のコマンドの実行
+bash commands/kit.sh -t vnc -s sim_with_judge.sh    # シミュレータの起動
+bash commands/kit.sh -t vnc -s start.sh             # シミュレーションの開始
+```
+
+コマンド実行後、VNCの画面上にGazeboなどが表示されます。
+
 <br />
 
-### 8.4 VNCの設定
+### 8.5 VNCの設定
 `commands/config.h`にVNCに関連する設定を変更することができます。  
 必要であれば変更して下さい。
 
