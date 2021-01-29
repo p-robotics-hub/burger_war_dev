@@ -11,10 +11,16 @@ CORE_DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-core
 #----------------------------------------------------------
 # Local config values
 #----------------------------------------------------------
-# VNCのポート番号
+# VNCサーバのポート番号
 VNC_PORT=5900
-# VNCログイン時のパスワード
-VNC_PASSWORD=pass
+# VNCログイン時のパスワード(空文字の場合はパスワードなし)
+VNC_PASSWORD=${VNC_PASSWORD:-}
+# VNC接続の解像度
+VNC_RESOLUTION=1280x800
+# VNCのx11vncへの
+VNC_X11VNC_ARGS=
+# VNCのOpenBoxへの引数
+VNC_OPENBOX_ARGS=
 
 # ワークスペースのrootディレクトリのパス
 HOST_WS_DIR=${HOME}/catkin_ws

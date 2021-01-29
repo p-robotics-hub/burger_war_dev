@@ -43,7 +43,6 @@ source "${SCRIPT_DIR}/config.sh"
 #------------------------------------------------
 RUN_OPTION=
 IMAGE_VERSION=latest
-VNC_MODE=
 RUN_TARGET=dev
 RUN_DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${RUN_TARGET}
 RUN_DOCKER_CONTAINER_NAME=${RUN_DOCKER_IMAGE_NAME}
@@ -114,7 +113,36 @@ fi
 
 # 新たにコンテナを起動する
 #------------------------------------------------
-if [ -z "$VNC_MODE" ]; then
+if [ "${RUN_TARGET}" == "vnc" ]; then
+  # VNC版コンテナの起動
+  set -x
+  docker run \
+    --name ${RUN_DOCKER_CONTAINER_NAME} \
+    -d \
+    --privileged \
+    --mount type=bind,src=${HOST_WS_DIR},dst=${CONTAINER_WS_DIR} \
+    -v /dev/shm \
+    -e HOST_USER_ID=$(id -u) \
+    -e HOST_GROUP_ID=$(id -g) \
+    -e PASSWORD=${VNC_PASSWORD} \
+    -e RESOLUTION=${VNC_RESOLUTION} \
+    -e X11VNC_ARGS=${VNC_X11VNC_ARGS} \
+    -e OPENBOX_ARGS=${VNC_OPENBOX_ARGS} \
+    -p ${VNC_PORT}:5900 \
+    ${RUN_OPTION} \
+    ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
+    tail -f /dev/null
+  set +x
+  cat <<-EOM-VNC
+	#--------------------------------------------------------------------
+	# 開発用のコンテナを起動しました
+	# USE IMAGE NAME: ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}
+	# CONTAINER NAME: ${RUN_DOCKER_CONTAINER_NAME}
+	# VNC ADDR:PORT : localhost:${VNC_PORT}
+	#--------------------------------------------------------------------
+EOM-VNC
+else
+  # 通常版コンテナの起動
   set -x
   docker run \
     --name ${RUN_DOCKER_CONTAINER_NAME} \
@@ -132,28 +160,11 @@ if [ -z "$VNC_MODE" ]; then
     ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
     tail -f /dev/null
   set +x
-else
-  set -x
-  docker run \
-    --name ${RUN_DOCKER_CONTAINER_NAME} \
-    -d \
-    --privileged \
-    --mount type=bind,src=/tmp/.X11-unix/,dst=/tmp/.X11-unix \
-    --mount type=bind,src=${HOST_WS_DIR},dst=${CONTAINER_WS_DIR} \
-    -v /dev/shm \
-    -e HOST_USER_ID=$(id -u) \
-    -e HOST_GROUP_ID=$(id -g) \
-    -p ${VNC_PORT}:${VNC_PORT} \
-    ${RUN_OPTION} \
-    ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
-    tail -f /dev/null
-    #'export USER=developer && vncserver :1 -geometry 1280x800 -depth 24 && tail -f /home/developer/.vnc/*:1.log'
-  set +x
+  cat <<-EOM-DEV
+	#--------------------------------------------------------------------
+	# 開発用のコンテナを起動しました
+	# USE IMAGE NAME: ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}
+	# CONTAINER NAME: ${RUN_DOCKER_CONTAINER_NAME}
+	#--------------------------------------------------------------------
+EOM-DEV
 fi
-cat <<-EOM
-#--------------------------------------------------------------------
-# 開発用のコンテナを起動しました
-# USE IMAGE NAME: ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}
-# CONTAINER NAME: ${RUN_DOCKER_CONTAINER_NAME}
-#--------------------------------------------------------------------
-EOM

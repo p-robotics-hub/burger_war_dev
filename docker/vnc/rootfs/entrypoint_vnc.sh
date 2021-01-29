@@ -1,79 +1,54 @@
 #!/bin/bash
 
-if [ -n "$VNC_PASSWORD" ]; then
-    echo -n "$VNC_PASSWORD" > /.password1
-    x11vnc -storepasswd $(cat /.password1) /.password2
-    chmod 400 /.password*
-    sed -i 's/^command=x11vnc.*/& -rfbauth \/.password2/' /etc/supervisor/conf.d/supervisord.conf
-    export VNC_PASSWORD=
-fi
-
+DEVELOPER_NAME=developer
+DEV_HOME=/home/${DEVELOPER_NAME}
+# x11vncへの追加引数
 if [ -n "$X11VNC_ARGS" ]; then
-    sed -i "s/^command=x11vnc.*/& ${X11VNC_ARGS}/" /etc/supervisor/conf.d/supervisord.conf
+    sed -i "s/^command=gosu {{USER}} x11vnc.*/& ${X11VNC_ARGS}/" /etc/supervisor/conf.d/supervisord.conf
 fi
 
-if [ -n "$OPENBOX_ARGS" ]; then
-    sed -i "s#^command=/usr/bin/openbox\$#& ${OPENBOX_ARGS}#" /etc/supervisor/conf.d/supervisord.conf
+# VNCパスワード設定
+if [ -n "$PASSWORD" ]; then
+    mkdir -p ${DEV_HOME}/.x11vnc
+    echo -n "$PASSWORD" > ${DEV_HOME}/.x11vnc/password1
+    x11vnc -storepasswd $(cat ${DEV_HOME}/.x11vnc/password1) ${DEV_HOME}/.x11vnc/password2
+    chmod 400 ${DEV_HOME}/.x11vnc/password*
+    sed -i "s!command=gosu {{USER}} x11vnc.*!& -rfbauth ${DEV_HOME}/.x11vnc/password2!" /etc/supervisor/conf.d/supervisord.conf
+    export PASSWORD=
 fi
 
+# VNC解像度設定
 if [ -n "$RESOLUTION" ]; then
     sed -i "s/1024x768/$RESOLUTION/" /usr/local/bin/xvfb.sh
 fi
 
-USER=${USER:-developer}
-HOME=/home/developer
-if [ "$USER" != "root" ]; then
-    echo "* enable custom user: $USER"
-    useradd --create-home --shell /bin/bash --user-group --groups adm,sudo $USER
-    if [ -z "$PASSWORD" ]; then
-        echo "  set default password to \"ubuntu\""
-        PASSWORD=ubuntu
-    fi
-    HOME=/home/$USER
-    echo "$USER:$PASSWORD" | chpasswd
-    cp -r /root/{.config,.gtkrc-2.0,.asoundrc} ${HOME}
-    chown -R $USER:$USER ${HOME}
-    [ -d "/dev/snd" ] && chgrp -R adm /dev/snd
+# OpenBoxへの追加引数
+if [ -n "$OPENBOX_ARGS" ]; then
+    sed -i "s#^command=/usr/bin/openbox\$#& ${OPENBOX_ARGS}#" /etc/supervisor/conf.d/supervisord.conf
 fi
-sed -i -e "s|%USER%|$USER|" -e "s|%HOME%|$HOME|" /etc/supervisor/conf.d/supervisord.conf
+
+# if [ "$DEVELOPER_NAME" != "root" ]; then
+#     echo "* enable custom user: ${DEVELOPER_NAME}"
+#     useradd --create-home --shell /bin/bash --user-group --groups adm,sudo ${DEVELOPER_NAME}
+#     if [ -z "$PASSWORD" ]; then
+#         echo "  set default password to \"ubuntu\""
+#         PASSWORD=ubuntu
+#     fi
+#     HOME=/home/${DEVELOPER_NAME}
+#     echo "${DEVELOPER_NAME}:$PASSWORD" | chpasswd
+#     cp -r /root/{.config,.gtkrc-2.0,.asoundrc} ${DEV_HOME}
+#     chown -R ${DEVELOPER_NAME}:${DEVELOPER_NAME} ${DEV_HOME}
+#     [ -d "/dev/snd" ] && chgrp -R adm /dev/snd
+# fi
+sed -i -e "s|{{USER}}|${DEVELOPER_NAME}|" -e "s|{{HOME}}|${DEV_HOME}|" /etc/supervisor/conf.d/supervisord.conf
 
 # home folder
-if [ ! -x "$HOME/.config/pcmanfm/LXDE/" ]; then
-    mkdir -p $HOME/.config/pcmanfm/LXDE/
-    ln -sf /usr/local/share/doro-lxde-wallpapers/desktop-items-0.conf $HOME/.config/pcmanfm/LXDE/
-    chown -R $USER:$USER $HOME
+if [ ! -x "${DEV_HOME}/.config/pcmanfm/LXDE/" ]; then
+    mkdir -p ${DEV_HOME}/.config/pcmanfm/LXDE/
+    ln -sf /usr/local/share/doro-lxde-wallpapers/desktop-items-0.conf ${DEV_HOME}/.config/pcmanfm/LXDE/
+    chown -R ${DEVELOPER_NAME}:${DEVELOPER_NAME} ${DEV_HOME}
 fi
 
-# # nginx workers
-# sed -i 's|worker_processes .*|worker_processes 1;|' /etc/nginx/nginx.conf
-
-# # nginx ssl
-# if [ -n "$SSL_PORT" ] && [ -e "/etc/nginx/ssl/nginx.key" ]; then
-#     echo "* enable SSL"
-# 	sed -i 's|#_SSL_PORT_#\(.*\)443\(.*\)|\1'$SSL_PORT'\2|' /etc/nginx/sites-enabled/default
-# 	sed -i 's|#_SSL_PORT_#||' /etc/nginx/sites-enabled/default
-# fi
-
-# # nginx http base authentication
-# if [ -n "$HTTP_PASSWORD" ]; then
-#     echo "* enable HTTP base authentication"
-#     htpasswd -bc /etc/nginx/.htpasswd $USER $HTTP_PASSWORD
-# 	sed -i 's|#_HTTP_PASSWORD_#||' /etc/nginx/sites-enabled/default
-# fi
-
-# # dynamic prefix path renaming
-# if [ -n "$RELATIVE_URL_ROOT" ]; then
-#     echo "* enable RELATIVE_URL_ROOT: $RELATIVE_URL_ROOT"
-# 	sed -i 's|#_RELATIVE_URL_ROOT_||' /etc/nginx/sites-enabled/default
-# 	sed -i 's|_RELATIVE_URL_ROOT_|'$RELATIVE_URL_ROOT'|' /etc/nginx/sites-enabled/default
-# fi
-
-# clearup
-PASSWORD=
-HTTP_PASSWORD=
-
-# DEVELOPER_NAMEはdocker build時に置き換える
-DEVELOPER_NAME=developer
 if [ "$(id -u)" == "0" ]; then
 
   if [ "${HOST_USER_ID}" != "$(gosu ${DEVELOPER_NAME} id -u)" ]; then

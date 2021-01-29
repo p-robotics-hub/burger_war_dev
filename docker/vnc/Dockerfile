@@ -87,3 +87,5 @@ RUN chown developer -R /home/developer
 WORKDIR /home/developer
 
 ENTRYPOINT ["/entrypoint_vnc.sh"]
+
+ENV DEBIAN_FRONTEND=newt
