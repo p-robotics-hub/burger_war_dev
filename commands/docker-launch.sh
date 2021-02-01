@@ -3,11 +3,13 @@
 #-burger-war-kitのDockerコンテナを起動する
 #-
 #+[USAGE]
-#+  $0 [-a RUNオプション] [-v イメージのバージョン] [-w WSディレクトリ][-h]
+#+  $0 [-a RUNオプション][-f][-r] [-t 起動ターゲット] [-v イメージのバージョン] [-w WSディレクトリ][-h]
 #+
 #-[OPTIONS]
 #-  -a options    'docker run'に追加で渡す引数を指定（複数回指定可能）
-#-  -t target     起動するターゲットの指定(core|dev|robo|sim|vnc)
+#-  -f            既存のコンテナを削除して、新しいコンテナを作成し起動する
+#-  -r            既存のコンテナを前回の設定で再起動する
+#-  -t target     起動するターゲットの指定(core|dev|robo|sim|vnc) (default: dev)
 #-  -w dir-path   ホストPCのロボコンワークスペースのパスを指定 (default: $HOME/catkin_ws)
 #-  -v version    'docker run'で起動するイメージの'version'を指定 (default: latest)
 #-  -h            このヘルプを表示
@@ -119,7 +121,7 @@ do
     a  ) # docker runへの追加オプション引数指定
       RUN_OPTION="${RUN_OPTION} ${OPTARG}"
       ;;
-    f  ) # 
+    f  ) # 既存のコンテナを削除して新しいコンテナを起動
       FORCE_NEW_CONTAINER_REQUEST=1
       ;;
     r  ) # 既存のコンテナを再起動
