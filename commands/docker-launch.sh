@@ -33,6 +33,71 @@ help_exit() {
   | sed "s/\$0/${CMD_NAME}/g"     1>&2
   exit 0
 }
+remove_container() {
+  # 既存のコンテナを削除
+  if [ "${1}" == "-n" ]; then
+    docker rm ${2} >/dev/null
+  else
+    echo ""
+    echo "既存の ${1} コンテナを削除します..."
+    docker rm ${1} >/dev/null
+    echo "既存の ${1} コンテナを削除しました"
+  fi
+}
+save_contianer() {
+  # 既存のコンテナを保存
+  container_name=$1
+  echo ""
+  echo -e "既存のコンテナをイメージとして保存します"
+  read -p "保存するバージョン名を入力して下さい: " backup_version
+  if [ -z "${backup_version}" ]; then
+    echo "バージョン名が不正です。起動処理を中断します"
+    exit 1
+  fi
+  docker commit ${container_name} ${RUN_DOCKER_IMAGE_NAME}:${backup_version} >/dev/null
+  cat <<-EOM_SAVE
+	#--------------------------------------------------------------------
+	# 既存のコンテナを以下のイメージとして保存しました
+	# SAVE IMAGE NAME: ${RUN_DOCKER_IMAGE_NAME}:${backup_version}
+	#
+	# 保存したイメージからコンテナを起動するには、以下のコマンドを実行して下さい
+	# RUN COMMAND    : bash commands/docker-launch.sh -t ${RUN_TARGET} -v ${backup_version}
+	#--------------------------------------------------------------------
+EOM_SAVE
+  docker rm ${container_name} >/dev/null
+}
+
+print_run_message() {
+  # 起動したコンテナの情報を出力
+  container_name=$1
+  image_name=$(docker ps -f "name=${container_name}" --format "{{.Image}}")
+  if [ -z "${image_name}" ]; then
+    # 起動失敗時
+    echo -e "\e[31m#--------------------------------------------------------------------"
+    echo -e "# コンテナの起動に失敗しました..."
+    echo -e "#--------------------------------------------------------------------\e[m\n"
+    read -p "Dockerのログを確認しますか？(y/n): " yesno
+    case ${yesno} in
+      y|yes|Y|YES ) # Dockerのログを出力する
+        set -x
+        docker logs "${container_name}"
+        set +x
+        ;;
+      * ) #出力しない
+        ;;
+    esac
+    exit 1
+  fi
+  # 起動成功時
+  vnc_port=$(docker ps -f "name=${container_name}" --format "{{.Ports}}" | sed 's@^.*:\([0-9]\{1,\}\).*$@\1@')
+  echo ""
+  echo "#--------------------------------------------------------------------"
+  echo "# 開発用のコンテナを起動しました"
+  echo "# USE IMAGE NAME: ${image_name}"
+  echo "# CONTAINER NAME: ${container_name}"
+  [ -n "${vnc_port}" ] && echo "# VNC ADDR:PORT : localhost:${vnc_port}"
+  echo "#--------------------------------------------------------------------"
+}
 
 # 設定値読み込み
 #------------------------------------------------
@@ -46,11 +111,19 @@ IMAGE_VERSION=latest
 RUN_TARGET=dev
 RUN_DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${RUN_TARGET}
 RUN_DOCKER_CONTAINER_NAME=${RUN_DOCKER_IMAGE_NAME}
-while getopts a:v:t:w:h OPT
+RESTART_CONTAINER_REQUEST=
+FORCE_NEW_CONTAINER_REQUEST=
+while getopts a:frt:v:w:h OPT
 do
   case $OPT in
     a  ) # docker runへの追加オプション引数指定
       RUN_OPTION="${RUN_OPTION} ${OPTARG}"
+      ;;
+    f  ) # 
+      FORCE_NEW_CONTAINER_REQUEST=1
+      ;;
+    r  ) # 既存のコンテナを再起動
+      RESTART_CONTAINER_REQUEST=1
       ;;
     t  ) # ビルドするターゲットを指定
       RUN_TARGET="${OPTARG}"
@@ -81,40 +154,53 @@ if docker container ls --format '{{.Names}}' | grep -q -e "^${RUN_DOCKER_CONTAIN
   echo "起動中の ${RUN_DOCKER_CONTAINER_NAME} コンテナを停止しました"
 fi
 
-# 同名のコンテナが存在する場合は削除する
+# 同名のコンテナが存在する場合
 #------------------------------------------------
 if docker container ls -a --format '{{.Names}}' | grep -q -e "^${RUN_DOCKER_CONTAINER_NAME}$" ; then
-  echo -e "\e[33mWARNING: 前回起動していた ${RUN_DOCKER_CONTAINER_NAME} コンテナが存在します"
-  read -p "既存のコンテナを削除して、新しいコンテナを起動しますか？(yes/no): " yesno
-  echo -e "\e[m"
-  case $yesno in
-    yes ) # 既存のコンテナ
-      echo "既存の ${RUN_DOCKER_CONTAINER_NAME} コンテナを削除します..."
-      docker rm ${RUN_DOCKER_CONTAINER_NAME} >/dev/null
-      echo "既存の ${RUN_DOCKER_CONTAINER_NAME} コンテナを削除しました"
-      ;;
-    * ) # 既存のコンテナを別名で保存
-      read -p "既存のコンテナをイメージとして保存します。保存するバージョン名を入力して下さい: " backup_version
-      if [ -z "${backup_version}" ]; then
-        echo "バージョン名が不正です。起動処理を中断します"
-      fi
-      docker commit ${RUN_DOCKER_CONTAINER_NAME} ${RUN_DOCKER_IMAGE_NAME}:${backup_version} >/dev/null
-      echo -e "\e[33m#--------------------------------------------------------------------"
-      echo -e "# 既存のコンテナを以下のイメージとして保存しました"
-      echo -e "# SAVE IMAGE NAME: ${RUN_DOCKER_IMAGE_NAME}:${backup_version}"
-      echo -e "# "
-      echo -e "# 保存したイメージからコンテナを起動するには、以下のコマンドを実行して下さい"
-      echo -e "# RUN COMMAND    : bash commands/docker-launch.sh -v ${backup_version}"
-      echo -e "#--------------------------------------------------------------------\e[m"
-      docker rm ${RUN_DOCKER_CONTAINER_NAME} >/dev/null
-      ;;
-  esac
+  if [ -n "${RESTART_CONTAINER_REQUEST}" ]; then
+    # オプションにより既存コンテナの再起動を指定済みのため確認はスキップ
+    :
+  elif [ -n "${FORCE_NEW_CONTAINER_REQUEST}" ]; then
+    # オプションにより新コンテナの作成を指定済みのため確認はスキップ
+    remove_container "${RUN_DOCKER_CONTAINER_NAME}"
+  else
+    # ユーザーによる起動方法の選択
+    echo -e "\e[33mWARNING: 前回起動していた ${RUN_DOCKER_CONTAINER_NAME} コンテナが存在します"
+    echo -e "コンテナを起動する方法を以下から選択できます"
+    echo -e "---------------------------------------------------------"
+    echo -e "  1: 既存のコンテナを再起動する"
+    echo -e "  2: 既存のコンテナを保存して新しいコンテナを起動する"
+    echo -e "  3: 既存のコンテナを削除して新しいコンテナを起動する"
+    echo -e "----------------------------------------------------------"
+    read -p "選択肢の番号を入力して下さい(1〜3): " choice_numer
+    case ${choice_numer} in
+      2 ) # 既存のコンテナを別名で保存
+        save_contianer "${RUN_DOCKER_CONTAINER_NAME}"
+        ;;
+      3 ) # 既存のコンテナを削除
+        remove_container "${RUN_DOCKER_CONTAINER_NAME}"
+        ;;
+      * ) # 既存のコンテナを再起動
+        RESTART_CONTAINER_REQUEST=1
+        ;;
+    esac
+    echo -e "\e[m"
+  fi
+else
+  # コンテナが存在しない場合は新しくコンテナを作成して起動する
+  RESTART_CONTAINER_REQUEST=
 fi
 
-# 新たにコンテナを起動する
+# コンテナを起動する
 #------------------------------------------------
-if [ "${RUN_TARGET}" == "vnc" ]; then
-  # VNC版コンテナの起動
+if [ -n "${RESTART_CONTAINER_REQUEST}" ]; then
+  # 既存のコンテナを再起動
+  echo -e "既存のコンテナを前回起動時の設定で起動します\n"
+  set -x
+  docker start ${RUN_DOCKER_CONTAINER_NAME}
+  set +x
+elif [ "${RUN_TARGET}" == "vnc" ]; then
+  # 新しくVNC版コンテナの起動
   set -x
   docker run \
     --name ${RUN_DOCKER_CONTAINER_NAME} \
@@ -134,16 +220,8 @@ if [ "${RUN_TARGET}" == "vnc" ]; then
     ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
     tail -f /dev/null
   set +x
-  cat <<-EOM-VNC
-	#--------------------------------------------------------------------
-	# 開発用のコンテナを起動しました
-	# USE IMAGE NAME: ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}
-	# CONTAINER NAME: ${RUN_DOCKER_CONTAINER_NAME}
-	# VNC ADDR:PORT : localhost:${VNC_PORT}
-	#--------------------------------------------------------------------
-EOM-VNC
 else
-  # 通常版コンテナの起動
+  # 新しく通常版コンテナの起動
   set -x
   docker run \
     --name ${RUN_DOCKER_CONTAINER_NAME} \
@@ -161,11 +239,7 @@ else
     ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
     tail -f /dev/null
   set +x
-  cat <<-EOM-DEV
-	#--------------------------------------------------------------------
-	# 開発用のコンテナを起動しました
-	# USE IMAGE NAME: ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}
-	# CONTAINER NAME: ${RUN_DOCKER_CONTAINER_NAME}
-	#--------------------------------------------------------------------
-EOM-DEV
 fi
+
+# 起動後のメッセージ出力
+print_run_message ${RUN_DOCKER_CONTAINER_NAME}
