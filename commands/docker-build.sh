@@ -34,6 +34,12 @@ help_exit() {
   | sed "s/\$0/${CMD_NAME}/g"     1>&2
   exit 0
 }
+print_error() {
+  # 引数のエラーメッセージを出力
+  echo -n -e "\e[31m"
+  echo -e "$@" | xargs -I{} echo -e {}
+  echo -n -e "\e[m"
+}
 
 # 設定値読み込み
 #------------------------------------------------
@@ -71,7 +77,14 @@ do
       ;;
     t  ) # ビルドするターゲットを指定
       BUILD_TARGET="${OPTARG}"
-      BUILD_DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${BUILD_TARGET}
+      if [ -f "${DOCKER_ROOT_DIR}/${BUILD_TARGET}/Dockerfile" ]; then
+        BUILD_DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${BUILD_TARGET}
+      else
+        print_error \
+          "指定ターゲットのDockerfileは存在しません: ${DOCKER_ROOT_DIR}/${BUILD_TARGET}/Dockerfile\n" \
+          "ターゲットには次のいずれかを指定して下さい: core, dev, robo, sim, vnc"
+        exit 1
+      fi
       ;;
     v  ) # Dockerイメージのバージョン指定
       IMAGE_VERSION="${OPTARG}"

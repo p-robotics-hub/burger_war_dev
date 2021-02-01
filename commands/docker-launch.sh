@@ -35,6 +35,12 @@ help_exit() {
   | sed "s/\$0/${CMD_NAME}/g"     1>&2
   exit 0
 }
+print_error() {
+  # 引数のエラーメッセージを出力
+  echo -n -e "\e[31m"
+  echo -e "$@" | xargs -I{} echo -e {}
+  echo -n -e "\e[m"
+}
 remove_container() {
   # 既存のコンテナを削除
   if [ "${1}" == "-n" ]; then
@@ -48,7 +54,7 @@ remove_container() {
 }
 save_contianer() {
   # 既存のコンテナを保存
-  container_name=$1
+  container_name=${1}
   echo ""
   echo -e "既存のコンテナをイメージとして保存します"
   read -p "保存するバージョン名を入力して下さい: " backup_version
@@ -68,16 +74,16 @@ save_contianer() {
 EOM_SAVE
   docker rm ${container_name} >/dev/null
 }
-
 print_run_message() {
   # 起動したコンテナの情報を出力
-  container_name=$1
+  container_name=${1}
   image_name=$(docker ps -f "name=${container_name}" --format "{{.Image}}")
   if [ -z "${image_name}" ]; then
     # 起動失敗時
-    echo -e "\e[31m#--------------------------------------------------------------------"
-    echo -e "# コンテナの起動に失敗しました..."
-    echo -e "#--------------------------------------------------------------------\e[m\n"
+    print_error \
+      "#--------------------------------------------------------------------\n" \
+      "# コンテナの起動に失敗しました...\n" \
+      "#--------------------------------------------------------------------"
     read -p "Dockerのログを確認しますか？(y/n): " yesno
     case ${yesno} in
       y|yes|Y|YES ) # Dockerのログを出力する
@@ -85,7 +91,7 @@ print_run_message() {
         docker logs "${container_name}"
         set +x
         ;;
-      * ) #出力しない
+      * ) # 出力しない
         ;;
     esac
     exit 1
@@ -148,9 +154,37 @@ do
 done
 shift $((OPTIND - 1))
 
-# 同名のコンテナが存在する場合は停止する
+RUN_DOCKER_IMAGE_NAME_FULL=${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION}
+
+# 指定のコンテナが存在するかチェック
 #------------------------------------------------
-if docker container ls --format '{{.Names}}' | grep -q -e "^${RUN_DOCKER_CONTAINER_NAME}$" ; then
+if [ -n "${RESTART_CONTAINER_REQUEST}" ]; then
+  if docker ps -a --format '{{.Image}}' | grep -q -E "^${RUN_DOCKER_IMAGE_NAME_FULL}$" ; then
+    # 指定Dockerイメージから起動したコンテナが存在する場合
+    :
+  else
+    # 指定Dockerイメージから起動したコンテナが存在しない場合
+    echo -e "\e[33m指定のイメージ ${RUN_DOCKER_IMAGE_NAME_FULL} から起動したコンテナは存在しません"
+    echo -e "${RUN_DOCKER_IMAGE_NAME_FULL} から新しいコンテナを起動します\e[m"
+    RESTART_CONTAINER_REQUEST=
+  fi
+fi
+
+# 指定のDockerイメージが存在するかチェック
+#------------------------------------------------
+if docker images "${RUN_DOCKER_IMAGE_NAME_FULL}" | awk 'NR>1{print $1":"$2}' \
+  | grep -q -E "${RUN_DOCKER_IMAGE_NAME_FULL}"; then
+  # 指定イメージが存在する場合
+  :
+else
+  # 指定イメージが存在しない場合
+  print_error "指定のイメージ ${RUN_DOCKER_IMAGE_NAME_FULL} は存在しません"
+  exit 1
+fi
+
+# 起動中の同名のコンテナが存在する場合は停止する
+#------------------------------------------------
+if docker ps --format '{{.Names}}' | grep -q -e "^${RUN_DOCKER_CONTAINER_NAME}$" ; then
   echo "起動中の ${RUN_DOCKER_CONTAINER_NAME} コンテナを停止します..."
   docker container stop ${RUN_DOCKER_CONTAINER_NAME} >/dev/null
   echo "起動中の ${RUN_DOCKER_CONTAINER_NAME} コンテナを停止しました"
@@ -158,7 +192,7 @@ fi
 
 # 同名のコンテナが存在する場合
 #------------------------------------------------
-if docker container ls -a --format '{{.Names}}' | grep -q -e "^${RUN_DOCKER_CONTAINER_NAME}$" ; then
+if docker ps -a --format '{{.Names}}' | grep -q -e "^${RUN_DOCKER_CONTAINER_NAME}$" ; then
   if [ -n "${RESTART_CONTAINER_REQUEST}" ]; then
     # オプションにより既存コンテナの再起動を指定済みのため確認はスキップ
     :
@@ -167,7 +201,7 @@ if docker container ls -a --format '{{.Names}}' | grep -q -e "^${RUN_DOCKER_CONT
     remove_container "${RUN_DOCKER_CONTAINER_NAME}"
   else
     # ユーザーによる起動方法の選択
-    echo -e "\e[33mWARNING: 前回起動していた ${RUN_DOCKER_CONTAINER_NAME} コンテナが存在します"
+    echo -e "\e[33m前回起動していた ${RUN_DOCKER_CONTAINER_NAME} コンテナが存在します"
     echo -e "コンテナを起動する方法を以下から選択できます"
     echo -e "---------------------------------------------------------"
     echo -e "  1: 既存のコンテナを再起動する"
@@ -188,10 +222,8 @@ if docker container ls -a --format '{{.Names}}' | grep -q -e "^${RUN_DOCKER_CONT
     esac
     echo -e "\e[m"
   fi
-else
-  # コンテナが存在しない場合は新しくコンテナを作成して起動する
-  RESTART_CONTAINER_REQUEST=
 fi
+
 
 # コンテナを起動する
 #------------------------------------------------
@@ -202,7 +234,7 @@ if [ -n "${RESTART_CONTAINER_REQUEST}" ]; then
   docker start ${RUN_DOCKER_CONTAINER_NAME}
   set +x
 elif [ "${RUN_TARGET}" == "vnc" ]; then
-  # 新しくVNC版コンテナの起動
+  # 新しくVNC版コンテナを起動
   set -x
   docker run \
     --name ${RUN_DOCKER_CONTAINER_NAME} \
@@ -219,11 +251,11 @@ elif [ "${RUN_TARGET}" == "vnc" ]; then
     -e OPENBOX_ARGS=${VNC_OPENBOX_ARGS} \
     -p ${VNC_PORT}:5900 \
     ${RUN_OPTION} \
-    ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
+    ${RUN_DOCKER_IMAGE_NAME_FULL} \
     tail -f /dev/null
   set +x
 else
-  # 新しく通常版コンテナの起動
+  # 新しく通常版コンテナを起動
   set -x
   docker run \
     --name ${RUN_DOCKER_CONTAINER_NAME} \
@@ -238,7 +270,7 @@ else
     -e HOST_USER_ID=$(id -u) \
     -e HOST_GROUP_ID=$(id -g) \
     ${RUN_OPTION} \
-    ${RUN_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
+    ${RUN_DOCKER_IMAGE_NAME_FULL} \
     tail -f /dev/null
   set +x
 fi
