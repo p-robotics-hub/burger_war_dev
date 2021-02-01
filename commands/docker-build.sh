@@ -40,6 +40,14 @@ help_exit() {
 SCRIPT_DIR=$(cd "$(dirname $0)"; pwd)
 source "${SCRIPT_DIR}/config.sh"
 
+# Proxy設定
+PROXY_OPTION=
+[ -n "${HOST_HTTP_PROXY}"  ] && PROXY_OPTION="${PROXY_OPTION} --build-arg HTTP_PROXY=${HOST_HTTP_PROXY}"
+[ -n "${HOST_HTTPS_PROXY}" ] && PROXY_OPTION="${PROXY_OPTION} --build-arg HTTPS_PROXY=${HOST_HTTPS_PROXY}"
+[ -n "${HOST_FTP_PROXY}"   ] && PROXY_OPTION="${PROXY_OPTION} --build-arg FTP_PROXY=${HOST_FTP_PROXY}"
+[ -n "${HOST_http_proxy}"  ] && PROXY_OPTION="${PROXY_OPTION} --build-arg http_proxy=${HOST_http_proxy}"
+[ -n "${HOST_https_proxy}" ] && PROXY_OPTION="${PROXY_OPTION} --build-arg https_proxy=${HOST_https_proxy}"
+[ -n "${HOST_ftp_proxy}"   ] && PROXY_OPTION="${PROXY_OPTION} --build-arg ftp_proxy=${HOST_ftp_proxy}"
 
 # オプション・引数解析
 #------------------------------------------------
@@ -90,12 +98,7 @@ set -x
 docker build \
   ${CORE_BUILD_OPTION} \
   --build-arg KIT_VERSION=${KIT_VERSION} \
-  --build-arg http_proxy=${HOST_http_proxy} \
-  --build-arg https_proxy=${HOST_https_proxy} \
-  --build-arg ftp_proxy=${HOST_ftp_proxy} \
-  --build-arg HTTP_PROXY=${HOST_HTTP_PROXY} \
-  --build-arg HTTPS_PROXY=${HOST_HTTPS_PROXY} \
-  --build-arg FTP_PROXY=${HOST_FTP_PROXY} \
+  ${PROXY_OPTION} \
   -f "${CORE_DOCKER_FILE_PATH}" \
   -t ${CORE_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
   "${DOCKER_ROOT_DIR}"
@@ -107,12 +110,7 @@ set -x
 docker build \
   ${DEV_BUILD_OPTION} \
   --build-arg CORE_VERSION=${IMAGE_VERSION} \
-  --build-arg http_proxy=${HOST_http_proxy} \
-  --build-arg https_proxy=${HOST_https_proxy} \
-  --build-arg ftp_proxy=${HOST_ftp_proxy} \
-  --build-arg HTTP_PROXY=${HOST_HTTP_PROXY} \
-  --build-arg HTTPS_PROXY=${HOST_HTTPS_PROXY} \
-  --build-arg FTP_PROXY=${HOST_FTP_PROXY} \
+  ${PROXY_OPTION} \
   -f "${DOCKER_ROOT_DIR}/${BUILD_TARGET}/Dockerfile" \
   -t ${BUILD_DOCKER_IMAGE_NAME}:${IMAGE_VERSION} \
   "${DOCKER_ROOT_DIR}"
