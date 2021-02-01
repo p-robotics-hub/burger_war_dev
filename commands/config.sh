@@ -1,6 +1,9 @@
 #----------------------------------------------------------
 # Repository config values
 #----------------------------------------------------------
+# 使用するburger-war-kitイメージのバージョン
+KIT_VERSION=latest
+
 # Dockerイメージ名(公開パッケージ名)
 DOCKER_IMAGE_NAME=burger-war
 

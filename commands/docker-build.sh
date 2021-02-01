@@ -78,11 +78,18 @@ do
 done
 shift $((OPTIND - 1))
 
+# burger-war-kitのイメージを取得
+#------------------------------------------------
+set -x
+docker pull ghcr.io/p-robotics-hub/burger-war-kit:${KIT_VERSION}
+set +x
+
 # コアイメージ用のDockerfileのビルド
 #------------------------------------------------
 set -x
 docker build \
   ${CORE_BUILD_OPTION} \
+  --build-arg KIT_VERSION=${KIT_VERSION} \
   --build-arg http_proxy=${HOST_http_proxy} \
   --build-arg https_proxy=${HOST_https_proxy} \
   --build-arg ftp_proxy=${HOST_ftp_proxy} \
