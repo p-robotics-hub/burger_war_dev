@@ -461,7 +461,9 @@ bash commands/kit.sh roslaunch burger_war sim_robot_run.launch enemy_level:=1
 
 <br />
 
-## 6. 起動したコンテナの中で操作をしたい場合
+## 6. その他のDocker操作
+
+### 6.1 起動したコンテナの中で操作をしたい場合
 
 起動した開発用コンテナの中で何か操作をしたいことがあるかもしれません。
 
@@ -491,11 +493,144 @@ bash commands/kit.sh -c gazebo
 <br />
 
 
+### 6.2 コンテナの停止方法
+コンテナはPCシャットダウン時に自動で停止します。
+
+起動しているコンテナを今すぐ停止したい場合は、以下のコマンドを実行して下さい。
+
+```
+docker stop burger-war-dev      # docker-launch.sh で`-t`を指定しなかった場合(もしくは`-t dev`を指定)
+docker stop burger-war-vnc      # docker-launch.sh で`-t vnc`を指定した場合
+```
+
+全てのコンテナを停止したい場合は、以下のコマンドを実行して下さい。
+
+```
+docker stop $(docker ps -q)
+```
+
+起動しているコンテナの一覧は、以下のコマンドで確認できます。
+
+```
+docker ps
+```
+
+例えば、コンテナが１つも起動していない場合は以下のような出力になります。
+
+```
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+```
+
+
+### 6.3 コンテナの削除方法
+`commands/docker-launch.sh`によるコンテナ起動時に既に同名のコンテナがある場合は、既存のコンテナを削除するか選択できます。
+
+もし、それ以外でコンテナを削除したい場合は、以下のコマンドを実行して下さい。
+
+```
+docker rm burger-war-dev      # docker-launch.sh で`-t`を指定しなかった場合(もしくは`-t dev`を指定)
+docker rm burger-war-vnc      # docker-launch.sh で`-t vnc`を指定した場合
+```
+
+停止中の全てのコンテナを削除したい場合は、以下のコマンドを実行して下さい。
+
+```
+docker rm $(docker ps -a -q)
+```
+
+### 6.4 イメージの削除方法
+`commands/docker-build.sh`は、内部では`docker build`を実行しています。  
+`docker build`を実行により新しいイメージが作成されていきます。
+
+何度もDockerfileの修正と`docker build`を繰り返していくと、多くのストレージを消費することになります。  
+その為、定期的に不要なイメージは削除した方が良いでしょう。
+
+#### 存在するイメージの確認
+作成済みのイメージは、以下のコマンドで確認できます。
+
+```
+docker images
+```
+
+例えば、以下のような出力になります。
+
+```
+REPOSITORY                                      TAG                    IMAGE ID       CREATED        SIZE
+burger-war-dev                                  test                   bb3e892790c6   3 hours ago    4.09GB
+burger-war-vnc                                  test                   4b8407915ae1   3 hours ago    4.06GB
+<none>                                          <none>                 29aa17c79487   3 hours ago    3.51GB
+burger-war-core                                 test                   a8b2cdb5fbdd   4 hours ago    3.45GB
+```
+
+REPOSITORYの列が`<None>`となっているものは、既に使用されていないイメージです。
+
+#### 使用されていないイメージの削除
+使用されていないイメージを全て削除したい場合は、以下のコマンドを実行して下さい。
+
+```
+docker image prune -f
+```
+
+#### 任意のイメージを削除する
+任意のイメージを削除したい場合は、以下のコマンドを実行して下さい。  
+引数には、削除したい`イメージ名:バージョン`か、`docker images`の出力の３列目に表示される`IMAGE ID`を指定します。
+
+```
+docker rmi burger-war-dev:test          # イメージ名:バージョンによる指定
+docker rmi bb3e892790c6                 # IMAGE IDによる指定
+```
+
+引数には複数のイメージを指定することができます。
+
+```
+docker rmi bb3e892790c6 4b8407915ae1
+```
+他のイメージから参照されているイメージは、以下のようなエラーが出て削除できません。
+
+```
+Error response from daemon: conflict: unable to delete 8185511cd5ad (cannot be forced) - image has dependent child images
+```
+
+`-f`オプションを追加して削除できる場合もあります。
+
+```
+docker rmi -f bb3e892790c6
+```
+
+それでも削除できない場合は、参照元のコンテナやイメージから先に削除して下さい。
+
+#### 参照されているイメージの確認
+参照元のイメージは以下のコマンドで確認できます。  
+`"IMAGE ID"`は、削除したいイメージの`IMAGE ID`に置き換えてください。
+
+```
+for i in $(docker images -q); do docker history $i | grep -q "IMAGE ID" && echo $i; done | sort -u
+```
+
+長いため、シェルスクリプトとして保存しておくと良いでしょう。
+
+```bash
+for i in $(docker images -q)
+do
+  docker history $i | grep -q $1 && echo $i
+done | sort -u
+```
+
+#### 全てイメージを削除する
+もし、全てのイメージを削除したい場合は、以下のコマンドを実行して下さい。
+
+```
+docker rmi $(docker images -aq)
+```
+
+全てのイメージを削除した場合、次回の`docker build`に時間がかかる点にご注意下さい。  
+
+
 ## 7. カスタマイズしたDockerイメージの作成
 
 Gazeboの起動に失敗したり、ロボコンで使用したい追加ライブラリなどがある場合、カスタマイズしたDockerイメージの作成が必要になります。
 
-具体的には、以下の2つのDockerfileを修正します。
+具体的には、以下の3つのDockerfileを修正します。
 
 ```
 burger_war_dev
@@ -504,6 +639,8 @@ burger_war_dev
 |   |   |-- Dockerfile    シミュレーション対戦/実機環境で使用したいライブラリのインストールなどを追記する
 |   |-- dev
 |   |   |-- Dockerfile    開発用パソコンに必要なドライバやツールのインストール、設定などを追記する
+|   |-- vnc
+|   |   |-- Dockerfile    開発用パソコンに必要なドライバやツールのインストール、設定などを追記する(VNCを使用したい場合)
 ```
 
 <br />
@@ -615,6 +752,8 @@ PATHが通った場所にインストールできていれば、以下のよう�
 bash commands/kit.sh -c myexec
 ```
 
+<br />
+
 ### 7.2 開発環境に必要なパッケージ(ドライバなど)をインストールする場合
 --------------------------------------------------------------------
 開発用のパソコンでのみ使いたいツールや、ドライバがある場合、`docker/dev/Dockerfile`に必要なインストール処理を追加して下さい。
@@ -650,8 +789,9 @@ bash commands/docker-build.sh
 ## 8. VNC版コンテナの作成と接続
 `docker/vnc`ディレクトリには、VNCサーバーを起動したコンテナを作成するためのファイルが入っています。
 
-### 8.1 VNC版のDockerイメージのビルド
+※VNC上で日本語入力ができない制約がありますのでご注意下さい
 
+### 8.1 VNC版のDockerイメージのビルド
 VNC版コンテナのDockerイメージをビルドするには、以下のコマンドを実行して下さい。
 
 ```
@@ -705,6 +845,8 @@ bash commands/docker-launch.sh -t vnc
 VNCクライアントソフトの１つである`Remmina`の場合、設定例は以下になります。
 
 ![vnc_remmina](https://user-images.githubusercontent.com/76457573/106171246-ac809100-61d4-11eb-9084-c14dd9ce3e82.png)
+
+<br />
 
 ### 8.4 VNCでのシミュレーション実行
 VNC接続後、[burger_war_kitの手順書](https://github.com/p-robotics-hub/burger_war_kit/blob/main/README.md)に記載された操作でビルドやシミュレータの起動などを行うことができます。
