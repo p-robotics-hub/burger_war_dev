@@ -19,7 +19,6 @@ HOST_http_proxy=${http_proxy:-}
 HOST_https_proxy=${https_proxy:-}
 HOST_HTTP_PROXY=${HTTP_PROXY:-}
 HOST_HTTPS_PROXY=${HTTPS_PROXY:-}
-HOST_HTTPS_PROXY=${HTTPS_PROXY:-}
 HOST_ftp_proxy=${ftp_proxy:-}
 HOST_FTP_PROXY=${FTP_PROXY:-}
 
