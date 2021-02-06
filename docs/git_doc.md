@@ -46,6 +46,27 @@ git cloneしただけではdefaltのブランチ（今回はmainブランチ）�
 $ git pull origin docs
 ```
 
+エラーが出た時
+gitのリモートリポジトリの設定を確認
+
+``` terminal
+$ git remote -v
+```
+
+こんな感じの結果がでる。記載されたurlが正しいかどうか確認しよう
+
+``` terminal
+origin  https://github.com/EndoNrak/burger_war_dev.git (fetch)
+origin  https://github.com/EndoNrak/burger_war_dev.git (push)
+```
+
+正しくなかった場合は次のコマンドで設定を変更しよう
+``` terminal
+$ git remote set-url origin https://github.com/EndoNrak/burger_war_dev.git
+```
+
+これで解決できたはず！
+
 ### ファイルの変更
 なんでもいいのでファイルに変更を加える
 今回はdocsフォルダになにか好きなファイルを作成してみてください
@@ -72,3 +93,7 @@ $ git push origin head
 もしくは
 $ git push origin docs
 ```
+
+エラーが出た場合
+githubリポジトリへのアクセス権限設定がない場合が多い
+リポジトリの管理者に自分のgithubアカウントをコラボレーターに招待してもらい、編集権限を獲得しよう
