@@ -54,6 +54,7 @@ PROXY_OPTION=
 [ -n "${HOST_http_proxy}"  ] && PROXY_OPTION="${PROXY_OPTION} --build-arg http_proxy=${HOST_http_proxy}"
 [ -n "${HOST_https_proxy}" ] && PROXY_OPTION="${PROXY_OPTION} --build-arg https_proxy=${HOST_https_proxy}"
 [ -n "${HOST_ftp_proxy}"   ] && PROXY_OPTION="${PROXY_OPTION} --build-arg ftp_proxy=${HOST_ftp_proxy}"
+[ -n "${PROXY_OPTION}" ] && PROXY_OPTION="${PROXY_OPTION} --build-arg no_proxy=127.0.0.1,localhost,${HOSTNAME} --build-arg NO_PROXY=127.0.0.1,localhost,${HOSTNAME}"
 
 # オプション・引数解析
 #------------------------------------------------
