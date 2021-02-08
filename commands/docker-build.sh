@@ -54,7 +54,6 @@ PROXY_OPTION=
 [ -n "${HOST_http_proxy}"  ] && PROXY_OPTION="${PROXY_OPTION} --build-arg http_proxy=${HOST_http_proxy}"
 [ -n "${HOST_https_proxy}" ] && PROXY_OPTION="${PROXY_OPTION} --build-arg https_proxy=${HOST_https_proxy}"
 [ -n "${HOST_ftp_proxy}"   ] && PROXY_OPTION="${PROXY_OPTION} --build-arg ftp_proxy=${HOST_ftp_proxy}"
-[ -n "${PROXY_OPTION}" ] && PROXY_OPTION="${PROXY_OPTION} --build-arg no_proxy=127.0.0.1,localhost,${HOSTNAME} --build-arg NO_PROXY=127.0.0.1,localhost,${HOSTNAME}"
 
 # オプション・引数解析
 #------------------------------------------------
@@ -63,7 +62,7 @@ CORE_BUILD_OPTION=
 IMAGE_VERSION=latest
 BUILD_TARGET=dev
 BUILD_DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${BUILD_TARGET}
-while getopts a:c:d:t:v:h OPT
+while getopts a:c:d:k:t:v:h OPT
 do
   case $OPT in
     a  ) # burger-war-core/burger-war-devのdocker buildへの追加オプション引数指定
@@ -75,6 +74,9 @@ do
       ;;
     d  ) # burger-war-devのdocker buildへの追加オプション引数指定
       DEV_BUILD_OPTION="${DEV_BUILD_OPTION} ${OPTARG}"
+      ;;
+    k  ) # kitのイメージバージョンを指定してビルド
+      KIT_VERSION="${OPTARG}"
       ;;
     t  ) # ビルドするターゲットを指定
       BUILD_TARGET="${OPTARG}"

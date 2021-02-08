@@ -120,7 +120,6 @@ PROXY_OPTION=
 [ -n "${HOST_http_proxy}"  ] && PROXY_OPTION="${PROXY_OPTION} -e http_proxy=${HOST_http_proxy}"
 [ -n "${HOST_https_proxy}" ] && PROXY_OPTION="${PROXY_OPTION} -e https_proxy=${HOST_https_proxy}"
 [ -n "${HOST_ftp_proxy}"   ] && PROXY_OPTION="${PROXY_OPTION} -e ftp_proxy=${HOST_ftp_proxy}"
-[ -n "${PROXY_OPTION}" ] && PROXY_OPTION="${PROXY_OPTION} -e no_proxy=127.0.0.1,localhost,${HOSTNAME} -e NO_PROXY=127.0.0.1,localhost,${HOSTNAME}"
 
 # オプション・引数解析
 #------------------------------------------------
