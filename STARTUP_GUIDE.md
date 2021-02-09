@@ -1103,9 +1103,35 @@ AMD/ATIのグラフィックボードを載せている場合、標準でイン�
 
 ### C PROXYの設定について
 --------------------------------------------------------------------
+PROXY環境下では、ホストPCで必要な環境変数の設定を行って下さい。
 
-[TODO:PROXYの設定例を記載する]
+ホストPCで以下の環境変数が定義されていた場合、docker build(`--build-arg`)とdocker run(`-e`)コマンドに渡すようになっています。
 
+- http_proxy
+- https_proxy
+- ftp_proxy
+- HTTP_PROXY
+- HTTPS_PROXY
+- FTP_PROXY
 
+<br />
 
+また、PROXY対象外のアドレスは下記設定になっています。
 
+```bash
+export no_proxy=127.0.0.1,localhost,${HOSTNAME}
+export NO_PROXY=${no_proxy}
+```
+
+上記の2変数は、Dockerコンテナ内の以下2つのファイルで設定しています。
+
+- `/home/developer/.bashrc`
+- `/home/developer/.bash_profile`
+
+もし必要であれば、`docker/dev/Dockerfile`で以下のようにして設定を上書いて下さい。  
+（`XXXX`は必要な設定に置き換えて下さい）
+
+```
+RUN sed -i'' 's/no_proxy=.*$/no_proxy=XXXX/' /home/developer/.bashrc
+RUN sed -i'' 's/no_proxy=.*$/no_proxy=XXXX/' /home/developer/.bash_profile
+```
