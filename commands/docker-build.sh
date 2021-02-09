@@ -9,6 +9,7 @@
 #-  -a options    burger-war-core/burger-war-devの'docker build'に追加で渡す引数を指定（複数回指定可能）
 #-  -c options    burger-war-coreの'docker build'に追加で渡す引数を指定（複数回指定可能）
 #-  -d options    burger-war-devの'docker build'に追加で渡す引数を指定（複数回指定可能）
+#-  -k version    利用するburger-war-kitのバージョンを指定
 #-  -t target     ビルドするターゲットの指定(dev|robo|sim|vnc) *coreは常にビルドされる
 #-  -v version    'docker build -t'で指定するイメージのバージョンを指定 (default: latest)
 #-  -h            このヘルプを表示

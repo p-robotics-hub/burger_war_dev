@@ -201,6 +201,20 @@ bash commands/docker-build.sh -v test
 
 <br />
 
+### 2.3 burger-war-kitイメージのバージョンを指定したDockerfileのビルド
+--------------------------------------------------------------------
+もし、最新のburger-war-kitイメージを利用して動かなくなったなど、古いburger-war-kitイメージを利用したい場合があるかもしれません。
+
+その場合は、以下のように`-k`オプションで利用するバージョンを指定して下さい。
+
+```
+bash commands/docker-build.sh -k 4.1.0
+```
+
+配布されているburger-war-kitのバージョンは[こちらのページ](https://github.com/orgs/p-robotics-hub/packages/container/package/burger-war-kit)から確認できます。
+
+<br />
+
 ## 3. 開発用のDockerコンテナの起動
 
 Dockerイメージのビルドができたら、Dockerコンテナを起動しましょう。  
