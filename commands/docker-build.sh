@@ -3,7 +3,7 @@
 #-burger-war-core/burger-war-devのDockerfileをビルドする
 #-
 #+[USAGE]
-#+  $0 [-a BUILDオプション(core/dev)] [-c BUILDオプション(core)] [-d BUILDオプション(dev)] [-t BUILDターゲット][-v イメージのバージョン] [-h]
+#+  $0 [-a BUILDオプション(core/dev)] [-c BUILDオプション(core)] [-d BUILDオプション(dev)] [-k kitイメージのバージョン] [-t BUILDターゲット][-v 作成イメージのバージョン] [-h]
 #+
 #-[OPTIONS]
 #-  -a options    burger-war-core/burger-war-devの'docker build'に追加で渡す引数を指定（複数回指定可能）
