@@ -182,7 +182,7 @@ class TeriyakiBurger():
 
     # Subscriber "self.lidar_sub" に対応するCallback関数（センサー情報を一定周期で受け取るたびに実行される関数）．
     # "data.ranges"がLidarを使って得られた，角度ごとの距離情報を格納した配列．
-    # 障害物までの距離が近い場合は，スピードを落とす．
+    # 障害物までの距離が近い場合は，後退する．
     def lidarCallback(self, data):
         '''
         lidar scan use for bumper
