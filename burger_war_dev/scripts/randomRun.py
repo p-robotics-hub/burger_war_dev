@@ -42,8 +42,10 @@ class RandomBot():
         print("image show")
         self.image_count += 1
         # cv2.imshow("Image window", self.img)
-        cv2.imwrite(f"../../../logs/image_raw/first/{self.image_count}.jpg", self.image)
-        cv2.waitKey(1)
+        if self.image_count % 10 == 0:
+            cv2.imwrite('~/catkin_ws/logs/image_raw/third/{}.jpg'.format(self.image_count), self.img)
+            cv2.waitKey(1)
+            print('{}.jpg saved'.format(self.image_count))
 
     def calcTwist(self):
         value = random.randint(1,1000)
