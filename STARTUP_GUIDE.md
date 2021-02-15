@@ -12,6 +12,7 @@ burger_warの開発環境をDocker上に構築する手順について説明し�
 - [2. 開発用のDockerイメージの作成](#2-%E9%96%8B%E7%99%BA%E7%94%A8%E3%81%AEdocker%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%AE%E4%BD%9C%E6%88%90)
   - [2.1 Dockerfileのビルド](#21-dockerfile%E3%81%AE%E3%83%93%E3%83%AB%E3%83%89)
   - [2.2 バージョンを指定したDockerfileのビルド](#22-%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%9Fdockerfile%E3%81%AE%E3%83%93%E3%83%AB%E3%83%89)
+  - [2.3 burger-war-kitイメージのバージョンを指定したDockerfileのビルド](#23-burger-war-kit%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%AE%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%9Fdockerfile%E3%81%AE%E3%83%93%E3%83%AB%E3%83%89)
 - [3. 開発用のDockerコンテナの起動](#3-%E9%96%8B%E7%99%BA%E7%94%A8%E3%81%AEdocker%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AE%E8%B5%B7%E5%8B%95)
   - [3.1 バージョンを指定せずにコンテナを起動](#31-%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%9B%E3%81%9A%E3%81%AB%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E8%B5%B7%E5%8B%95)
   - [3.2 バージョンを指定してコンテナを起動](#32-%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%A6%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E8%B5%B7%E5%8B%95)
@@ -198,6 +199,20 @@ bash commands/docker-build.sh -v test
 # 開発環境用　　: burger-war-dev:test
 #--------------------------------------------------------------------
 ```
+
+<br />
+
+### 2.3 burger-war-kitイメージのバージョンを指定したDockerfileのビルド
+--------------------------------------------------------------------
+もし、最新のburger-war-kitイメージを利用して動かなくなったなど、古いburger-war-kitイメージを利用したい場合があるかもしれません。
+
+その場合は、以下のように`-k`オプションで利用するバージョンを指定して下さい。
+
+```
+bash commands/docker-build.sh -k 4.1.0
+```
+
+配布されているburger-war-kitのバージョンは[こちらのページ](https://github.com/orgs/p-robotics-hub/packages/container/package/burger-war-kit)から確認できます。
 
 <br />
 
@@ -1103,9 +1118,35 @@ AMD/ATIのグラフィックボードを載せている場合、標準でイン�
 
 ### C PROXYの設定について
 --------------------------------------------------------------------
+PROXY環境下では、ホストPCで必要な環境変数の設定を行って下さい。
 
-[TODO:PROXYの設定例を記載する]
+ホストPCで以下の環境変数が定義されていた場合、docker build(`--build-arg`)とdocker run(`-e`)コマンドに渡すようになっています。
 
+- http_proxy
+- https_proxy
+- ftp_proxy
+- HTTP_PROXY
+- HTTPS_PROXY
+- FTP_PROXY
 
+<br />
 
+また、PROXY対象外のアドレスは下記設定になっています。
 
+```bash
+export no_proxy=127.0.0.1,localhost,${HOSTNAME}
+export NO_PROXY=${no_proxy}
+```
+
+上記の2変数は、Dockerコンテナ内の以下2つのファイルで設定しています。
+
+- `/home/developer/.bashrc`
+- `/home/developer/.bash_profile`
+
+もし必要であれば、`docker/dev/Dockerfile`で以下のようにして設定を上書いて下さい。  
+（`XXXX`は必要な設定に置き換えて下さい）
+
+```
+RUN sed -i'' 's/no_proxy=.*$/no_proxy=XXXX/' /home/developer/.bashrc
+RUN sed -i'' 's/no_proxy=.*$/no_proxy=XXXX/' /home/developer/.bash_profile
+```
