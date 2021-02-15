@@ -110,7 +110,14 @@ git clone https://github.com/<GitHubユーザー名>/burger_war_dev
 --------------------------------------------------------------------
 
 docker engineとdocker-composeをインストールします。
-※既にインストール済みの方は、本手順はスキップして下さい
+
+既にインストール済みの方は、本手順はスキップして下さい。
+ただし、もしdockerコマンドの実行に`sudo`が必要な状態でしたら、以下の何れかの対応をしてから本手順書を読み進めて下さい。
+
+- [ユーザをdockerグループに追加する](#d1-ユーザをdockerグループに追加する)
+- [各コマンドにsudoをつけて実行する](#d2-各コマンドにsudoをつけて実行する)
+
+
 
 まずは、以下のコマンドでディレクトリを移動して下さい。
 
@@ -136,9 +143,9 @@ Ubuntu以外のLinuxディストリビューションの場合は、以下の公
 - [dockerのインストール](https://docs.docker.com/engine/install/)
 - [docker-composeのインストール](https://docs.docker.com/compose/install/)
 
+<br />
 
-<span style="color: red;">インストール完了後、一度パソコンを再起動して下さい。</span>
-
+**インストール完了後、一度パソコンを再起動して下さい。**
 
 <br />
 
@@ -1161,3 +1168,39 @@ export NO_PROXY=${no_proxy}
 RUN sed -i'' 's/no_proxy=.*$/no_proxy=XXXX/' /home/developer/.bashrc
 RUN sed -i'' 's/no_proxy=.*$/no_proxy=XXXX/' /home/developer/.bash_profile
 ```
+
+<br />
+
+### D dockerコマンドの実行にsudoが必要な場合
+
+#### D.1 ユーザをdockerグループに追加する
+
+sudo不要でdockerコマンドを実行したい場合は、以下のコマンドでユーザをdockerグループに追加して、**パソコンを再起動して下さい。**
+
+```
+sudo usermod -aG docker ${USER}
+```
+
+所属しているグループを確認するには以下のコマンドを実行して下さい。
+
+```
+groups
+```
+
+以下のように、出力に`docker`が含まれていればdockerグループに所属できいます。
+
+```
+username adm cdrom sudo dip plugdev lpadmin sambashare docker
+```
+
+※「commands/docker-install.sh」を使用してインストールした場合は、自動でdockerグループへの追加も行う為、本手順は不要になります
+
+#### D.2 各コマンドにsudoをつけて実行する
+何かしらの理由でdockerグループに所属させたくない場合は、本手順書に記載している以下のスクリプトには、sudoを付けて実行して下さい。
+
+- commands/docker-build.sh
+- commands/docker-launch.sh
+- commands/kit.sh
+
+また、`docker 各サブコマンド`を実行するときも同様に`sudo`を付けて実行するようにして下さい。
+
