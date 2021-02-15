@@ -39,6 +39,7 @@ burger_warの開発環境をDocker上に構築する手順について説明し�
   - [A 短縮コマンドの設定例](#a-%E7%9F%AD%E7%B8%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E8%A8%AD%E5%AE%9A%E4%BE%8B)
   - [B グラフィックボードのドライバのインストール手順補足](#b-%E3%82%B0%E3%83%A9%E3%83%95%E3%82%A3%E3%83%83%E3%82%AF%E3%83%9C%E3%83%BC%E3%83%89%E3%81%AE%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E6%89%8B%E9%A0%86%E8%A3%9C%E8%B6%B3)
   - [C PROXYの設定について](#c-proxy%E3%81%AE%E8%A8%AD%E5%AE%9A%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
+  - [D dockerコマンドの実行にsudoが必要な場合](#d-docker%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E5%AE%9F%E8%A1%8C%E3%81%ABsudo%E3%81%8C%E5%BF%85%E8%A6%81%E3%81%AA%E5%A0%B4%E5%90%88)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <br />
