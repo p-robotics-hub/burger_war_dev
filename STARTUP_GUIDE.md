@@ -73,16 +73,27 @@ burger_warの開発に必要なツールをインストールします。
 まずは、gitとcurlをインストールします。
 
 ```
+sudo apt-get update
 sudo apt-get install -y git curl
 ```
 
 次にワークスペースディレクトリを作成し、本リポジトリと開発ツール用のリポジトリをクローンします。
 
-
 ```
 mkdir -p ~/catkin_ws/src && cd ~/catkin_ws/src
 git clone https://github.com/p-robotics-hub/burger_war_dev
 git clone https://github.com/p-robotics-hub/burger_war_kit
+```
+
+実際に大会用のプログラムを開発する場合は、本リポジトリ(burger_war_dev)をフォークした各自のリポジトリで開発を進めて下さい。  
+フォークするには、GitHubにログインしてから本ページ右上にある「Fork」をクリックして、フォーク先のユーザ or 組織を選択して下さい。
+
+![フォーク手順](https://user-images.githubusercontent.com/76457573/107924955-1eb7ea80-6fb7-11eb-9758-e7719f483a0c.png)
+
+フォークしたご自分のburger_war_devリポジトリからクローンする場合は、以下のように`p-robotics-hub`の部分を、ご自分のGitHubユーザ名に変更して下さい。
+
+```
+git clone https://github.com/<GitHubユーザー名>/burger_war_dev
 ```
 
 実行後のディレクトリ構成は以下となります。
