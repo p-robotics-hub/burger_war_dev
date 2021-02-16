@@ -39,6 +39,7 @@ burger_warの開発環境をDocker上に構築する手順について説明し�
   - [A 短縮コマンドの設定例](#a-%E7%9F%AD%E7%B8%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E8%A8%AD%E5%AE%9A%E4%BE%8B)
   - [B グラフィックボードのドライバのインストール手順補足](#b-%E3%82%B0%E3%83%A9%E3%83%95%E3%82%A3%E3%83%83%E3%82%AF%E3%83%9C%E3%83%BC%E3%83%89%E3%81%AE%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E6%89%8B%E9%A0%86%E8%A3%9C%E8%B6%B3)
   - [C PROXYの設定について](#c-proxy%E3%81%AE%E8%A8%AD%E5%AE%9A%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
+  - [D dockerコマンドの実行にsudoが必要な場合](#d-docker%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E5%AE%9F%E8%A1%8C%E3%81%ABsudo%E3%81%8C%E5%BF%85%E8%A6%81%E3%81%AA%E5%A0%B4%E5%90%88)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <br />
@@ -73,16 +74,27 @@ burger_warの開発に必要なツールをインストールします。
 まずは、gitとcurlをインストールします。
 
 ```
+sudo apt-get update
 sudo apt-get install -y git curl
 ```
 
 次にワークスペースディレクトリを作成し、本リポジトリと開発ツール用のリポジトリをクローンします。
 
-
 ```
 mkdir -p ~/catkin_ws/src && cd ~/catkin_ws/src
 git clone https://github.com/p-robotics-hub/burger_war_dev
 git clone https://github.com/p-robotics-hub/burger_war_kit
+```
+
+実際に大会用のプログラムを開発する場合は、本リポジトリ(burger_war_dev)をフォークした各自のリポジトリで開発を進めて下さい。  
+フォークするには、GitHubにログインしてから本ページ右上にある「Fork」をクリックして、フォーク先のユーザ or 組織を選択して下さい。
+
+![フォーク手順](https://user-images.githubusercontent.com/76457573/107924955-1eb7ea80-6fb7-11eb-9758-e7719f483a0c.png)
+
+フォークしたご自分のburger_war_devリポジトリからクローンする場合は、以下のように`p-robotics-hub`の部分を、ご自分のGitHubユーザ名に変更して下さい。
+
+```
+git clone https://github.com/<GitHubユーザー名>/burger_war_dev
 ```
 
 実行後のディレクトリ構成は以下となります。
@@ -99,7 +111,14 @@ git clone https://github.com/p-robotics-hub/burger_war_kit
 --------------------------------------------------------------------
 
 docker engineとdocker-composeをインストールします。
-※既にインストール済みの方は、本手順はスキップして下さい
+
+既にインストール済みの方は、本手順はスキップして下さい。
+ただし、もしdockerコマンドの実行に`sudo`が必要な状態でしたら、以下の何れかの対応をしてから本手順書を読み進めて下さい。
+
+- [ユーザをdockerグループに追加する](#d1-ユーザをdockerグループに追加する)
+- [各コマンドにsudoをつけて実行する](#d2-各コマンドにsudoをつけて実行する)
+
+
 
 まずは、以下のコマンドでディレクトリを移動して下さい。
 
@@ -125,9 +144,9 @@ Ubuntu以外のLinuxディストリビューションの場合は、以下の公
 - [dockerのインストール](https://docs.docker.com/engine/install/)
 - [docker-composeのインストール](https://docs.docker.com/compose/install/)
 
+<br />
 
-<span style="color: red;">インストール完了後、一度パソコンを再起動して下さい。</span>
-
+**インストール完了後、一度パソコンを再起動して下さい。**
 
 <br />
 
@@ -1150,3 +1169,39 @@ export NO_PROXY=${no_proxy}
 RUN sed -i'' 's/no_proxy=.*$/no_proxy=XXXX/' /home/developer/.bashrc
 RUN sed -i'' 's/no_proxy=.*$/no_proxy=XXXX/' /home/developer/.bash_profile
 ```
+
+<br />
+
+### D dockerコマンドの実行にsudoが必要な場合
+
+#### D.1 ユーザをdockerグループに追加する
+
+sudo不要でdockerコマンドを実行したい場合は、以下のコマンドでユーザをdockerグループに追加して、**パソコンを再起動して下さい。**
+
+```
+sudo usermod -aG docker ${USER}
+```
+
+所属しているグループを確認するには以下のコマンドを実行して下さい。
+
+```
+groups
+```
+
+以下のように、出力に`docker`が含まれていればdockerグループに所属できいます。
+
+```
+username adm cdrom sudo dip plugdev lpadmin sambashare docker
+```
+
+※「commands/docker-install.sh」を使用してインストールした場合は、自動でdockerグループへの追加も行う為、本手順は不要になります
+
+#### D.2 各コマンドにsudoをつけて実行する
+何かしらの理由でdockerグループに所属させたくない場合は、本手順書に記載している以下のスクリプトには、sudoを付けて実行して下さい。
+
+- commands/docker-build.sh
+- commands/docker-launch.sh
+- commands/kit.sh
+
+また、`docker 各サブコマンド`を実行するときも同様に`sudo`を付けて実行するようにして下さい。
+
