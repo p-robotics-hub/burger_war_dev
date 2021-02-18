@@ -12,6 +12,10 @@ import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import actionlib_msgs
 
+from std_srvs.srv import Empty, EmptyRequest, EmptyResponse
+
+PI = 3.1416
+
 # Ref: https://hotblackrobotics.github.io/en/blog/2018/01/29/action-client-py/
 
 #from std_msgs.msg import String
@@ -27,7 +31,8 @@ class NaviBot():
         self.vel_pub = rospy.Publisher('cmd_vel', Twist,queue_size=1)
         self.client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
 
-
+        rospy.wait_for_service("/move_base/clear_costmaps")
+        self.clear_costmap = rospy.ServiceProxy("/move_base/clear_costmaps", Empty)
 
 
     def setGoal(self,x,y,yaw):
@@ -58,35 +63,56 @@ class NaviBot():
     def strategy(self):
         r = rospy.Rate(5) # change speed 5fps
 
-        # self.setGoal(-0.5,0,0)
-        # self.setGoal(-0.5,0,3.1415/2)
-        
-        # self.setGoal(0,0.5,0)
-        # self.setGoal(0,0.5,3.1415)
-        
-        # self.setGoal(-0.5,0,-3.1415/2)
-        
-        # self.setGoal(0,-0.5,0)
-        # self.setGoal(0,-0.5,3.1415)
+        # self.setGoal(-1.0,0,-PI/4)
+        # self.setGoal(-1.3,0.1,PI/8)
 
-        self.setGoal(-1.0,0,0)
-        # self.setGoal(-1.0,0,3.1415/4)
-        self.setGoal(-1.0,0,-3.1415/4)
+        # self.setGoal(-0.72,0.72,PI/4)
 
-        self.setGoal(-1.0,0.2,3.1415/4)
+        # self.setGoal(0,1.1,-PI/2)
+        # self.setGoal(0,1.0,-PI*3/4)
+        # self.setGoal(0.1,1.3,-PI*3/8)
 
-        self.setGoal(0,1.0,-3.1415/2)
-        # self.setGoal(0,1.0,-3.1415/4)
-        self.setGoal(0,1.0,-3.1415*3/4)
+        # self.setGoal(0.72,0.72,-PI/4)
 
-        self.setGoal(1.0,0,3.1415)
-        self.setGoal(1.0,0,3.1415*3/4)
-        self.setGoal(1.0,0,-3.1415*3/4)
+        # self.setGoal(1.1,0,PI)
+        # self.setGoal(1.0,0,PI*3/4)
+        # self.setGoal(1.3,-0.1,-PI*7/8)
 
-        self.setGoal(0,-1.0,3.1415/2)
-        self.setGoal(0,-1.0,3.1415/4)
-        self.setGoal(0,-1.0,3.1415*3/4)
-        
+        # self.setGoal(0.72,-0.72,-PI*3/4)
+
+        # self.setGoal(0,-1.1,PI/2)
+        # self.setGoal(0,-1.0,PI/4)
+        # self.setGoal(-0.1,-1.3,PI*5/8)
+
+        # self.setGoal(-0.72,-0.72,PI*3/4)
+
+        # self.setGoal(-1.0,0,-PI/4)
+
+        self.setGoal(-1.0,0,-PI/4)
+        self.setGoal(-1.0,0,PI/2)
+
+        self.setGoal(-0.72,0.72,PI/4)
+
+        self.setGoal(0,1.1,-PI/2)
+        self.setGoal(0,1.1,-PI*3/4)
+        self.setGoal(0,1.1,0)
+
+        self.setGoal(0.72,0.72,-PI/4)
+
+        self.setGoal(1.1,0,PI)
+        self.setGoal(1.1,0,PI*3/4)
+        self.setGoal(1.1,0,-PI/2)
+
+        self.setGoal(0.72,-0.72,-PI*3/4)
+
+        self.setGoal(0,-1.1,PI/2)
+        self.setGoal(0,-1.1,PI/4)
+        self.setGoal(0,-1.1,PI)
+
+        self.setGoal(-0.72,-0.72,PI*3/4)
+
+        self.setGoal(-1.0,0,-PI/4)
+
 
 
 

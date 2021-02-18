@@ -1,11 +1,11 @@
-obstacle_range: 2.0
-raytrace_range: 3.0
+obstacle_range: 0.15 # default: 2.0
+raytrace_range: 1.0 # default: 3.0
 
 #footprint: [[-0.105, -0.105], [-0.105, 0.105], [0.041, 0.105], [0.041, -0.105]]
 robot_radius: 0.1
 
-inflation_radius: 0.8
-cost_scaling_factor: 3.0
+inflation_radius: 0.1 // 障害物から影響を受ける距離 0.8 -> 0.5 に変更
+cost_scaling_factor: 3.0 // 障害物から "inflation_radius" まで指数関数的にロボットに与える影響が減衰する．その減衰具合．大きいほど早く減衰する．3.0
 
 map_type: costmap
 observation_sources: scan
