@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from ColorExtractor import ColorExtractor
+# print(cv2.__version__)
 
 
 class EnemyRecognizer:
@@ -10,19 +11,15 @@ class EnemyRecognizer:
         self.dist = None
         self.direct = None
     
-    def get_complement_circle_info(self) -> tuple:
-        cnts, _ = cv2.findContours(self.red_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        ((x, y), radius) = cv2.minEnclosingCircle(cnts[0])
+    def get_complement_circle_info(self):
+        _, cnts, _ = cv2.findContours(self.red_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        (x, y), radius = cv2.minEnclosingCircle(cnts[0])
         return ((x, y), radius)
-        # print(circle_info)
-        # img = cv2.circle(img,center,radius,(0,255,0),2)
-        # return img
-        # self.drawCenterMark((center[0], center[1]), radius)
+        # self.drawCenterMark((x, y), radius)
         # cv2.imshow('MinEnclosingCircle', self.image)
         # cv2.imwrite("../data/after_proc_image/10_detect_red_circle.jpg", self.image)
-        # cv2.waitKey(1)
+        # cv2.waitKey(0)
 
-    # 円のセンターマークを描画
     def drawCenterMark(self, point, radius):
         npt = (int(point[0]), int(point[1]))
         r = int(radius)
@@ -36,7 +33,7 @@ class EnemyRecognizer:
 # if __name__ == '__main__':
 #     import glob
 #     import matplotlib.pyplot as plt
-#     image_list = glob.glob("../data/image_raws/10*")
+#     image_list = glob.glob("burger_war_dev/data/image_raws/30*")
 
 #     enemy_recognizer = EnemyRecognizer(cv2.imread(image_list[0]))
 #     circle_info = enemy_recognizer.get_complement_circle_info()
