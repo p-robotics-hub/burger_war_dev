@@ -68,7 +68,7 @@ class PupeRun():
             # check if field score is updated.
             if self.all_field_score[idx] != self.all_field_score_prev[idx]:
                 if self.all_field_score[idx] == 2:
-                    print("enemy get target No.", idx, self.game_timestamp)
+                    print(idx, self.game_timestamp)
                     self.enemy_get_target_no = idx
                     self.enemy_get_target_no_timestamp = self.game_timestamp
         # update field score state to check enemy get target
