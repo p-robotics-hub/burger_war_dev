@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import cv2
 import numpy as np
 import math
@@ -68,15 +71,15 @@ class EnemyRecognizer:
             return True
 
 
-if __name__ == '__main__':
-    import glob
-    import matplotlib.pyplot as plt
-    # image_list = glob.glob("burger_war_dev/data/image_distance/*")
-    image_list = glob.glob("burger_war_dev/data/image_raws/1090*")
-    image_path = image_list[0]
+# if __name__ == '__main__':
+#     import glob
+#     import matplotlib.pyplot as plt
+#     # image_list = glob.glob("burger_war_dev/data/image_distance/*")
+#     image_list = glob.glob("burger_war_dev/data/image_raws/1090*")
+#     image_path = image_list[0]
 
-    enem_rec = EnemyRecognizer(cv2.imread(image_path))
-    # print(len(enem_rec.red_image))
-    print(image_path)
-    print(enem_rec.calcDirection())
-    print(enem_rec.calcDistance())
+#     enem_rec = EnemyRecognizer(cv2.imread(image_path))
+#     # print(len(enem_rec.red_image))
+#     print(image_path)
+#     print(enem_rec.calcDirection())
+#     print(enem_rec.calcDistance())
