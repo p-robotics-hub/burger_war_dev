@@ -20,6 +20,12 @@ class WarStateWatcher():
         
         # bot name 
         self.name = bot_name
+
+        # set rosparams
+        self.judge_url = rospy.get_param('/send_id_to_judge/judge_url')
+        # self.my_side = rospy.get_param('~side')
+        self.my_side = "r"
+
         # warstate publisher
         self.warstate_pub = rospy.Publisher('warstate', war_state, queue_size=1)
         self.war_state = war_state()
@@ -39,7 +45,6 @@ class WarStateWatcher():
 
         # warstate callback should be called after all parameter is ready!!
         rospy.Timer(rospy.Duration(0.11), self.WarState_timerCallback)
-        JUDGE_URL = rospy.get_param('/send_id_to_judge/judge_url')
         
         # RESPECT @F0CACC1A
     def WarState_timerCallback(self, state):
@@ -51,7 +56,7 @@ class WarStateWatcher():
         # RESPECT seigorun2.py
     def getWarState(self):
         # get current state from judge server
-        resp = requests.get(JUDGE_URL + "/warState")
+        resp = requests.get(self.judge_url + "/warState")
         dic = resp.json()
         # get score
         if self.my_side == "r":  # red_bot
@@ -80,10 +85,6 @@ class WarStateWatcher():
                     print(idx, self.game_timestamp)
                     self.enemy_get_target_no = idx
                     self.enemy_get_target_no_timestamp = self.game_timestamp
-        # update field score state to check enemy get target
-
-        self.waypoint.set_field_score(self.all_field_score[6:])
-
         # update body AR marker point
         if self.my_side == "b":
             self.enemy_body_remain = np.sum(self.all_field_score[3:6])
