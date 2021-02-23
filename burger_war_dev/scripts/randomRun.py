@@ -39,7 +39,7 @@ class RandomBot():
             print(e)
 
         #    if self.camera_preview:
-        print("image show")
+        # print("image show")
         self.image_count += 1
         # cv2.imshow("Image window", self.img)
         # if self.image_count % 10 == 0:
@@ -79,7 +79,7 @@ class RandomBot():
 
         while not rospy.is_shutdown():
             twist = self.calcTwist()
-            print(twist)
+            # print(twist)
             self.vel_pub.publish(twist)
 
             r.sleep()

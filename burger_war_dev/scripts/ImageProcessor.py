@@ -3,9 +3,8 @@
 
 import rospy
 import cv2
-
+from burger_war_dev.msg import img_info
 from sensor_msgs.msg import Image
-from msg import img_info
 from cv_bridge import CvBridge, CvBridgeError
 
 # from ColorExtractor import ColorExtractor
@@ -13,25 +12,27 @@ from EnemyRecognizer import EnemyRecognizer
 
 
 class ImageProcessor:
-    def __init__(self, image):
+    def __init__(self, name):
+        self.name = name
 
         # publisher
         self.img_info_pub = rospy.Publisher('img_info', img_info, queue_size=1)
         self.img_info = img_info()
 
         # image subscriber
-        self.image_sub = rospy.Subscriber('image_raw', Image, self.imageCallBack)
+        self.image_sub = rospy.Subscriber('/image_raw', Image, self.imageCallBack)
         self.cv_bridge = CvBridge()
 
         # self.color_extractor = ColorExtractor()
 
 
     def imageCallBack(self, data):
-
+        print("imageCallBack")
         try:
             self.img = self.cv_bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
             print(e)
+        cv2.imshow("Image window", self.img)
         # self.getImgInfo()
 
     def getImgInfo(self):
