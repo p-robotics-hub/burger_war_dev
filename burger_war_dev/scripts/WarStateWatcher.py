@@ -9,17 +9,23 @@ Publish 'warstate' topic.
 '''
 
 import rospy
-from warstate_msgs.msg import WarState
+import numpy as np
+import requests
+from burger_war_dev.msg import war_state
 
 
-class PupeRun():
+class WarStateWatcher():
 
     def __init__(self, bot_name="NoName"):
         
         # bot name 
-        self.name = puperun
+        self.name = bot_name
         # warstate publisher
-        self.warstate_pub = rospy.Publisher('warstate', WarState,queue_size=1)
+        self.warstate_pub = rospy.Publisher('warstate', war_state, queue_size=1)
+        self.war_state = war_state()
+        self.war_state.is_enem_left_marker_gotten = False
+        self.war_state.is_enem_right_marker_gotten = False
+        self.war_state.is_enem_back_marker_gotten = False
 
         self.game_timestamp = 0
         self.my_score = 0
@@ -37,6 +43,9 @@ class PupeRun():
         
         # RESPECT @F0CACC1A
     def WarState_timerCallback(self, state):
+        # self.war_state.is_enem_left_marker_gotten = False
+        # self.war_state.is_enem_right_marker_gotten = False
+        # self.war_state.is_enem_back_marker_gotten = False
         self.getWarState()
 
         # RESPECT seigorun2.py
@@ -88,17 +97,18 @@ class PupeRun():
             self.Is_lowwer_score = False
         #print("Is_lowwer_score", self.Is_lowwer_score)
 
-   def strategy(self):
+    def strategy(self):
         r = rospy.Rate(1) # change speed 1fps
-      
         while not rospy.is_shutdown():
-            warstate = self.getwarstate()
+            # warstate = self.getwarstate()
+            warstate = self.war_state
             print(warstate)
             self.warstate_pub.publish(warstate)
 
             r.sleep()
 
 if __name__ == '__main__':
-    rospy.init_node('get_war_state')
-    Puperun = Puperun('Puperun')
+    JUDGE_URL = rospy.get_param('/send_id_to_judge/judge_url')
+    rospy.init_node('war_state_watcher')
+    Puperun = WarStateWatcher('war_state_waatcher')
     Puperun.strategy()
