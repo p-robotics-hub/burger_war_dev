@@ -13,6 +13,9 @@ import rospy
 import random
 
 from geometry_msgs.msg import Twist
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge, CvBridgeError
+import cv2
 
 
 class RandomBot():
@@ -21,6 +24,28 @@ class RandomBot():
         self.name = bot_name
         # velocity publisher
         self.vel_pub = rospy.Publisher('cmd_vel', Twist,queue_size=1)
+
+        self.cv_bridge = CvBridge()
+
+        # image subscriber
+        self.image_sub = rospy.Subscriber('/image_raw', Image, self.imageCallBack)
+        self.image_count = 0
+
+    def imageCallBack(self, data):
+
+        try:
+            self.img = self.cv_bridge.imgmsg_to_cv2(data, "bgr8")
+        except CvBridgeError as e:
+            print(e)
+
+        #    if self.camera_preview:
+        # print("image show")
+        self.image_count += 1
+        # cv2.imshow("Image window", self.img)
+        # if self.image_count % 10 == 0:
+        #     cv2.imwrite('~/catkin_ws/logs/image_raw/third/{}.jpg'.format(self.image_count), self.img)
+        #     cv2.waitKey(1)
+        #     print('{}.jpg saved'.format(self.image_count))
 
     def calcTwist(self):
         value = random.randint(1,1000)
@@ -54,7 +79,7 @@ class RandomBot():
 
         while not rospy.is_shutdown():
             twist = self.calcTwist()
-            print(twist)
+            # print(twist)
             self.vel_pub.publish(twist)
 
             r.sleep()
