@@ -37,8 +37,10 @@ class WarStateWatcher():
         self.my_score = 0
         self.enemy_score = 0
         self.Is_lowwer_score = False
-        self.all_field_score = np.ones([18])  # field score state
-        self.all_field_score_prev = np.ones([18])  # field score state (previous)
+        # self.all_field_score = np.ones([18])  # field score state
+        self.all_field_score = [0]*18
+        # self.all_field_score_prev = np.ones([18])  # field score state (previous)
+        self.all_field_score_prev = [0]*18 
         self.enemy_get_target_no = -1
         self.enemy_get_target_no_timestamp = -1
         self.enemy_body_remain = 3
@@ -82,14 +84,21 @@ class WarStateWatcher():
             # check if field score is updated.
             if self.all_field_score[idx] != self.all_field_score_prev[idx]:
                 if self.all_field_score[idx] == 2:
-                    print(idx, self.game_timestamp)
+                    # print(idx, self.game_timestamp)
                     self.enemy_get_target_no = idx
                     self.enemy_get_target_no_timestamp = self.game_timestamp
         # update body AR marker point
         if self.my_side == "b":
             self.enemy_body_remain = np.sum(self.all_field_score[3:6])
+            self.war_state.is_enem_left_marker_gotten = True if self.all_field_score[3]==0 else False
+            self.war_state.is_enem_back_marker_gotten = True if self.all_field_score[4]==0 else False
+            self.war_state.is_enem_right_marker_gotten = True if self.all_field_score[5]==0 else False
+
         elif self.my_side == "r":
             self.enemy_body_remain = np.sum(self.all_field_score[0:3])
+            self.war_state.is_enem_left_marker_gotten = True if self.all_field_score[0]==0 else False
+            self.war_state.is_enem_back_marker_gotten = True if self.all_field_score[1]==0 else False
+            self.war_state.is_enem_right_marker_gotten = True if self.all_field_score[2]==0 else False
 
         # update which bot is higher score
         if self.my_score <= self.enemy_score:
@@ -103,7 +112,6 @@ class WarStateWatcher():
         while not rospy.is_shutdown():
             # warstate = self.getwarstate()
             warstate = self.war_state
-            print(warstate)
             self.warstate_pub.publish(warstate)
 
             r.sleep()
