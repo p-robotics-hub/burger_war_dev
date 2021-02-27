@@ -13,7 +13,7 @@ import rospy
 
 from geometry_msgs.msg import Twist
 
-from naviBase import NaviBase
+from naviBasic import NaviBasic
 
 class RandomBot():
     def __init__(self, bot_name="NoName"):
@@ -22,7 +22,7 @@ class RandomBot():
         # velocity publisher
         self.vel_pub = rospy.Publisher('cmd_vel', Twist,queue_size=1)
 
-        self.BasicMode = NaviBase()
+        self.BasicMode = NaviBasic()
 
     def strategy(self):
         r = rospy.Rate(1) # change speed 1fps
