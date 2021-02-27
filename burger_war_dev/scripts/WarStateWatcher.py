@@ -117,7 +117,6 @@ class WarStateWatcher():
             r.sleep()
 
 if __name__ == '__main__':
-    JUDGE_URL = rospy.get_param('/send_id_to_judge/judge_url')
     rospy.init_node('war_state_watcher')
     Puperun = WarStateWatcher('war_state_waatcher')
     Puperun.strategy()
