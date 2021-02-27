@@ -38,9 +38,9 @@ class WarStateWatcher():
         self.enemy_score = 0
         self.Is_lowwer_score = False
         # self.all_field_score = np.ones([18])  # field score state
-        self.all_field_score = [0]*18
+        self.all_field_score = [1]*18
         # self.all_field_score_prev = np.ones([18])  # field score state (previous)
-        self.all_field_score_prev = [0]*18 
+        self.all_field_score_prev = [1]*18 
         self.enemy_get_target_no = -1
         self.enemy_get_target_no_timestamp = -1
         self.enemy_body_remain = 3
