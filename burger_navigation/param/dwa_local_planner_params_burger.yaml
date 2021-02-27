@@ -19,8 +19,8 @@ DWAPlannerROS:
   acc_lim_theta: 3.2 
 
 # Goal Tolerance Parametes
-  xy_goal_tolerance: 0.05
-  yaw_goal_tolerance: 0.17
+  xy_goal_tolerance: 0.05         # x, y距離目標地点の許容誤差
+  yaw_goal_tolerance: 0.17        # yaw軸目標地点の許容誤差
   latch_xy_goal_tolerance: false
 
 # Forward Simulation Parameters
@@ -31,13 +31,16 @@ DWAPlannerROS:
   controller_frequency: 10.0
 
 # Trajectory Scoring Parameters
-  path_distance_bias: 32.0
-  goal_distance_bias: 20.0
-  occdist_scale: 0.02
-  forward_point_distance: 0.325
-  stop_time_buffer: 0.2
-  scaling_speed: 0.25
-  max_scaling_factor: 0.2
+# cost = path_distance_bias * (distance to path from the endpoint of the trajectory in meters)
+#        + goal_distance_bias * (distance to local goal from the endpoint of the trajectory in meters)
+#        + occdist_scale * (maxmum obstacle cost along the trajectory in obstacle cost (0-254))
+  path_distance_bias: 32.0                # 提案された経路をコントローラがどれぐらい正しく沿うかに関する重み
+  goal_distance_bias: 20.0                # 目標地点と制御速度に近接したかに関する重み
+  occdist_scale: 0.02                     # 障害物回避に関する重み
+  forward_point_distance: 0.325           # ロボットの中心と追加スコアリングポイントとの距離 [m]
+  stop_time_buffer: 0.2                   # ロボットの衝突前に停止するために必要な時間 [sec]
+  scaling_speed: 0.25                     # スケーリング速度 [m/sec]
+  max_scaling_factor: 0.2                 # 最大スケーリング速度
 
 # Oscillation Prevention Parameters
   oscillation_reset_dist: 0.05
