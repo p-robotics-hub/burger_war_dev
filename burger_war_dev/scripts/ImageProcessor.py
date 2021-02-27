@@ -3,7 +3,7 @@
 
 import rospy
 import cv2
-from burger_war_dev.msg import img_info
+from burger_war_dev.msg import ImgInfo
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -16,8 +16,8 @@ class ImageProcessor:
 
         # publisher
         self.img = None
-        self.img_info_pub = rospy.Publisher('img_info', img_info, queue_size=1)
-        self.img_info = img_info()
+        self.imgInfo_pub = rospy.Publisher('img_info', ImgInfo, queue_size=1)
+        self.imgInfo = ImgInfo()
 
         # image subscriber
         self.image_sub = rospy.Subscriber('/image_raw', Image, self.imageCallBack)
@@ -31,13 +31,13 @@ class ImageProcessor:
             print(e)
         enem_rec = EnemyRecognizer(self.img)
         if enem_rec.isEnemyRecognized:
-            self.img_info.is_enemy_recognized = True
-            self.img_info.enemy_dist = enem_rec.calcDistance()
-            self.img_info.enemy_direct = int(enem_rec.calcDirection())
+            self.imgInfo.is_enemy_recognized = True
+            self.imgInfo.enemy_dist = enem_rec.calcDistance()
+            self.imgInfo.enemy_direct = int(enem_rec.calcDirection())
         else:
-            self.img_info.is_enemy_recognized = False
-            self.img_info.enemy_dist = 0
-            self.img_info.enemy_direct = 0
+            self.imgInfo.is_enemy_recognized = False
+            self.imgInfo.enemy_dist = 0
+            self.imgInfo.enemy_direct = 0
         # self.getImgInfo()
 
     # def getImgInfo(self):
@@ -64,11 +64,11 @@ class ImageProcessor:
         r = rospy.Rate(1) # change speed 1fps
 
         while not rospy.is_shutdown():
-            self.img_info_pub.publish(self.img_info)
-            print(self.img_info)
+            self.imgInfo_pub.publish(self.imgInfo)
+            print(self.imgInfo)
             r.sleep()
 
 if __name__ == '__main__':
     rospy.init_node('image_processor')
-    img_proc = ImageProcessor('Imageprocessor')
+    img_proc = ImageProcessor('ImageProcessor')
     img_proc.strategy()
