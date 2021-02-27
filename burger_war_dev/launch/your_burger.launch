@@ -6,15 +6,10 @@
 
     <!-- sample program node -->
 
-<<<<<<< HEAD
     <!-- <node pkg="burger_war_dev" type="randomRun.py" name="randomRun" output="screen"/> -->
-    
-=======
-    <node pkg="burger_war_dev" type="randomRun.py" name="randomRun" output="screen"/>
     <!-- <node pkg="burger_war_dev" type="level_3_clubhouse_for_get_images.py" name="clubhouse_get_images" output="screen"/> -->
-    <node pkg="burger_war_dev" type="ImageProcessor.py" name="imageProcessor" output="screen"/>
+    <!-- <node pkg="burger_war_dev" type="ImageProcessor.py" name="imageProcessor" output="screen"/> -->
 
->>>>>>> main
     <!-- END sample program node -->
 
     <!-- Navigation sample program  -->
