@@ -65,8 +65,8 @@ class RandomBot():
             x = 0
             th = 0
         twist = Twist()
-        twist.linear.x = x; twist.linear.y = 0; twist.linear.z = 0
-        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th
+        twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
         return twist
 
     def strategy(self):
