@@ -10,13 +10,10 @@ by Takuya Yamaguhi.
 '''
 
 import rospy
-import random
 
 from geometry_msgs.msg import Twist
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge, CvBridgeError
-import cv2
 
+from naviBasic import NaviBasic
 
 class RandomBot():
     def __init__(self, bot_name="NoName"):
@@ -25,63 +22,13 @@ class RandomBot():
         # velocity publisher
         self.vel_pub = rospy.Publisher('cmd_vel', Twist,queue_size=1)
 
-        self.cv_bridge = CvBridge()
-
-        # image subscriber
-        self.image_sub = rospy.Subscriber('/image_raw', Image, self.imageCallBack)
-        self.image_count = 0
-
-    def imageCallBack(self, data):
-
-        try:
-            self.img = self.cv_bridge.imgmsg_to_cv2(data, "bgr8")
-        except CvBridgeError as e:
-            print(e)
-
-        #    if self.camera_preview:
-        # print("image show")
-        self.image_count += 1
-        # cv2.imshow("Image window", self.img)
-        # if self.image_count % 10 == 0:
-        #     cv2.imwrite('~/catkin_ws/logs/image_raw/third/{}.jpg'.format(self.image_count), self.img)
-        #     cv2.waitKey(1)
-        #     print('{}.jpg saved'.format(self.image_count))
-
-    def calcTwist(self):
-        value = random.randint(1,1000)
-        if value < 250:
-            x = 0.2
-            th = 0
-        elif value < 500:
-            x = -0.2
-            th = 0
-        elif value < 750:
-            x = 0
-            th = 1
-        elif value < 1000:
-            x = 0
-            th = -1
-        else:
-            x = 0
-            th = 0
-        twist = Twist()
-        twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
-        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
-        return twist
+        self.BasicMode = NaviBasic()
 
     def strategy(self):
         r = rospy.Rate(1) # change speed 1fps
 
-        target_speed = 0
-        target_turn = 0
-        control_speed = 0
-        control_turn = 0
-
         while not rospy.is_shutdown():
-            twist = self.calcTwist()
-            # print(twist)
-            self.vel_pub.publish(twist)
-
+            self.BasicMode.main()
             r.sleep()
 
 
