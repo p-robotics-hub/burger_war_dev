@@ -42,9 +42,13 @@ class NaviBot():
         rospy.wait_for_service("/move_base/clear_costmaps")
         self.clear_costmap = rospy.ServiceProxy("/move_base/clear_costmaps", Empty)
 
+        self.status = self.client.get_state()
+
 
     def setGoal(self,points):
         self.client.wait_for_server()
+
+        self.clear_costmap.call()
 
         goal = MoveBaseGoal()
         goal.target_pose.header.frame_id = "map"
@@ -67,19 +71,65 @@ class NaviBot():
             rospy.signal_shutdown("Action server not available!")
         else:
             return self.client.get_result()
-            
 
+
+    def mode_dicision(self):       
+        pass
+        # カメラで敵バルーンが検知できている場合 -> track_enemy
+        # そうでない場合 -> basic
+    
+
+    def basic(self):
+        pass
+    
+
+    def track_enemy(self):
+        self.client.cancel_all_goals()
+        # 新たに目標地点を設計して，Navigationで移動
+        # 敵マーカ取得後，元の周回コースに復帰
+        
 
     def strategy(self):
         r = rospy.Rate(5) # change speed 5fps
 
-        while not rospy.is_shutdown():
-            self.waypoint = self.waypoints.get_next_waypoint()
-            self.setGoal(self.waypoint)
+        self.waypoint = self.waypoints.get_current_waypoint()
+        self.setGoal(self.waypoint)
 
-    def navStateCheck(self):
-        self.state = self.client.get_state()
-        # print(100)
+        while not rospy.is_shutdown():
+
+            # Basic Mode
+            pre_status = self.status
+            self.status = self.client.get_state()
+
+            if pre_status != self.status:
+                rospy.loginfo(self.client.get_goal_status_text())
+
+            if self.status == actionlib.GoalStatus.ACTIVE:
+                print('ACTIVE')    
+            
+            elif self.status == actionlib.GoalStatus.SUCCEEDED:
+                print('SUCCEEDED')
+                self.waypoint = self.waypoints.get_next_waypoint()
+                self.setGoal(self.waypoint)
+            
+            # 本来は今回の競技に適したRecovery Behaviorを設計すべき
+            # 現段階では，目標地点を次に設定して，強引にDeadrockを突破する
+            elif self.status == actionlib.GoalStatus.ABORTED:
+                print('ABORTED')
+                self.waypoint = self.waypoints.get_next_waypoint()
+                self.setGoal(self.waypoint)
+
+            elif self.status == actionlib.GoalStatus.PENDING:
+                print('PENDING')
+                self.waypoint = self.waypoints.get_current_waypoint()
+                self.setGoal(self.waypoint)
+
+            # 敵追従を終えた場合に，元の周回コースに復帰するため
+            # Navigationで敵追従するなら，要らないかも
+            elif self.status == actionlib.GoalStatus.PREEMPTING or self.status == actionlib.GoalStatus.PREEMPTED:
+                print('PREEMPTING or PREEMPTED')    
+                self.waypoint = self.waypoints.get_current_waypoint()
+                self.setGoal(self.waypoint)    
 
 
 if __name__ == '__main__':

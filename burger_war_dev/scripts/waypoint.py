@@ -11,7 +11,7 @@ class Waypoint:
     def __init__(self, path):
 
         self.points = []
-        self.way_count = -1
+        self.way_count = 0
 
         with open(path) as f:
             lines = csv.reader(f)
@@ -28,6 +28,9 @@ class Waypoint:
             self.way_count = 0
             print('Next Lap')
          
+        return self.points[self.way_count][0:3]
+    
+    def get_current_waypoint(self):
         return self.points[self.way_count][0:3]
     
     # 敵が近くにいると判断できたときだけ，以下の行動を行う
