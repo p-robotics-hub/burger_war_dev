@@ -1,19 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from enum import Enum
 import rospy
 
 from naviBasic import NaviBasic
 # from naviAttack import NaviAttack
+from gazeEnemy import GazeEnemyBot
 
-# from modeDecider import getActMode
+from ModeDecider import ModeDecider
 
+from burger_war_dev.msg import ImgInfo
 
-class ActMode(Enum):
-    basic = 1
-    attack = 2
-
+from ActMode import ActMode
 
 class PupeBot():
     def __init__(self, bot_name="NoName"):
@@ -22,19 +20,30 @@ class PupeBot():
         # mode
         self.mode = ActMode.basic
         self.navi = NaviBasic()
+        self.modeDecider = ModeDecider()
 
-    def decide_mode(self):
-        # self.mode = getActMode()
+        # img_info subscriber
+        self.imgInfo_sub = rospy.Subscriber('/img_info', ImgInfo, self.imgInfoCallBack)
+        self.imgInfo_data = None
+    
+    def imgInfoCallBack(self, data):
+        print(data)
+        self.imgInfo_data = data
+
+    def select_mode(self):
+        self.mode = self.modeDecider.getActMode(self.imgInfo_data.isEnemyRecognized, self.imgInfo_data.enemy_dist)
+        print(self.mode)
         if self.mode==ActMode.basic:
             self.navi = NaviBasic()
-        # elif self.mode==ActMode.attack:
-        #     self.navi = NaviAttack()
+        elif self.mode==ActMode.attack:
+            # self.navi = NaviAttack()
+            self.navi = GazeEnemyBot()
 
     def strategy(self):
         r = rospy.Rate(5)
 
         while not rospy.is_shutdown():
-            self.decide_mode()
+            self.select_mode()
             self.navi.main()
             r.sleep()
 
