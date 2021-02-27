@@ -24,7 +24,6 @@ class ImageProcessor:
         self.cv_bridge = CvBridge()
 
     def imageCallBack(self, data):
-        print("imageCallBack")
         try:
             self.img = self.cv_bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:

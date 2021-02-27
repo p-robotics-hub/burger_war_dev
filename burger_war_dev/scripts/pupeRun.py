@@ -5,9 +5,9 @@ from enum import Enum
 import rospy
 
 from naviBasic import NaviBasic
-from naviAttack import NaviAttack
+# from naviAttack import NaviAttack
 
-from modeDecider import getActMode
+# from modeDecider import getActMode
 
 
 class ActMode(Enum):
@@ -24,11 +24,11 @@ class PupeBot():
         self.navi = NaviBasic()
 
     def decide_mode(self):
-        self.mode = getActMode()
+        # self.mode = getActMode()
         if self.mode==ActMode.basic:
             self.navi = NaviBasic()
-        elif self.mode==ActMode.attack:
-            self.navi = NaviAttack()
+        # elif self.mode==ActMode.attack:
+        #     self.navi = NaviAttack()
 
     def strategy(self):
         r = rospy.Rate(5)
