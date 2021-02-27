@@ -118,5 +118,5 @@ class WarStateWatcher():
 
 if __name__ == '__main__':
     rospy.init_node('war_state_watcher')
-    Puperun = WarStateWatcher('war_state_waatcher')
+    Puperun = WarStateWatcher('war_state_watcher')
     Puperun.strategy()
