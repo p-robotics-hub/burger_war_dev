@@ -23,8 +23,15 @@ class Waypoint:
     def get_next_waypoint(self):
         self.way_count = self.way_count + 1
 
+        # 出来れば2週目からは，相手に奪われているところを狙いたい．
         if self.way_count == len(self.points):
             self.way_count = 0
             print('Next Lap')
          
         return self.points[self.way_count][0:3]
+    
+    # 敵が近くにいると判断できたときだけ，以下の行動を行う
+    # 事前設定のルートへの復帰どうする？？
+    # 適当に座標が一番近いところへ行く？？
+    def get_enemy_waypoints(self):
+        pass
