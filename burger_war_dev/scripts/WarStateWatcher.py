@@ -11,7 +11,7 @@ Publish 'warstate' topic.
 import rospy
 import numpy as np
 import requests
-from burger_war_dev.msg import war_state
+from burger_war_dev.msg import WarState
 
 
 class WarStateWatcher():
@@ -27,11 +27,11 @@ class WarStateWatcher():
         self.my_side = "r"
 
         # warstate publisher
-        self.warstate_pub = rospy.Publisher('warstate', war_state, queue_size=1)
-        self.war_state = war_state()
-        self.war_state.is_enem_left_marker_gotten = False
-        self.war_state.is_enem_right_marker_gotten = False
-        self.war_state.is_enem_back_marker_gotten = False
+        self.warState_pub = rospy.Publisher('war_state', WarState, queue_size=1)
+        self.warState = WarState()
+        self.warState.is_enem_left_marker_gotten = False
+        self.warState.is_enem_right_marker_gotten = False
+        self.warState.is_enem_back_marker_gotten = False
 
         self.game_timestamp = 0
         self.my_score = 0
@@ -90,15 +90,15 @@ class WarStateWatcher():
         # update body AR marker point
         if self.my_side == "b":
             self.enemy_body_remain = np.sum(self.all_field_score[3:6])
-            self.war_state.is_enem_left_marker_gotten = True if self.all_field_score[3]==0 else False
-            self.war_state.is_enem_back_marker_gotten = True if self.all_field_score[4]==0 else False
-            self.war_state.is_enem_right_marker_gotten = True if self.all_field_score[5]==0 else False
+            self.warState.is_enem_left_marker_gotten = True if self.all_field_score[3]==0 else False
+            self.warState.is_enem_back_marker_gotten = True if self.all_field_score[4]==0 else False
+            self.warState.is_enem_right_marker_gotten = True if self.all_field_score[5]==0 else False
 
         elif self.my_side == "r":
             self.enemy_body_remain = np.sum(self.all_field_score[0:3])
-            self.war_state.is_enem_left_marker_gotten = True if self.all_field_score[0]==0 else False
-            self.war_state.is_enem_back_marker_gotten = True if self.all_field_score[1]==0 else False
-            self.war_state.is_enem_right_marker_gotten = True if self.all_field_score[2]==0 else False
+            self.warState.is_enem_left_marker_gotten = True if self.all_field_score[0]==0 else False
+            self.warState.is_enem_back_marker_gotten = True if self.all_field_score[1]==0 else False
+            self.warState.is_enem_right_marker_gotten = True if self.all_field_score[2]==0 else False
 
         # update which bot is higher score
         if self.my_score <= self.enemy_score:
@@ -111,8 +111,8 @@ class WarStateWatcher():
         r = rospy.Rate(1) # change speed 1fps
         while not rospy.is_shutdown():
             # warstate = self.getwarstate()
-            warstate = self.war_state
-            self.warstate_pub.publish(warstate)
+            warstate = self.warState
+            self.warState_pub.publish(warstate)
 
             r.sleep()
 
