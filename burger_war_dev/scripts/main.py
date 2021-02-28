@@ -3,14 +3,15 @@
 import rospy
 import random
 
-from geometry_msgs.msg import Twist
-
 import tf
 
 
 import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import actionlib_msgs
+
+# test yamada
+from geometry_msgs.msg import Twist
 
 # Ref: https://hotblackrobotics.github.io/en/blog/2018/01/29/action-client-py/
 
@@ -54,20 +55,46 @@ class NaviBot():
         else:
             return self.client.get_result()        
 
-
+        # Under construction
+    def back(self):
+        x = -0.1
+        th = 0
+        twist = Twist()
+        twist.linear.x = x; twist.linear.y = 0; twist.linear.z = 0
+        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th
+        return twist
+    ###################################
+    
     def strategy(self):
         r = rospy.Rate(5) # change speed 5fps
+#           (ue is plus , hidari is plus, rotation plus is couterclock)
 
-        self.setGoal(-0.5,0,0)
-        self.setGoal(-0.5,0,3.1415/2)
-        
-        self.setGoal(0,0.5,0)
-        self.setGoal(0,0.5,3.1415)
-        
-        self.setGoal(-0.5,0,-3.1415/2)
-        
-        self.setGoal(0,-0.5,0)
-        self.setGoal(0,-0.5,3.1415)
+     #   twist = self.back()
+     #   print(twist)
+     #   self.vel_pub.publish(twist)
+     #   r.sleep()
+
+        # get points first
+        self.setGoal(-0.9,  0,      0)
+        self.setGoal(-1.3,  0,      0)
+        self.setGoal(-1.3,  0,      3.1415/4)
+        self.setGoal(-1.3,  0,      -3.1415/4)
+
+        # start circling around field
+        self.setGoal(-0.742,-0.742, 3.1415*7/4)
+        self.setGoal(0,     -1.3,   3.1415*1/4)
+        self.setGoal(0.742, -0.742, 3.1415*1/4)
+        self.setGoal(1.3,   0,      3.1415*3/4)
+
+        self.setGoal(0.9,   0,      3.1415)
+        self.setGoal(1.3,   0,      3.1415)
+        self.setGoal(1.3,   0,      3.1415*3/4)
+        self.setGoal(1.3,   0,      3.1415*5/4)
+
+        self.setGoal(0.742, 0.742,  3.1415*3/4)
+        self.setGoal(0,     1.3,    3.1415*5/4)      
+        self.setGoal(-0.742,0.742,  3.1415*5/4)
+        self.setGoal(-1.3,  0,      3.1415*7/4)
 
 
 
