@@ -4,8 +4,8 @@
 import rospy
 
 from naviBasic import NaviBasic
-# from naviAttack import NaviAttack
-from gazeEnemy import GazeEnemyBot
+from naviAttack import NaviAttack
+# from gazeEnemy import GazeEnemyBot
 
 from ModeDecider import ModeDecider
 
@@ -40,8 +40,8 @@ class PupeBot():
             if self.mode==ActMode.basic:
                 self.navi = NaviBasic()
             elif self.mode==ActMode.attack:
-                # self.navi = NaviAttack()
-                self.navi = GazeEnemyBot()
+                self.navi = NaviAttack()
+                # self.navi = GazeEnemyBot()
         
         self.mode_prev = self.mode
 
