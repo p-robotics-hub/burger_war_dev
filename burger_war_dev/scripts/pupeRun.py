@@ -19,6 +19,7 @@ class PupeBot():
         self.name = bot_name
         # mode
         self.mode = ActMode.basic
+        self.mode_prev = ActMode.basic
         self.navi = NaviBasic()
         self.modeDecider = ModeDecider()
 
@@ -31,13 +32,18 @@ class PupeBot():
         self.imgInfo_data = data
 
     def select_mode(self):
-        self.mode = self.modeDecider.getActMode(self.imgInfo_data.isEnemyRecognized, self.imgInfo_data.enemy_dist)
+        print(self.imgInfo_data)
+        if self.imgInfo_data is not None:
+            self.mode = self.modeDecider.getActMode(self.imgInfo_data.is_enemy_recognized, self.imgInfo_data.enemy_dist)
         print(self.mode)
-        if self.mode==ActMode.basic:
-            self.navi = NaviBasic()
-        elif self.mode==ActMode.attack:
-            # self.navi = NaviAttack()
-            self.navi = GazeEnemyBot()
+        if self.mode != self.mode_prev:
+            if self.mode==ActMode.basic:
+                self.navi = NaviBasic()
+            elif self.mode==ActMode.attack:
+                # self.navi = NaviAttack()
+                self.navi = GazeEnemyBot()
+        
+        self.mode_prev = self.mode
 
     def strategy(self):
         r = rospy.Rate(5)
