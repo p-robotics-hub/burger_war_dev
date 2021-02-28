@@ -58,7 +58,7 @@ class NaviBot():
     def navi_rotate(self):
          
       
-       self.setGoal(-0.95,0.4,0)
+       self.setGoal(-0.9,0.5,0)
 
        self.setGoal(-0.2,0.4,3.1415)
        self.setGoal(-0.2,0.4,-3.1415/2)
@@ -68,7 +68,7 @@ class NaviBot():
        self.setGoal(-0.2,-0.4,3.1415/2)
        self.setGoal(-0.2,-0.4,0)
 
-       self.setGoal(-0.95,-0.4,0)
+       self.setGoal(-0.9,-0.5,0)
     
     def strategy(self):
     
@@ -78,7 +78,7 @@ class NaviBot():
             
             twist = self.navi_rotate()
             #print(twist)
-            self.vel_pub.publish(twist)
+            #self.vel_pub.publish(twist)
 
             r.sleep()   
 
