@@ -18,6 +18,8 @@ from std_srvs.srv import Empty, EmptyRequest, EmptyResponse
 
 from waypoint import Waypoint
 
+from naviBasic import NaviBasic
+
 PI = 3.1416
 
 # Ref: https://hotblackrobotics.github.io/en/blog/2018/01/29/action-client-py/
@@ -47,7 +49,10 @@ class NaviAttack():
         self.status = self.client.get_state()
 
         self.tf_flag = False
-        self.rotation_gain = 5.0
+        self.rotation_gain = 1.0
+
+        self.naviBasic = NaviBasic()
+        self.naviBasic.client.cancel_all_goals()
 
 
     def poseCallback(self, data):
@@ -119,7 +124,7 @@ class NaviAttack():
     # 常に敵中心を向くような姿勢を目標姿勢とする
     # 敵中心からの距離は一旦，1.0とする        
     def get_next_enemypoint(self):
-        self.enemypoint_th = self.th + self.enemy_info.enemy_direct * self.rotation_gain
+        self.enemypoint_th = self.th + self.enemy_info.enemy_direct * self.rotation_gain # PD制御にすべき
 
         
     # get_next_enemypointの結果，目標位置が障害物内に設定される可能性もある
@@ -138,7 +143,8 @@ class NaviAttack():
         if self.tf_flag:
             self.get_next_enemypoint()
             # self.setGoal(0.75,0.7,self.enemypoint_th)
-            self.setGoal(0.8,0.6,self.enemypoint_th)
+            # self.setGoal(0.8,0.6,self.enemypoint_th)
+            self.setGoal(self.pose_x,self.pose_y,self.enemypoint_th)
             self.tf_flag = False
             # r.sleep()
 

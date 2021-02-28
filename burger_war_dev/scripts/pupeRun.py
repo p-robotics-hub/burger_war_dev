@@ -5,11 +5,10 @@ import rospy
 
 from naviBasic import NaviBasic
 from naviAttack import NaviAttack
-# from gazeEnemy import GazeEnemyBot
 
 from ModeDecider import ModeDecider
 
-from burger_war_dev.msg import ImgInfo
+# from burger_war_dev.msg import ImgInfo, WarState
 
 from ActMode import ActMode
 
@@ -24,24 +23,32 @@ class PupeBot():
         self.modeDecider = ModeDecider()
 
         # img_info subscriber
-        self.imgInfo_sub = rospy.Subscriber('/img_info', ImgInfo, self.imgInfoCallBack)
-        self.imgInfo_data = None
-    
-    def imgInfoCallBack(self, data):
-        print(data)
-        self.imgInfo_data = data
+        # self.imgInfo_sub = rospy.Subscriber('/img_info', ImgInfo, self.imgInfoCallBack)
+        # self.imgInfo = None
 
-    def select_mode(self):
-        print(self.imgInfo_data)
-        if self.imgInfo_data is not None:
-            self.mode = self.modeDecider.getActMode(self.imgInfo_data.is_enemy_recognized, self.imgInfo_data.enemy_dist)
+        # WarState subscriber
+        # self.warState_sub = rospy.Subscriber('/war_state', WarState, self.warStateCallBack)
+        # self.warState = None
+
+        # rospy.Timer(rospy.Duration(0.1), self.selectModeCallBack)
+
+    def imgInfoCallBack(self, data):
+        # print(data)
+        self.imgInfo = data
+    
+    def warStateCallBack(self, data):
+        self.warState = data
+
+    def selectModeCallBack(self, state):
+        print(self.imgInfo)
+        if (self.imgInfo is not None) and (self.warState is not None):
+            self.mode = self.modeDecider.getActMode(self.mode, self.imgInfo, self.warState)
         print(self.mode)
         if self.mode != self.mode_prev:
             if self.mode==ActMode.basic:
                 self.navi = NaviBasic()
             elif self.mode==ActMode.attack:
                 self.navi = NaviAttack()
-                # self.navi = GazeEnemyBot()
         
         self.mode_prev = self.mode
 
@@ -49,7 +56,6 @@ class PupeBot():
         r = rospy.Rate(5)
 
         while not rospy.is_shutdown():
-            self.select_mode()
             self.navi.main()
             r.sleep()
 
