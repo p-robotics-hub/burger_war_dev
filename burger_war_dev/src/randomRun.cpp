@@ -1,5 +1,3 @@
-hogehoge
-
 // burger war c++ example
 // respect from https://demura.net/lecture/13932.html
 
