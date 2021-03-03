@@ -242,7 +242,7 @@ if [ -n "${RESTART_CONTAINER_REQUEST}" ]; then
   set -x
   docker start ${RUN_DOCKER_CONTAINER_NAME}
   set +x
-elif [ "${RUN_TARGET}" == "vnc" ]; then
+elif [ "${RUN_TARGET}" == "vnc" -o "${RUN_TARGET}" == "sim" ]; then
   # 新しくVNC版コンテナを起動
   set -x
   docker run \
@@ -256,8 +256,8 @@ elif [ "${RUN_TARGET}" == "vnc" ]; then
     -e HOST_GROUP_ID=$(id -g) \
     -e PASSWORD=${VNC_PASSWORD} \
     -e RESOLUTION=${VNC_RESOLUTION} \
-    -e X11VNC_ARGS=${VNC_X11VNC_ARGS} \
-    -e OPENBOX_ARGS=${VNC_OPENBOX_ARGS} \
+    -e X11VNC_ARGS="${VNC_X11VNC_ARGS}" \
+    -e OPENBOX_ARGS="${VNC_OPENBOX_ARGS}" \
     -p ${VNC_PORT}:5900 \
     ${PROXY_OPTION} \
     ${RUN_OPTION} \
