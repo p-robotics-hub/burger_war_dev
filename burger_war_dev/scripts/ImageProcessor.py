@@ -24,7 +24,6 @@ class ImageProcessor:
         self.cv_bridge = CvBridge()
 
     def imageCallBack(self, data):
-        print("imageCallBack")
         try:
             self.img = self.cv_bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
@@ -61,11 +60,11 @@ class ImageProcessor:
         pass
 
     def strategy(self):
-        r = rospy.Rate(1) # change speed 1fps
+        r = rospy.Rate(5)
 
         while not rospy.is_shutdown():
             self.imgInfo_pub.publish(self.imgInfo)
-            print(self.imgInfo)
+            # print(self.imgInfo)
             r.sleep()
 
 if __name__ == '__main__':
