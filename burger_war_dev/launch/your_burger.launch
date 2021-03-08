@@ -10,6 +10,8 @@
     <node pkg="burger_war_dev" type="pupeRun.py" name="pupeRun" output="screen"/>
     <!-- <node pkg="burger_war_dev" type="WarStateWatcher.py" name="warStateWatcher" output="screen"/>   
     <node pkg="burger_war_dev" type="ImageProcessor.py" name="imageProcessor" output="screen"/> -->
+    <include file="$(find obstacle_detector)/launch/nodes.launch" />
+
 
     <!-- END sample program node -->
 
