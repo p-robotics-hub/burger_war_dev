@@ -66,8 +66,8 @@ jobs:
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/logs
           mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/src
-          cp ./burger_navigation ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
-          cp ./burger_war_dev ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
+          cp -r ./burger_navigation ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
+          cp -r ./burger_war_dev ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
 
       # burger-warコンテナ起動
       - name: Launch Docker Container
