@@ -20,6 +20,7 @@ env:
   DOCKER_BUILDKIT: 1
   RESISTRY_URL: ghcr.io/${{ github.repository_owner }}
   IMAGE_NAME_CORE: burger-war-core
+  DOCKER_ROOT_DIR: ./docker
   DOCKER_FILE_CORE: ./docker/core/Dockerfile
   DOCKER_FILE_SIM: ./docker/sim/Dockerfile
   DOCKER_FILE_ROBO: ./docker/robo/Dockerfile
@@ -48,8 +49,9 @@ jobs:
       # burger-warイメージのビルド
       - name: Build Docker Image
         run: |
-          bash commands/docker-build.sh -t sim -k ${{ env.KIT_VERSION }}
-          bash commands/docker-build.sh -t robo -k ${{ env.KIT_VERSION }}
+          docker build --file ${{ env.DOCKER_FILE_CORE }} --tag ${{ env.DOCKER_FILE_CORE }} --build-arg KIT_VERSION=${{ env.KIT_VERSION }} ${{ env.DOCKER_ROOT_DIR }}
+          docker build --file ${{ env.DOCKER_FILE_SIM }} --tag ${{ env.DOCKER_FILE_SIM }} ${{ env.DOCKER_ROOT_DIR }}
+          docker build --file ${{ env.DOCKER_FILE_ROBO }} --tag ${{ env.DOCKER_FILE_ROBO }} ${{ env.DOCKER_ROOT_DIR }}
 
       # xvfbのインストールと起動
       - name: Xvfb install and run
@@ -57,15 +59,23 @@ jobs:
           sudo apt-get install -y xvfb
           Xvfb -ac ${{ env.DISPLAY }} -screen 0 1280x780x24 &
 
+      # burger-warのファイル準備
+      - name: Create Workspace
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/logs
+          mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/src
+          cp ./burger_navigation ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
+          cp ./burger_war_dev ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
+
       # burger-warコンテナ起動
       - name: Launch Docker Container
         run: |
-          mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/logs
           docker run \
             --name ${{ env.IMAGE_NAME_CORE }} \
             -d \
             --privileged \
-            --net host \
+            --net host \logs
+            --mount type=bind,src=${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev,dst=/home/developer/catkin_ws/src/burger_war_dev \
             --mount type=bind,src=${GITHUB_WORKSPACE}/catkin_ws/logs,dst=/home/developer/catkin_ws/logs \
             --device /dev/snd \
             -v /dev/shm \
