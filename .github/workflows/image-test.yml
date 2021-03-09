@@ -20,6 +20,8 @@ env:
   DOCKER_BUILDKIT: 1
   RESISTRY_URL: ghcr.io/${{ github.repository_owner }}
   IMAGE_NAME_CORE: burger-war-core
+  IMAGE_NAME_SIM: burger-war-sim
+  IMAGE_NAME_ROBO: burger-war-robo
   DOCKER_ROOT_DIR: ./docker
   DOCKER_FILE_CORE: ./docker/core/Dockerfile
   DOCKER_FILE_SIM: ./docker/sim/Dockerfile
@@ -49,9 +51,9 @@ jobs:
       # burger-warイメージのビルド
       - name: Build Docker Image
         run: |
-          docker build --file ${{ env.DOCKER_FILE_CORE }} --tag ${{ env.DOCKER_FILE_CORE }} --build-arg KIT_VERSION=${{ env.KIT_VERSION }} ${{ env.DOCKER_ROOT_DIR }}
-          docker build --file ${{ env.DOCKER_FILE_SIM }} --tag ${{ env.DOCKER_FILE_SIM }} ${{ env.DOCKER_ROOT_DIR }}
-          docker build --file ${{ env.DOCKER_FILE_ROBO }} --tag ${{ env.DOCKER_FILE_ROBO }} ${{ env.DOCKER_ROOT_DIR }}
+          docker build --file ${{ env.DOCKER_FILE_CORE }} --tag ${{ env.IMAGE_NAME_CORE }} --build-arg KIT_VERSION=${{ env.KIT_VERSION }} ${{ env.DOCKER_ROOT_DIR }}
+          docker build --file ${{ env.DOCKER_FILE_SIM }} --tag ${{ env.IMAGE_NAME_SIM }} ${{ env.DOCKER_ROOT_DIR }}
+          docker build --file ${{ env.DOCKER_FILE_ROBO }} --tag ${{ env.IMAGE_NAME_ROBO }} ${{ env.DOCKER_ROOT_DIR }}
 
       # xvfbのインストールと起動
       - name: Xvfb install and run
