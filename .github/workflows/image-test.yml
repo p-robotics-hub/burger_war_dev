@@ -68,9 +68,9 @@ jobs:
           mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/src
           cp -r ./burger_navigation ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
           cp -r ./burger_war_dev ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
-          echo "burger_war_kit ======================================================"
-          ls -la ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_kit/
-          echo "burger_war_dev ======================================================"
+          echo "catkin_ws/ ======================================================"
+          ls -la ${GITHUB_WORKSPACE}/catkin_ws
+          echo "catkin_ws/src/burger_war_dev/ ==================================="
           ls -la ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
 
       # burger-warコンテナ起動
