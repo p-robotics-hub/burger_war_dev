@@ -29,7 +29,7 @@ env:
   TEST_VERSION: test.${{ github.run_number }}
   TEST_LOG_ARCHIVE: test_logs-${{ github.run_number }}
   DISPLAY: ':99'
-  KIT_VERSION: test.13
+  KIT_VERSION: test.14
 
 # 実行する処理
 jobs:
@@ -119,6 +119,10 @@ jobs:
       # burger-warイメージをテストバージョンとしてプッシュ
       - name: Push Docker Image
         run: |
-          docker tag ${{ env.IMAGE_NAME_CORE }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_CORE }}:${{ env.TEST_VERSION }}
-          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_CORE }}:${{ env.TEST_VERSION }}
+          # burger-war-simのプッシュ
+          docker tag ${{ env.IMAGE_NAME_SIM }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
+          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
+          # burger-war-roboのプッシュ
+          docker tag ${{ env.IMAGE_NAME_ROBO }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
+          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
 
