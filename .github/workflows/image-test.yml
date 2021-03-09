@@ -29,7 +29,7 @@ env:
   TEST_VERSION: test.${{ github.run_number }}
   TEST_LOG_ARCHIVE: test_logs-${{ github.run_number }}
   DISPLAY: ':99'
-  KIT_VERSION: test.14
+  KIT_VERSION: test.15
 
 # 実行する処理
 jobs:
@@ -68,6 +68,10 @@ jobs:
           mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/src
           cp -r ./burger_navigation ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
           cp -r ./burger_war_dev ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
+          echo "burger_war_kit ======================================================"
+          ls -la ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_kit/
+          echo "burger_war_dev ======================================================"
+          ls -la ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
 
       # burger-warコンテナ起動
       - name: Launch Docker Container
