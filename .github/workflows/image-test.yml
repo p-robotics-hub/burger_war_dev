@@ -76,7 +76,7 @@ jobs:
             --name ${{ env.IMAGE_NAME_CORE }} \
             -d \
             --privileged \
-            --net host \logs
+            --net host \
             --mount type=bind,src=${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev,dst=/home/developer/catkin_ws/src/burger_war_dev \
             --mount type=bind,src=${GITHUB_WORKSPACE}/catkin_ws/logs,dst=/home/developer/catkin_ws/logs \
             --device /dev/snd \
