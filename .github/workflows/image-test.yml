@@ -26,7 +26,7 @@ env:
   DOCKER_FILE_CORE: ./docker/core/Dockerfile
   DOCKER_FILE_SIM: ./docker/sim/Dockerfile
   DOCKER_FILE_ROBO: ./docker/robo/Dockerfile
-  TEST_VERSION: test.${{ github.run_number }}
+  # TEST_VERSION: test.${{ github.run_number }}
   TEST_LOG_ARCHIVE: test_logs-${{ github.run_number }}
   DISPLAY: ':99'
   KIT_VERSION: test.16
@@ -123,27 +123,27 @@ jobs:
         with:
           name: ${{ env.TEST_LOG_ARCHIVE }}
           path: ${{ github.WORKSPACE }}/catkin_ws/logs/test_logs.tgz
-          retention-days: 5
+          retention-days: 90
 
-      # ghcr.ioにログイン
-      - name: Login to ghrc.io
-        if: steps.image-test.outputs.test_result == 0
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.GHCR_USERNAME }}
-          password: ${{ secrets.GHCR_PASSWORD }}
+      # # ghcr.ioにログイン
+      # - name: Login to ghrc.io
+      #   if: steps.image-test.outputs.test_result == 0
+      #   uses: docker/login-action@v1
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ secrets.GHCR_USERNAME }}
+      #     password: ${{ secrets.GHCR_PASSWORD }}
 
-      # burger-warイメージをテストバージョンとしてプッシュ
-      - name: Push Docker Image
-        if: steps.image-test.outputs.test_result == 0
-        run: |
-          # burger-war-simのプッシュ
-          docker tag ${{ env.IMAGE_NAME_SIM }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
-          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
-          # burger-war-roboのプッシュ
-          docker tag ${{ env.IMAGE_NAME_ROBO }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
-          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
+      # # burger-warイメージをテストバージョンとしてプッシュ
+      # - name: Push Docker Image
+      #   if: steps.image-test.outputs.test_result == 0
+      #   run: |
+      #     # burger-war-simのプッシュ
+      #     docker tag ${{ env.IMAGE_NAME_SIM }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
+      #     docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
+      #     # burger-war-roboのプッシュ
+      #     docker tag ${{ env.IMAGE_NAME_ROBO }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
+      #     docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
 
       # テストがNGだった場合
       - name: If Test Failed
