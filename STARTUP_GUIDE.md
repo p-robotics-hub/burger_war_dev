@@ -420,7 +420,7 @@ burger-war-dev   latest    025983ca7e90   25 hours ago     4.18GB
 <br />
 
 ## 4. ワークスペースのビルド
-コンテナの起動ができたら、ワークスペースをビルドしてみましょう。
+コンテナの起動ができたら、ワークスペースをビルドしてみましょう。  
 以下のように、`kit.sh -c`の引数にビルド用のコマンド`catkin build`を渡して実行します。
 
 ```
@@ -920,6 +920,107 @@ VNC_OPENBOX_ARGS=
 ```
 
 設定が反映されるのは、`commands/docker-launch.sh`を実行してコンテナを起動したときになります。
+
+<br />
+
+## 9. GitHub Actionsによる自動ビルドとテスト
+本リポジトリでは、GitHub Actionsで動作するDockerイメージの自動ビルドとロボットプログラムの自動テストを用意しています。
+
+### 9.1 自動ビルドとテストの実行トリガ
+-------------------------------------------------------------------------------
+以下のファイルの修正をGitHubにプッシュすると、自動ビルドとテストをGitHub Actions上で実行します。
+
+- `docker/core/**`
+- `docker/sim/**`
+- `docker/robo/**`
+- `burger_navigation/**`
+- `burger_war_dev/**`
+- `.github/workflows/image-test.yml`
+
+自動ビルドとテストは、どのブランチへプッシュしても実行されます。
+
+<br />
+
+### 9.2 自動ビルドとテストで行っている処理
+-------------------------------------------------------------------------------
+GitHub Actionsの自動テストで行っている主な処理は以下になります。
+
+1. burger-war-core/sim/roboイメージのビルド (`docker build`)
+2. 仮想ディスプレイの起動 (`Xvfb`)
+3. burger-war-coreコンテナ起動 (`docker run`)
+4. ロボコンプロジェクトのビルド (`catkin build`)
+5. burger-war-kitのテスト (`scripts/sim_run_test.sh`)
+6. テスト実行ログの保存 (`GitHub Artifact`)
+
+実際の処理は`.github/workflows/image-test.yml`を参照して下さい。
+
+<br />
+
+### 9.3 判定方法とログファイル
+-------------------------------------------------------------------------------
+自動テストは、自分のロボットが3分間で1点以上取得していれば試験はパスとしています。
+
+3分間というのは実際の実行時間ではなく、Gazeboのシミュレーション時間になります。
+
+テスト終了後、実行したGitHub ActionsのArtifactsから自動テスト実行時のログファイルをダウンロードできます。
+
+![devのログ出力](https://user-images.githubusercontent.com/76457573/110598025-a19e2080-81c4-11eb-88fd-c2c34e618c76.png)
+
+<br />
+
+ダウンロードしたログファイル(`test_log/test`ディレクトリ配下)の概要は以下になります。
+
+|ログファイル|説明
+|:-----------|:---
+|gazebo/*|$HOME/.gazebo/logディレクトリ配下のファイル
+|ros/*|$HOME/.ros/logディレクトリ配下のファイル
+|judge/*|burger_war_kit/judge/logsディレクトリ配下のファイル
+|screenshot/*|試験実行時の画面キャプチャ画像
+|sim_with_test.log|burger_war_kit/scripts/sim_with_test.shの出力ログ
+|start_script.log|burger_war_kit/scripts/start.sh or start_test.shの出力ログ
+|judge_server_result.log|試験終了時に審判サーバから取得した情報(/warState)
+
+<br />
+
+### 9.4 ローカル環境とGitHub Actionsでの自動テストの違い
+-------------------------------------------------------------------------------
+#### ローカル環境
+ローカル環境では、コンテナ起動時にホストPCの`$HOME/catkin_ws`ディレクトリをマウントしています。
+
+本リポジトリのファイルは、`$HOME/catkin_ws/src`ディレクトリ配下に配置するため、ホストPC上での変更は、起動中のコンテナにも反映されます。
+
+それにより、burger_war_devディレクトリ配下のファイルを修正したときに、burger-war-coreイメージを再ビルドする必要はありません。
+
+ただし、`docker`ディレクトリ配下のファイルは、burger-war-kitイメージのビルド時に反映される為、再ビルドするようにして下さい。
+
+<br />
+
+#### GitHub Actions環境
+GitHub Actions上では、コンテナ起動時のマウントポイントが`$HOME/catkin_ws/`から`$HOME/catkin_ws/src/burger_war_dev/`に変わります。
+
+また、上記ディレクトリには以下のディレクトリのみコピーします。
+
+- `burger_navigation/`
+- `burger_war_dev/`
+
+`burger_war_kit`については、latest版のburger-war-kitイメージ作成時に予め埋め込まれたソースコードを参照します。
+ 
+その他、GitHub ActionsではGUIを表示するディスプレイがない為、`Xvfb`という仮想ディスプレイを使用しているという違いがあります。
+
+<br />
+
+### 9.5 ビルドコマンドを変更したい場合
+-------------------------------------------------------------------------------
+作成されたロボットプログラムをビルドするコマンドは、デフォルトでは`catkin build`です。
+
+もし変更したい場合は、`.github/workflows/image-test.yml`の以下の部分を修正して下さい。
+
+```
+# ロボコンプロジェクトのビルド
+- name: Build Robot Programs
+  run: |
+    docker exec -u developer -t ${{ env.IMAGE_NAME }} bash -l -c "catkin build"
+```
 
 <br />
 
