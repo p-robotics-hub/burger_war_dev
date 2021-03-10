@@ -26,6 +26,7 @@ env:
   DOCKER_FILE_CORE: ./docker/core/Dockerfile
   DOCKER_FILE_SIM: ./docker/sim/Dockerfile
   DOCKER_FILE_ROBO: ./docker/robo/Dockerfile
+  TEST_VERSION: test.${{ github.run_number }}
   TEST_LOG_ARCHIVE: test_logs-${{ github.run_number }}
   DISPLAY: ':99'
   KIT_VERSION: test.16
@@ -138,11 +139,11 @@ jobs:
         if: steps.image-test.outputs.test_result == 0
         run: |
           # burger-war-simのプッシュ
-          docker tag ${{ env.IMAGE_NAME_SIM }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}
-          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}
+          docker tag ${{ env.IMAGE_NAME_SIM }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
+          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
           # burger-war-roboのプッシュ
-          docker tag ${{ env.IMAGE_NAME_ROBO }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}
-          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}
+          docker tag ${{ env.IMAGE_NAME_ROBO }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
+          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
 
       # テストがNGだった場合
       - name: If Test Failed
