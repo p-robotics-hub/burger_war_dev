@@ -26,10 +26,9 @@ env:
   DOCKER_FILE_CORE: ./docker/core/Dockerfile
   DOCKER_FILE_SIM: ./docker/sim/Dockerfile
   DOCKER_FILE_ROBO: ./docker/robo/Dockerfile
-  TEST_VERSION: test.${{ github.run_number }}
   TEST_LOG_ARCHIVE: test_logs-${{ github.run_number }}
   DISPLAY: ':99'
-  KIT_VERSION: test.15
+  KIT_VERSION: test.16
 
 # 実行する処理
 jobs:
@@ -49,10 +48,16 @@ jobs:
           docker version
 
       # burger-warイメージのビルド
-      - name: Build Docker Image
+      - name: Build Core Image
         run: |
           docker build --file ${{ env.DOCKER_FILE_CORE }} --tag ${{ env.IMAGE_NAME_CORE }} --build-arg KIT_VERSION=${{ env.KIT_VERSION }} ${{ env.DOCKER_ROOT_DIR }}
+
+      - name: Build Sim Image
+        run: |
           docker build --file ${{ env.DOCKER_FILE_SIM }} --tag ${{ env.IMAGE_NAME_SIM }} ${{ env.DOCKER_ROOT_DIR }}
+
+      - name: Build Robo Image
+        run: |
           docker build --file ${{ env.DOCKER_FILE_ROBO }} --tag ${{ env.IMAGE_NAME_ROBO }} ${{ env.DOCKER_ROOT_DIR }}
 
       # xvfbのインストールと起動
@@ -93,8 +98,8 @@ jobs:
           docker ps -a
           docker logs ${{ env.IMAGE_NAME_CORE }}
 
-      # ファイル確認
-      - name: Copy Files
+      # ロボコンプロジェクトのパッケージリスト
+      - name: Source Package List
         run: |
           docker exec -u developer -t ${{ env.IMAGE_NAME_CORE }} bash -l -c "ls -la /home/developer/catkin_ws/src/*"
 
@@ -133,11 +138,11 @@ jobs:
         if: steps.image-test.outputs.test_result == 0
         run: |
           # burger-war-simのプッシュ
-          docker tag ${{ env.IMAGE_NAME_SIM }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
-          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
+          docker tag ${{ env.IMAGE_NAME_SIM }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}
+          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}
           # burger-war-roboのプッシュ
-          docker tag ${{ env.IMAGE_NAME_ROBO }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
-          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
+          docker tag ${{ env.IMAGE_NAME_ROBO }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}
+          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}
 
       # テストがNGだった場合
       - name: If Test Failed
