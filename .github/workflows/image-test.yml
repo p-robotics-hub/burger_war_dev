@@ -93,6 +93,11 @@ jobs:
           docker ps -a
           docker logs ${{ env.IMAGE_NAME_CORE }}
 
+      # ファイル確認
+      - name: Copy Files
+        run: |
+          docker exec -u developer -t ${{ env.IMAGE_NAME_CORE }} bash -l -c "ls -la /home/developer/catkin_ws/src/*"
+
       # ロボコンプロジェクトのビルド
       - name: Build Robot Programs
         run: |
@@ -138,6 +143,6 @@ jobs:
       - name: If Test Failed
         if: steps.image-test.outputs.test_result != 0
         run: |
-          echo "::error Test Is Faild!!"
-          echo "::error See step 'Test Docker Image'"
+          echo "::error::Test is failed!!"
+          echo "::error::See step 'Test Docker Image'"
           exit 1
