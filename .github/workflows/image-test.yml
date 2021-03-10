@@ -65,7 +65,7 @@ jobs:
       - name: Create Workspace
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/logs
-          mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/src
+          mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
           cp -r ./burger_navigation ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
           cp -r ./burger_war_dev ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
           echo "catkin_ws/ ======================================================"
