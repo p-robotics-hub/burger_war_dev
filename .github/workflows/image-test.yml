@@ -14,6 +14,12 @@ on:
 
   # ブラウザ上からの手動実行設定
   workflow_dispatch:
+    inputs:
+      # リリース有無の設定
+      release_enable:
+        description: 'Dockerイメージのリリース'
+        default: yes
+        required: true
 
 # 環境変数の設定
 env:
@@ -26,7 +32,6 @@ env:
   DOCKER_FILE_CORE: ./docker/core/Dockerfile
   DOCKER_FILE_SIM: ./docker/sim/Dockerfile
   DOCKER_FILE_ROBO: ./docker/robo/Dockerfile
-  # TEST_VERSION: test.${{ github.run_number }}
   TEST_LOG_ARCHIVE: test_logs-${{ github.run_number }}
   DISPLAY: ':99'
   KIT_VERSION: test.16
@@ -125,25 +130,28 @@ jobs:
           path: ${{ github.WORKSPACE }}/catkin_ws/logs/test_logs.tgz
           retention-days: 90
 
-      # # ghcr.ioにログイン
-      # - name: Login to ghrc.io
-      #   if: steps.image-test.outputs.test_result == 0
-      #   uses: docker/login-action@v1
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ secrets.GHCR_USERNAME }}
-      #     password: ${{ secrets.GHCR_PASSWORD }}
+      # ghcr.ioにログイン
+      - name: Login to ghrc.io
+        if: steps.image-test.outputs.test_result == 0 && github.event.inputs.release_enable == 'yes'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_PASSWORD }}
 
-      # # burger-warイメージをテストバージョンとしてプッシュ
-      # - name: Push Docker Image
-      #   if: steps.image-test.outputs.test_result == 0
-      #   run: |
-      #     # burger-war-simのプッシュ
-      #     docker tag ${{ env.IMAGE_NAME_SIM }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
-      #     docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}:${{ env.TEST_VERSION }}
-      #     # burger-war-roboのプッシュ
-      #     docker tag ${{ env.IMAGE_NAME_ROBO }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
-      #     docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}:${{ env.TEST_VERSION }}
+      # burger-warイメージをテストバージョンとしてプッシュ
+      - name: Push Docker Image
+        if: steps.image-test.outputs.test_result == 0 && github.event.inputs.release_enable == 'yes'
+        run: |
+          # burger-war-coreのプッシュ
+          docker tag ${{ env.IMAGE_NAME_CORE }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_CORE }}
+          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_CORE }}
+          # burger-war-simのプッシュ
+          docker tag ${{ env.IMAGE_NAME_SIM }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}
+          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_SIM }}
+          # burger-war-roboのプッシュ
+          docker tag ${{ env.IMAGE_NAME_ROBO }} ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}
+          docker push ${{ env.RESISTRY_URL }}/${{ env.IMAGE_NAME_ROBO }}
 
       # テストがNGだった場合
       - name: If Test Failed
