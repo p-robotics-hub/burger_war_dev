@@ -139,7 +139,7 @@ jobs:
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_PASSWORD }}
 
-      # burger-warイメージをテストバージョンとしてプッシュ
+      # burger-warイメージをghcr.ioにプッシュ
       - name: Push Docker Image
         if: steps.image-test.outputs.test_result == 0 && github.event.inputs.release_enable == 'yes'
         run: |
