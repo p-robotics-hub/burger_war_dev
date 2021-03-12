@@ -17,8 +17,8 @@ on:
     inputs:
       # リリース有無の設定
       release_enable:
-        description: 'Dockerイメージのリリース'
-        default: yes
+        description: 'Dockerイメージのリリース (yes/no)'
+        default: 'yes'
         required: true
 
 # 環境変数の設定
