@@ -12,7 +12,9 @@ class EnemyRecognizer:
     def __init__(self, image):
         self.image = image
         self.red_image = ColorExtractor(image).extract_red()
+        self.green_image = ColorExtractor(image).extract_green()
         self.isEnemyRecognized = self.judgeIsEnemyRecognized()
+        self.isEnemyMarkerRecognized = self.judgeIsEnemyMarkerRecognized()
         self.const = 22.2
         self.dist = None
         self.direct = None
@@ -61,11 +63,26 @@ class EnemyRecognizer:
             direct = math.degrees(math.atan((center_index-320)*balloon_r/self.const))
             return direct 
         else:
-            return None         
+            return None 
+
+    def calcMarkerDirection(self):
+        if self.isEnemyMarkerRecognized:
+            center_index = np.argmax(self.green_image.sum(axis=0))
+            # temporary equation for calc direct
+            direct = 0.05*(center_index-320)
+            return direct
+        else:
+            return None
             
 
     def judgeIsEnemyRecognized(self):
         if np.max(self.red_image.sum(axis=0))<5:
+            return False
+        else:
+            return True
+    
+    def judgeIsEnemyMarkerRecognized(self):
+        if np.max(self.green_image.sum(axis=0))<5:
             return False
         else:
             return True
@@ -81,5 +98,5 @@ class EnemyRecognizer:
 #     enem_rec = EnemyRecognizer(cv2.imread(image_path))
 #     # print(len(enem_rec.red_image))
 #     print(image_path)
-#     print(enem_rec.calcDirection())
-#     print(enem_rec.calcDistance())
+#     print(enem_rec.calcMarkerDirection())
+#     # print(enem_rec.calcDistance())
