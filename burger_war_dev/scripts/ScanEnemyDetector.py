@@ -37,20 +37,28 @@ class EnemyDetector:
 
         #subscriber
         self.lidar_sub = rospy.Subscriber('scan', LaserScan, self.lidarCallBack)
-        self.pose_sub = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, self.poseCallback)
+        self.pose_sub = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, self.poseCallBack)
         self.is_initialized_pose = False
 
         #publisher
         self.enemy_pos_pub = rospy.Publisher('scan_enemy_pose', ScanInfo, queue_size=1)
         self.scanInfo = ScanInfo()
 
-
     def lidarCallBack(self, data):
-        '''
-        input scan. list of lider range, robot locate(pose_x, pose_y, th)
-        return is_near_enemy(BOOL), enemy_direction[rad](float)
-        '''
         self.scan = data.ranges
+
+    def poseCallBack(self, data):
+        self.pose_x = data.pose.pose.position.x
+        self.pose_y = data.pose.pose.position.y
+        quaternion = data.pose.pose.orientation
+        rpy = tf.transformations.euler_from_quaternion((quaternion.x, quaternion.y, quaternion.z, quaternion.w))
+
+        self.th = rpy[2]
+        self.is_initialized_pose = True
+        self.updateScanInfo()
+        # print(self.pose_x, self.pose_y, self.th)
+
+    def updateScanInfo(self):
         if not len(self.scan) == 360:
             return False
 
@@ -66,8 +74,8 @@ class EnemyDetector:
             enemy_direction = idx / 360.0 * 2*PI
             enemy_dist = near_scan[idx]
         else:
-            enemy_direction = None
-            enemy_dist = None
+            enemy_direction = 0
+            enemy_dist = 0
 
         print("Enemy: {}, Direction: {}".format(is_near_enemy, enemy_direction))
         print("enemy points {}".format(sum(enemy_scan)))
@@ -75,20 +83,6 @@ class EnemyDetector:
         self.scanInfo.is_enemy_recognized = is_near_enemy
         self.scanInfo.enemy_dist = enemy_dist
         self.scanInfo.enemy_direct = enemy_direction
-
-    def poseCallback(self, data):
-        '''
-        pose topic from amcl localizer
-        update robot twist
-        '''
-        self.pose_x = data.pose.pose.position.x
-        self.pose_y = data.pose.pose.position.y
-        quaternion = data.pose.pose.orientation
-        rpy = tf.transformations.euler_from_quaternion((quaternion.x, quaternion.y, quaternion.z, quaternion.w))
-
-        self.th = rpy[2]
-        self.is_initialized_pose = True
-        print(self.pose_x, self.pose_y, self.th)        
 
     def is_point_emnemy(self, dist, ang_deg):
         if dist == 0:

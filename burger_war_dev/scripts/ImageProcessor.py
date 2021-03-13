@@ -32,7 +32,7 @@ class ImageProcessor:
         if enem_rec.isEnemyRecognized:
             self.imgInfo.is_enemy_recognized = True
             self.imgInfo.enemy_dist = enem_rec.calcDistance()
-            self.imgInfo.enemy_direct = int(enem_rec.calcDirection())
+            self.imgInfo.enemy_direct = enem_rec.calcDirection()
         else:
             self.imgInfo.is_enemy_recognized = False
             self.imgInfo.enemy_dist = 0
