@@ -34,22 +34,16 @@ class ImageProcessor:
             self.imgInfo.enemy_dist = enem_rec.calcDistance()
             self.imgInfo.enemy_direct = int(enem_rec.calcDirection())
         else:
-<<<<<<< HEAD
-            self.img_info.is_enemy_recognized = False
-            self.img_info.enemy_dist = 0
-            self.img_info.enemy_direct = 0
-
-        if enem_rec.isEnemyMarkerRecognized:
-            self.img_info.is_enemy_marker_recognized = True
-            self.img_info.enemy_marker_direct = enem_rec.calcMarkerDirection()
-        else:
-            self.img_info.is_enemy_recognized = False
-            self.img_info.enemy_direct = 0
-=======
             self.imgInfo.is_enemy_recognized = False
             self.imgInfo.enemy_dist = 0
             self.imgInfo.enemy_direct = 0
->>>>>>> main
+
+        if enem_rec.isEnemyMarkerRecognized:
+            self.imgInfo.is_enemy_marker_recognized = True
+            self.imgInfo.enemy_marker_direct = enem_rec.calcMarkerDirection()
+        else:
+            self.imgInfo.is_enemy_marker_recognized = False
+            self.imgInfo.enemy_marker_direct = 0
         # self.getImgInfo()
 
     # def getImgInfo(self):
@@ -76,7 +70,7 @@ class ImageProcessor:
         r = rospy.Rate(10) # change speed 10fps
 
         while not rospy.is_shutdown():
-            self.img_info_pub.publish(self.img_info)
+            self.imgInfo_pub.publish(self.imgInfo)
             # print(self.img_info)
             r.sleep()
 
