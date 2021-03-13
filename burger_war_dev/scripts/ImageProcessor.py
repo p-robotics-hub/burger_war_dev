@@ -37,6 +37,13 @@ class ImageProcessor:
             self.imgInfo.is_enemy_recognized = False
             self.imgInfo.enemy_dist = 0
             self.imgInfo.enemy_direct = 0
+
+        if enem_rec.isEnemyMarkerRecognized:
+            self.imgInfo.is_enemy_marker_recognized = True
+            self.imgInfo.enemy_marker_direct = enem_rec.calcMarkerDirection()
+        else:
+            self.imgInfo.is_enemy_marker_recognized = False
+            self.imgInfo.enemy_marker_direct = 0
         # self.getImgInfo()
 
     # def getImgInfo(self):
@@ -50,7 +57,7 @@ class ImageProcessor:
     def getEnemyDirection(self):
         pass
 
-    def getEnemyTargetDirections(self):
+    def getEnemyMarkerDirections(self):
         pass
         
     def getWallTargetDirections(self):
@@ -60,11 +67,11 @@ class ImageProcessor:
         pass
 
     def strategy(self):
-        r = rospy.Rate(5)
+        r = rospy.Rate(10) # change speed 10fps
 
         while not rospy.is_shutdown():
             self.imgInfo_pub.publish(self.imgInfo)
-            # print(self.imgInfo)
+            # print(self.img_info)
             r.sleep()
 
 if __name__ == '__main__':

@@ -1,3 +1,5 @@
 bool is_enemy_recognized
 float32 enemy_dist
-float32 enemy_direct 
+int64 enemy_direct 
+bool is_enemy_marker_recognized
+int64 enemy_marker_direct
