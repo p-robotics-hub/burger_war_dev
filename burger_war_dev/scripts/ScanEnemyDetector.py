@@ -8,7 +8,7 @@ import math
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from sensor_msgs.msg import LaserScan
 from burger_war_dev.msg import ScanInfo
-
+PI = math.pi
 
 
 # respect is_point_enemy freom team rabbit
@@ -36,26 +36,26 @@ class EnemyDetector:
         self.scan = []
 
         #subscriber
-        self.lidar_sub = rospy.Subscriber('/scan', LaserScan, self.lidarCallback)
-        self.pose_sub = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, self.poseCallback)
+        self.lidar_sub = rospy.Subscriber('scan', LaserScan, self.lidarCallBack)
+        self.pose_sub = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, self.poseCallback)
         self.is_initialized_pose = False
 
         #publisher
-        self.enemy_pos_pub = rospy.Publisher('/scan_enemy_pose', ScanInfo, queue_size=1)
+        self.enemy_pos_pub = rospy.Publisher('scan_enemy_pose', ScanInfo, queue_size=1)
         self.scanInfo = ScanInfo()
 
 
-    def liderCallBack(self, data):
+    def lidarCallBack(self, data):
         '''
         input scan. list of lider range, robot locate(pose_x, pose_y, th)
         return is_near_enemy(BOOL), enemy_direction[rad](float)
         '''
-        self.scan = data
+        self.scan = data.ranges
         if not len(self.scan) == 360:
             return False
 
         # drop too big and small value ex) 0.0 , 2.0 
-        near_scan = [x if self.max_distance > x > 0.1 else 0.0 for x in scan]
+        near_scan = [x if self.max_distance > x > 0.1 else 0.0 for x in self.scan]
 
         enemy_scan = [1 if self.is_point_emnemy(x,i) else 0 for i,x in  enumerate(near_scan)]
 
@@ -75,8 +75,6 @@ class EnemyDetector:
         self.scanInfo.is_enemy_recognized = is_near_enemy
         self.scanInfo.enemy_dist = enemy_dist
         self.scanInfo.enemy_direct = enemy_direction
-        print("scanInfo")
-        print(self.scanInfo)
 
     def poseCallback(self, data):
         '''
@@ -125,7 +123,7 @@ class EnemyDetector:
             return True
 
     def strategy(self):
-        r = rospy.Rate(5) # change speed 5fps
+        r = rospy.Rate(10) # change speed 5fps
 
         while not rospy.is_shutdown():
             scan_info = self.scanInfo
@@ -136,6 +134,6 @@ class EnemyDetector:
 # End Respect
 
 if __name__ == '__main__':
-    rospy.init_node('EnemyDetevtor')
-    bot = EnemyDetector('EnemyDetector')
+    rospy.init_node('EnemyDetector')
+    bot = EnemyDetector()
     bot.strategy()
