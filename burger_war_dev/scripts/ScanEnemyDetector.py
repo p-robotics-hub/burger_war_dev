@@ -13,19 +13,9 @@ PI = math.pi
 
 # respect is_point_enemy freom team rabbit
 # https://github.com/TeamRabbit/burger_war
-class EnemyDetector:
-    '''
-    Lidarのセンサ値から簡易的に敵を探す。
-    obstacle detector などを使ったほうがROSらしいがそれは参加者に任せます。
-    いろいろ見た感じ Team Rabit の実装は綺麗でした。
-    方針
-    実測のLidarセンサ値 と マップと自己位置から期待されるLidarセンサ値 を比較
-    ズレている部分が敵と判断する。
-    この判断は自己位置が更新された次のライダーのコールバックで行う。（フラグで管理）
-    0.7m 以上遠いところは無視する。少々のズレは許容する。
-    '''
+class EnemyDetector:    
     def __init__(self):
-        self.max_distance = 0.7
+        self.max_distance = 1.5
         self.thresh_corner = 0.25
         self.thresh_center = 0.35
 
@@ -56,7 +46,7 @@ class EnemyDetector:
         self.th = rpy[2]
         self.is_initialized_pose = True
         self.updateScanInfo()
-        # print(self.pose_x, self.pose_y, self.th)
+        print(self.pose_x, self.pose_y, self.th)
 
     def updateScanInfo(self):
         if not len(self.scan) == 360:
@@ -71,7 +61,7 @@ class EnemyDetector:
         if is_near_enemy:
             idx_l = [i for i, x in enumerate(enemy_scan) if x == 1]
             idx = idx_l[len(idx_l)/2]
-            enemy_direction = idx / 360.0 * 2*PI
+            enemy_direction = idx
             enemy_dist = near_scan[idx]
         else:
             enemy_direction = 0
