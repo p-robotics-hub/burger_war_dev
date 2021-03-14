@@ -5,6 +5,7 @@ import rospy
 
 from naviBasic import NaviBasic
 from naviAttack import NaviAttack
+from naviAttack2 import NaviAttack2
 
 from ModeDecider import ModeDecider
 
@@ -28,7 +29,7 @@ class PupeBot():
         self.imgInfo = ImgInfo()
         self.warState_sub = rospy.Subscriber('/war_state', WarState, self.warStateCallBack)
         self.warState = WarState()
-        self.scanInfo_sub = rospy.Subscriber('/scan_enemy_pose', WarState, self.scanInfoCallBack)
+        self.scanInfo_sub = rospy.Subscriber('/scan_enemy_pose', ScanInfo, self.scanInfoCallBack)
         self.scanInfo = ScanInfo()
 
         rospy.Timer(rospy.Duration(0.1), self.selectModeCallBack)
@@ -55,12 +56,14 @@ class PupeBot():
 
         if None not in info_dict.values():
             self.mode = self.modeDecider.getActMode(self.mode, **info_dict)
-        print(self.mode)
+        print(self.mode, self.mode_prev)
         if self.mode != self.mode_prev:
             if self.mode==ActMode.basic:
                 self.navi = NaviBasic()
             elif self.mode==ActMode.attack:
-                self.navi = NaviAttack()
+                # self.navi = NaviAttack()
+                print("select attack mode")
+                self.navi = NaviAttack2()
         
         self.mode_prev = self.mode
 
