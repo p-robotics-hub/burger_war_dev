@@ -9,6 +9,7 @@ from naviAttack import NaviAttack
 from ModeDecider import ModeDecider
 
 # from burger_war_dev.msg import ImgInfo, WarState
+from obstacle_detector.msg import Obstacles
 
 from ActMode import ActMode
 
@@ -32,12 +33,19 @@ class PupeBot():
 
         # rospy.Timer(rospy.Duration(0.1), self.selectModeCallBack)
 
+        # obstacles subscriber
+        self.obstacles_sub = rospy.Subscriber('/raw_obstacles', Obstacles, self.imgInfoCallBack)
+
     def imgInfoCallBack(self, data):
         # print(data)
         self.imgInfo = data
     
     def warStateCallBack(self, data):
         self.warState = data
+    
+    def obstacleCallback(self, data):
+        print("obstacle")
+        print(data)
 
     def selectModeCallBack(self, state):
         print(self.imgInfo)

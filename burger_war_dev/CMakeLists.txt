@@ -58,6 +58,7 @@ add_message_files(
   FILES
   WarState.msg
   ImgInfo.msg
+  ScanInfo.msg
  )
 
 ## Generate services in the 'srv' folder
