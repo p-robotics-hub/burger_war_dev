@@ -8,8 +8,8 @@ from naviAttack import NaviAttack
 
 from ModeDecider import ModeDecider
 
-# from burger_war_dev.msg import ImgInfo, WarState
-from obstacle_detector.msg import Obstacles
+from burger_war_dev.msg import ImgInfo, WarState, ScanInfo
+# from obstacle_detector.msg import Obstacles
 
 from ActMode import ActMode
 
@@ -23,34 +23,37 @@ class PupeBot():
         self.navi = NaviBasic()
         self.modeDecider = ModeDecider()
 
-        # img_info subscriber
-        # self.imgInfo_sub = rospy.Subscriber('/img_info', ImgInfo, self.imgInfoCallBack)
-        # self.imgInfo = None
+        # subscriber
+        self.imgInfo_sub = rospy.Subscriber('/img_info', ImgInfo, self.imgInfoCallBack)
+        self.imgInfo = ImgInfo()
+        self.warState_sub = rospy.Subscriber('/war_state', WarState, self.warStateCallBack)
+        self.warState = WarState()
+        self.scanInfo_sub = rospy.Subscriber('/scan_enemy_pose', WarState, self.scanInfoCallBack)
+        self.scanInfo = ScanInfo()
 
-        # WarState subscriber
-        # self.warState_sub = rospy.Subscriber('/war_state', WarState, self.warStateCallBack)
-        # self.warState = None
-
-        # rospy.Timer(rospy.Duration(0.1), self.selectModeCallBack)
+        rospy.Timer(rospy.Duration(0.1), self.selectModeCallBack)
 
         # obstacles subscriber
-        self.obstacles_sub = rospy.Subscriber('/raw_obstacles', Obstacles, self.imgInfoCallBack)
+        # self.obstacles_sub = rospy.Subscriber('/raw_obstacles', Obstacles, self.imgInfoCallBack)
 
     def imgInfoCallBack(self, data):
-        # print(data)
         self.imgInfo = data
     
     def warStateCallBack(self, data):
         self.warState = data
     
-    def obstacleCallback(self, data):
-        print("obstacle")
-        print(data)
+    def scanInfoCallback(self, data):
+        self.scanInfo = data
 
     def selectModeCallBack(self, state):
-        print(self.imgInfo)
-        if (self.imgInfo is not None) and (self.warState is not None):
-            self.mode = self.modeDecider.getActMode(self.mode, self.imgInfo, self.warState)
+        info_dict = {
+            "img_info": self.imgInfo,
+            "war_state": self.warState,
+            "scan_info": self.scanInfo
+        }
+        
+        if None not in info_dict.values:
+            self.mode = self.modeDecider.getActMode(self.mode, **info_dict)
         print(self.mode)
         if self.mode != self.mode_prev:
             if self.mode==ActMode.basic:

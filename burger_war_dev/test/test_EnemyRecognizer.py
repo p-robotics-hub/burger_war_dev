@@ -4,7 +4,7 @@ import unittest2
 
 import cv2
 
-from scripts.EnemyRecognizer import EnemyRecognizer
+from burger_war_dev.scripts.EnemyRecognizer import EnemyRecognizer
 
 
 class TestEneRec(unittest2.TestCase):
