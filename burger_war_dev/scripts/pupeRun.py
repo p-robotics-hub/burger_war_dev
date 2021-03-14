@@ -3,9 +3,9 @@
 
 import rospy
 
-from naviBasic import NaviBasic
-from naviAttack import NaviAttack
-from naviAttack2 import NaviAttack2
+from navi.naviBasic import NaviBasic
+from navi.naviAttack import NaviAttack
+from navi.naviAttack2 import NaviAttack2
 
 from ModeDecider import ModeDecider
 

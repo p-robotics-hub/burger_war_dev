@@ -36,7 +36,7 @@ class NaviAttack2():
                 twist.angular.z = 0.5
             else:
                 twist.angular.z = -0.5
-        twist.linear.x = self.scanInfo.enemy_dist - 0.6
+        twist.linear.x = self.scanInfo.enemy_dist - 0.5
         return twist
 
     def main(self):
