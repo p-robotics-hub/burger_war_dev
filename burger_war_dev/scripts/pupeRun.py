@@ -42,17 +42,18 @@ class PupeBot():
     def warStateCallBack(self, data):
         self.warState = data
     
-    def scanInfoCallback(self, data):
+    def scanInfoCallBack(self, data):
         self.scanInfo = data
 
     def selectModeCallBack(self, state):
+        print()
         info_dict = {
             "img_info": self.imgInfo,
             "war_state": self.warState,
             "scan_info": self.scanInfo
         }
-        
-        if None not in info_dict.values:
+
+        if None not in info_dict.values():
             self.mode = self.modeDecider.getActMode(self.mode, **info_dict)
         print(self.mode)
         if self.mode != self.mode_prev:
@@ -64,7 +65,7 @@ class PupeBot():
         self.mode_prev = self.mode
 
     def strategy(self):
-        r = rospy.Rate(5)
+        r = rospy.Rate(10)
 
         while not rospy.is_shutdown():
             self.navi.main()

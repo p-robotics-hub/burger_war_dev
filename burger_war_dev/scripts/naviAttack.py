@@ -12,7 +12,7 @@ from geometry_msgs.msg import PoseWithCovarianceStamped
 import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import actionlib_msgs
-from burger_war_dev.msg import ImgInfo
+from burger_war_dev.msg import ImgInfo, ScanInfo
 
 from std_srvs.srv import Empty, EmptyRequest, EmptyResponse
 
@@ -40,7 +40,8 @@ class NaviAttack():
         self.vel_pub = rospy.Publisher('cmd_vel', Twist,queue_size=1)
         self.client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
 
-        self.enemy_position_sub = rospy.Subscriber('img_info', ImgInfo, self.tfCallback)
+        # self.enemy_position_sub = rospy.Subscriber('img_info', ImgInfo, self.tfCallback)
+        self.scan_enemy_position_sub = rospy.Subscriber('scan_enemy_pose', ScanInfo, self.tfCallback)
         self.pose_sub = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, self.poseCallback)
 
         rospy.wait_for_service("/move_base/clear_costmaps")
