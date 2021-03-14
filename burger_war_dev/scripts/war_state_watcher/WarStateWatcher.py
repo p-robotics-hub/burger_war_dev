@@ -16,15 +16,10 @@ from burger_war_dev.msg import WarState
 
 class WarStateWatcher():
 
-    def __init__(self, bot_name="NoName"):
-        
-        # bot name 
-        self.name = bot_name
-
+    def __init__(self):
         # set rosparams
         self.judge_url = rospy.get_param('/send_id_to_judge/judge_url')
-        # self.my_side = rospy.get_param('~side')
-        self.my_side = "r"
+        self.my_side = rospy.get_param('/send_id_to_judge/side')
 
         # warstate publisher
         self.warState_pub = rospy.Publisher('war_state', WarState, queue_size=1)
@@ -110,7 +105,6 @@ class WarStateWatcher():
     def strategy(self):
         r = rospy.Rate(1) # change speed 1fps
         while not rospy.is_shutdown():
-            # warstate = self.getwarstate()
             warstate = self.warState
             self.warState_pub.publish(warstate)
 
@@ -118,5 +112,5 @@ class WarStateWatcher():
 
 if __name__ == '__main__':
     rospy.init_node('war_state_watcher')
-    Puperun = WarStateWatcher('war_state_watcher')
+    Puperun = WarStateWatcher()
     Puperun.strategy()
