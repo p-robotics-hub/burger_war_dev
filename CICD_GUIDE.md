@@ -1,8 +1,17 @@
 # CI/CD Guide (by GitHub Actions)
 本ドキュメントでは、本リポジトリで使用可能なGitHub Actionsについて記載しています。
 
-<!-- START doctoc -->
-<!-- END doctoc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [1. CI/CDについて](#1-cicd%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
+- [2. GitHub Actionsについて](#2-github-actions%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
+- [3. 本リポジトリのアクション](#3-%E6%9C%AC%E3%83%AA%E3%83%9D%E3%82%B8%E3%83%88%E3%83%AA%E3%81%AE%E3%82%A2%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3)
+  - [3.1 ドキュメント(mdファイル)の目次更新](#31-%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88md%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E7%9B%AE%E6%AC%A1%E6%9B%B4%E6%96%B0)
+  - [3.2 ビルドコマンドを変更したい場合](#32-%E3%83%93%E3%83%AB%E3%83%89%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%82%92%E5%A4%89%E6%9B%B4%E3%81%97%E3%81%9F%E3%81%84%E5%A0%B4%E5%90%88)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## 1. CI/CDについて
 昨今のソフトウェア開発では、多機能/高機能で高品質かつ短納期という無理難題な要求に応えるため、開発サイクル(ビルド、テスト、リリース)を自動化して継続的に行う、CI/CDと呼ばれる手法がよく使われています。
