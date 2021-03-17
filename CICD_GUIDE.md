@@ -21,10 +21,10 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## 1. CI/CDについて
-昨今のソフトウェア開発では、多機能/高機能で高品質かつ短納期という無理難題な要求に応えるため、開発サイクル(ビルド、テスト、リリース)を自動化して継続的に行う、CI/CDと呼ばれる手法がよく使われています。
+昨今のソフトウェア開発では、多機能/高機能で高品質かつ短納期という無理難題な要求に応えるため、開発サイクルの一部(ビルド、テスト、リリースなど)を自動化して継続的に行うCI/CDと呼ばれる手法がよく使われています。
 
-CI(Continuous Integration)では、コードに対して静的解析ツールの実施したり、ビルド・テストを自動化して品質を維持します。  
-一方、CD(Continuous Delivery または Continuous Deployment)では、テストされたソフトを自動でリリース(例えばWebシステムなら本番運用環境に反映)します。
+CI(Continuous Integration)では、コードに対して静的解析ツールの実施したり、ビルド・テストを自動化して工数を短縮しつつ品質を維持します。  
+CD(Continuous Delivery または Continuous Deployment)では、テストされたソフトを自動でリリース(例えばWebシステムなら本番運用環境に反映など)します。
 
 CI/CDを実現するためのツールとしては、Jenkinsのようなオンプレミス型のツールと、GitHub Actionsのようなクラウド型のサービスがあります。
 
@@ -38,15 +38,10 @@ CI/CDを実現するためのツールとしては、Jenkinsのようなオン�
 <br />
 
 ## 2. GitHub Actionsについて
-GitHub Actionsとは、GitHubが提供するCI/CDツールです。
+### 2.1 GitHub Actionsとは
+GitHub Actionsとは、GitHubが提供するCI/CDサービスです。
 
-GitHub Actionsにプッシュしたコードに対して、以下のようなことが行なえます。
-
-- FormatterやLinterをかける
-- ビルドしてテストを行う
-- テストにパスしたコードをバージョンを付けてリリース
-
-実際にGitHub Actionsで行う処理は、「ワークフロー」と呼ばれ、YMAL形式のファイル(`.github/workflows/*.yml`)に分けて記載します。
+GitHub Actionsで行う処理は、「ワークフロー」という単位で実行され、YMAL形式のファイル(`.github/workflows/*.yml`)に分けて記載します。
 
 YAMLファイルでは、実行する処理をシェルスクリプトのように記述できるため自由度は高いです。  
 これにより、リポジトリ内の任意のスクリプトファイルを実行することも可能です。
@@ -67,6 +62,42 @@ YAMLファイルでは、実行する処理をシェルスクリプトのよう�
 
 <br />
 
+### 2.2 GitHub Actionsワークフローの基本構成
+GitHub Actionsのワークフローファイル(`.github/workflows/*.yml`)の基本構成は以下のようにジョブとステップから成っています。
+
+```yml
+# ワークフロー名(Webブラウザ上に表示される名前)
+name: Workflow Name
+
+# 実行トリガーイベントの指定
+on:
+  # GitHubへのプッシュイベント時
+  push:
+    # トリガ対象ファイルの指定(Markdownファイルの場合)
+    paths: 
+      - '**.md'
+  # ブラウザからの手動実行可能にする
+  workflow_dispatch:
+
+# 実行する処理
+jobs:
+  Sample-Job:
+    name: Job Name
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Sample Step1
+        run: |
+          # 実行する処理を記載
+          echo "Hello World"
+      - name: Sample Step2
+        run: |
+          # 1つのステップで実行する処理は複数記載可能
+          echo "Hello Alice"
+          echo "Hello Bob"
+```
+
+<br />
+
 
 ## 3. 本リポジトリのアクション
 前述のように、本リポジトリでは、以下の処理を行うGitHub Actionsを用意しています。
@@ -74,9 +105,9 @@ YAMLファイルでは、実行する処理をシェルスクリプトのよう�
 1. ドキュメント(mdファイル)の目次更新
 2. Dockerイメージ/ロボットプログラムのビルド
 3. Dockerコンテナによるシミュレーション実行
-4. Dockerイメージのghcr.ioへのプッシュ
+4. Dockerイメージのghcr.io(Dockerイメージを公開するサービス)へのプッシュ
 
-実際には、1〜3で1つのワークフロー、4単体で1つのワークフローに分けています。
+ワークフローファイルとしては、以下の2つに分けています。
 
 - `.github/workflows/update_toc.yml`   ... ドキュメントの自動更新
 - `.github/workflows/image-test.yml`   ... 自動ビルド/テスト/ghcr.ioへのプッシュ
