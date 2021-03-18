@@ -19,6 +19,7 @@
   - [5.4 判定方法とログファイル](#54-%E5%88%A4%E5%AE%9A%E6%96%B9%E6%B3%95%E3%81%A8%E3%83%AD%E3%82%B0%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB)
   - [5.5 ビルドコマンドを変更したい場合](#55-%E3%83%93%E3%83%AB%E3%83%89%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%82%92%E5%A4%89%E6%9B%B4%E3%81%97%E3%81%9F%E3%81%84%E5%A0%B4%E5%90%88)
 - [その他](#%E3%81%9D%E3%81%AE%E4%BB%96)
+  - [A. GitHub Actionsドキュメントリンク集](#a-github-actions%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%E3%83%AA%E3%83%B3%E3%82%AF%E9%9B%86)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
