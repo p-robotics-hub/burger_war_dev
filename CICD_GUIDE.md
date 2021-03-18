@@ -175,8 +175,41 @@ GitHub Actionsの詳細については、[公式ドキュメント](https://docs
 <br />
 
 ## 5 自動ビルド/テストとリリース
+本リポジトリでは、GitHub Actions上でDockerイメージのビルドからシミュレーションによるテストまで実行するワークフローを用意しています。
 
-### 5.1 自動ビルドとテストで行っている処理
+実行方法としては、Dockerイメージに影響するファイルの変更をGitHubにプッシュした場合の自動実行と、ブラウザを操作して実行する方法があります。
+
+### 5.1 プッシュによる自動実行
+-------------------------------------------------------------------------------
+以下のファイルの修正をGitHubにプッシュすると、自動でビルドとテストを実行します。
+
+- `docker/core/**`
+- `docker/sim/**`
+- `docker/robo/**`
+- `burger_navigation/**`
+- `burger_war_dev/**`
+- `.github/workflows/image-test.yml`
+
+<br />
+
+### 5.2 ブラウザからの手動実行方法
+-------------------------------------------------------------------------------
+プッシュ以外に、ブラウザから以下のフォームで実行することができます。
+
+「Dockerイメージのリリース」に「yes」を指定すれば、ghcr.ioにイメージをプッシュすることができます。  
+※GitHubへのプッシュによる自動実行ではイメージのリリースは行いません
+
+ただし、Dockerイメージをプッシュするには以下の手順を事前に実施して下さい。
+
+[ghcr.ioにプッシュするためのシークレット作成手順](#-b-ghcrioにプッシュするためのシークレット作成手順)
+
+また、プッシュしたDockerイメージを公開するには、以下の操作を行って下さい。
+
+[ghcr.ioにプッシュしたイメージの公開](#-c-ghcrioにプッシュしたイメージの公開)
+
+<br />
+
+### 5.3 自動ビルドとテストで行っている処理
 -------------------------------------------------------------------------------
 GitHub Actionsの自動テストで行っている主な処理は以下になります。
 
@@ -191,7 +224,7 @@ GitHub Actionsの自動テストで行っている主な処理は以下になり
 
 <br />
 
-### 5.2 自動ビルドとテストの実行トリガ
+### 5.4 自動ビルドとテストの実行トリガ
 -------------------------------------------------------------------------------
 以下のファイルの修正をGitHubにプッシュすると、自動ビルドとテストをGitHub Actions上で実行します。
 
@@ -206,7 +239,7 @@ GitHub Actionsの自動テストで行っている主な処理は以下になり
 
 <br />
 
-### 5.3 GitHub Actionsによるテスト環境
+### 5.5 GitHub Actionsによるテスト環境
 -------------------------------------------------------------------------------
 #### ローカル環境
 ローカル環境では、コンテナ起動時にホストPCの`$HOME/catkin_ws`ディレクトリをマウントしています。
@@ -233,7 +266,7 @@ GitHub Actions上では、コンテナ起動時のマウントポイントが`$H
 
 <br />
 
-### 5.4 判定方法とログファイル
+### 5.6 判定方法とログファイル
 -------------------------------------------------------------------------------
 自動テストは、自分のロボットが3分間で1点以上取得していれば試験はパスとしています。
 
@@ -260,13 +293,13 @@ GitHub Actions上では、コンテナ起動時のマウントポイントが`$H
 <br />
 
 
-### 5.5 ビルドコマンドを変更したい場合
+### 5.7 ビルドコマンドを変更したい場合
 -------------------------------------------------------------------------------
 作成されたロボットプログラムをビルドするコマンドは、デフォルトでは`catkin build`です。
 
 もし変更したい場合は、`.github/workflows/image-test.yml`の以下の`catkin build`の部分を修正して下さい。
 
-```
+```yml
 # ロボコンプロジェクトのビルド
 - name: Build Robot Programs
   run: |
@@ -274,6 +307,7 @@ GitHub Actions上では、コンテナ起動時のマウントポイントが`$H
 ```
 
 <br />
+
 
 ## その他
 ### A. GitHub Actionsドキュメントリンク集
@@ -285,11 +319,11 @@ GitHub Actions上では、コンテナ起動時のマウントポイントが`$H
     - [GitHub Actions の重要な機能](https://docs.github.com/ja/actions/learn-github-actions/essential-features-of-github-actions)： 環境変数やArtifactsの利用方法など
       - [GitHub Actionsのワークフロー構文](https://docs.github.com/ja/actions/reference/workflow-syntax-for-github-actions)： ワークフローに使うYAMLの要素
       - [ワークフローをトリガーするイベント](https://docs.github.com/ja/actions/reference/events-that-trigger-workflows)： トリガイベントのリスト
-      - [環境変数](https://docs.github.com/ja/actions/reference/environment-variables)： デフォルトの環境変数リストなど
+      - [環境変数](https://docs.github.com/ja/actions/reference/environment-variables)： デフォルトの環境変数のリストなど
       - [ワークフロー データを成果物として保存する](https://docs.github.com/ja/actions/guides/storing-workflow-data-as-artifacts)： Artifactsの詳細
     - [アクションの検索とカスタマイズ](https://docs.github.com/ja/actions/learn-github-actions/finding-and-customizing-actions)： アクションの検索/使用/カスタマイズ方法など
     - [複雑なワークフローを管理する](https://docs.github.com/ja/actions/learn-github-actions/managing-complex-workflows)： 依存ジョブやビルドマトリックス、サービスコンテナの利用方法など
-2. 仕事で使う場合
+2. 業務で利用する場合
     - [利用規約](https://docs.github.com/ja/github/site-policy/github-terms-of-service)
     - [GitHub Actionsの支払いについて](https://docs.github.com/ja/github/setting-up-and-managing-billing-and-payments-on-github/about-billing-for-github-actions)： 利用料金など
     - [使用制限、支払い、管理](https://docs.github.com/ja/actions/reference/usage-limits-billing-and-administration)： 使用可能なジョブ数など
@@ -297,3 +331,90 @@ GitHub Actions上では、コンテナ起動時のマウントポイントが`$H
     - [ワークフローを Organization と共有する](https://docs.github.com/ja/actions/learn-github-actions/sharing-workflows-with-your-organization)： Organizationでのワークフローやシークレットなどの共有方法
     - [自分のランナーをホストする](https://docs.github.com/ja/actions/hosting-your-own-runners)： 独自のランナーの利用方法
     - [GitHub Actions のセキュリティ強化](https://docs.github.com/ja/actions/learn-github-actions/security-hardening-for-github-actions)： シークレットの利用方法やセキュリティ対策
+
+<br />
+
+
+### B. ghcr.ioにプッシュするためのシークレット作成手順
+-------------------------------------------------------------------------------
+自動テストにパスしたイメージをghcr.ioにプッシュするためにはログインする必要があります。
+
+そのため、ユーザー名とパスワードの代わりに`Personal access token`が必要になります。
+
+事前に各自のGitHubアカウントで`Personal access token`を作成し、それを各自のリポジトリのシークレットとして登録しておく必要があります。
+
+以下の手順に従って、[こちらのページ](https://github.com/settings/tokens)から作成して下さい。
+
+<br />
+
+#### 1. Personal access tokens の Generate new tokenをクリック
+![PAT作成手順2](https://user-images.githubusercontent.com/76457573/106542236-c4467500-6546-11eb-84e8-76071223a224.png)
+
+<br />
+
+#### 2. Select scopes で権限設定
+少なくとも以下にチェックを入れて、ページ下部にある[Generate token]をクリックして下さい。
+
+- write:packages
+- read:packages
+- delete:packages
+
+![PAT作成手順3](https://user-images.githubusercontent.com/76457573/106542385-15566900-6547-11eb-9763-c89951b94f0d.png)
+
+<br />
+
+#### 3. 生成された Personal access token をコピー
+生成された`Personal access token`(下の画像の黒塗り部分)をコピーして下さい。
+
+![PAT作成手順4](https://user-images.githubusercontent.com/76457573/106542405-21dac180-6547-11eb-9db1-125b09e336cf.png)
+
+<br />
+
+#### 4. シークレットを追加
+各リポジトリで「Settings」→「Secrets」→「New Repository secret」をクリックして下さい。
+
+![シークレット1](https://user-images.githubusercontent.com/76457573/111585196-51494300-8802-11eb-9f83-e3ab802c618d.png)
+
+以下の画面が表示されたら、Nameは`GHCR_PASSWORD`、Valueには先程コピーした`Personal access token`の値を入力して、`Add secret`をクリックしてシークレットを追加して下さい。
+
+![シークレット2](https://user-images.githubusercontent.com/76457573/111585204-527a7000-8802-11eb-8577-e667e5428330.png)
+
+同じように、Nameが`GHCR_USERNAME`、Valueは各自のアカウント名のシークレットを追加して下さい。
+
+<br />
+
+
+### C. ghcr.ioにプッシュしたイメージの公開
+-------------------------------------------------------------------------------
+ghcr.ioにプッシュしたイメージを誰でも利用できるようにするには、イメージを公開する必要があります。
+
+以下にburger-war-roboイメージを公開する手順を示します。  
+他に公開したいイメージがある場合は、同じ手順で公開して下さい。
+
+#### 1. アカウントのトップ画面でPackagesをクリック → 公開するイメージをクリック
+
+![公開1](https://user-images.githubusercontent.com/76457573/111590618-adfc2c00-8809-11eb-991b-3ea935115017.png)
+
+<br />
+
+#### 2. Packages Settingsをクリック
+
+![公開2](https://user-images.githubusercontent.com/76457573/111590620-ae94c280-8809-11eb-8be9-969d9b18e09b.png)
+
+<br />
+
+#### 3. Change visibilityをクリック
+
+![公開3](https://user-images.githubusercontent.com/76457573/111590623-af2d5900-8809-11eb-8cbb-a6f5446e0a35.png)
+
+<br />
+
+#### 4. Publicを選択 → 公開するイメージ名を入力 → 一番下のボタンをクリック
+
+![公開4](https://user-images.githubusercontent.com/76457573/111590626-af2d5900-8809-11eb-9074-7436b22ce645.png)
+
+<br />
+
+上記手順後、以下のように「Private」の記載が消えていることを確認して下さい。
+
+![公開5](https://user-images.githubusercontent.com/76457573/111591134-61652080-880a-11eb-9031-c4336e0efd39.png)
