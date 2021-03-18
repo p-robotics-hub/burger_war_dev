@@ -292,6 +292,7 @@ GitHub Actions上では、コンテナ起動時のマウントポイントが`$H
 2. 仕事で使う場合
     - [利用規約](https://docs.github.com/ja/github/site-policy/github-terms-of-service)
     - [GitHub Actionsの支払いについて](https://docs.github.com/ja/github/setting-up-and-managing-billing-and-payments-on-github/about-billing-for-github-actions)： 利用料金など
+    - [使用制限、支払い、管理](https://docs.github.com/ja/actions/reference/usage-limits-billing-and-administration)： 使用可能なジョブ数など
     - [JenkinsからGitHub Actionsへの移行](https://docs.github.com/ja/actions/learn-github-actions/migrating-from-jenkins-to-github-actions)： JenkinsとGitHub Actionsの比較
     - [ワークフローを Organization と共有する](https://docs.github.com/ja/actions/learn-github-actions/sharing-workflows-with-your-organization)： Organizationでのワークフローやシークレットなどの共有方法
     - [自分のランナーをホストする](https://docs.github.com/ja/actions/hosting-your-own-runners)： 独自のランナーの利用方法
