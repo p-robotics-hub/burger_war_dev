@@ -904,7 +904,7 @@ bash commands/kit.sh -t vnc -s start.sh             # シミュレーション�
 <br />
 
 ### 8.5 VNCの設定
-`commands/config.h`にVNCに関連する設定を変更することができます。  
+`commands/config.sh`にVNCに関連する設定を変更することができます。  
 必要であれば変更して下さい。
 
 ```
