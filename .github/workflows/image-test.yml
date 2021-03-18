@@ -34,7 +34,7 @@ env:
   DOCKER_FILE_ROBO: ./docker/robo/Dockerfile
   TEST_LOG_ARCHIVE: test_logs-${{ github.run_number }}
   DISPLAY: ':99'
-  KIT_VERSION: test.21
+  KIT_VERSION: latest
 
 # 実行する処理
 jobs:
