@@ -28,7 +28,7 @@ CD(Continuous Delivery または Continuous Deployment)では、テストされ�
 
 CI/CDを実現するためのツールとしては、Jenkinsのようなオンプレミス型のツールと、GitHub Actionsのようなクラウド型のサービスがあります。
 
-本リポジトリでは、GitHub Actionsを使うことで、以下の処理を行うようにしています。
+本リポジトリでは、GitHub Actionsを使って以下の処理を行うことができます。
 
   1. ドキュメント(mdファイル)の目次更新
   2. Dockerイメージ/ロボットプログラムのビルド
@@ -39,6 +39,7 @@ CI/CDを実現するためのツールとしては、Jenkinsのようなオン�
 
 ## 2. GitHub Actionsについて
 ### 2.1 GitHub Actionsとは
+------------------------------------------------------------------------------
 GitHub Actionsとは、GitHubが提供するCI/CDサービスです。
 
 GitHub Actionsで行う処理は、「ワークフロー」という単位で実行され、YMAL形式のファイル(`.github/workflows/*.yml`)に分けて記載します。
@@ -46,24 +47,30 @@ GitHub Actionsで行う処理は、「ワークフロー」という単位で実
 YAMLファイルでは、実行する処理をシェルスクリプトのように記述できるため自由度は高いです。  
 これにより、リポジトリ内の任意のスクリプトファイルを実行することも可能です。
 
-さらに、[マーケットプレイス](https://github.com/marketplace?type=actions)には、便利なアクションが公開されています。
-これらをプラグインのように活用することで、ワークフローの作成が楽になります。
+さらに、[マーケットプレイス](https://github.com/marketplace?type=actions)には、便利なアクションがたくさん公開されています。  
+これらをプラグインのように利用することで、ワークフローの作成がとても楽になります。
 
-とても便利なGitHub Actionsですが、利用目的はあくまでCI/CD用途でなければなりません。
-それ以外の用途で利用すると、アカウントの凍結や削除されてしまう可能性もあります。
-
-また、Publicなリポジトリでない場合、以下のページのように従量課金制となることに注意が必要です。
+ただし、Publicリポジトリでない場合、以下のページのように従量課金制になることに注意が必要です。
 
 - [GitHub Actionsの支払いについて](https://docs.github.com/ja/github/setting-up-and-managing-billing-and-payments-on-github/about-billing-for-github-actions)
 
-また、Publicであっても、以下の使用制限があります。
+また、Publicリポジトリであっても、以下の使用制限があります。
 
 - [使用制限、支払い、管理](https://docs.github.com/ja/actions/reference/usage-limits-billing-and-administration)
 
 <br />
 
 ### 2.2 GitHub Actionsワークフローの基本構成
-GitHub Actionsのワークフローファイル(`.github/workflows/*.yml`)の基本構成は以下のようにジョブとステップから成っています。
+------------------------------------------------------------------------------
+GitHub Actionsの１つのワークフローファイル(`.github/workflows/*.yml`)は、以下の要素から成っています。
+
+- イベント      　... トリガとなるイベント (GitHubへのPushや時刻指定など)
+- 環境変数定義　　... ワークフロー内で参照する環境変数定義
+- ジョブ      　　... 1つのランナー(コンテナや仮想マシンのようなもの)で実行するステップの集まり
+- ステップ        ... 1つ以上のアクションからなる処理の集まり
+- アクション      ... 実際に実行する各コマンド。マーケットプレイスで公開されたアクションも指定可能
+
+以下が、実際のワークフローのサンプルコードです。
 
 ```yml
 # ワークフロー名(Webブラウザ上に表示される名前)
@@ -73,11 +80,12 @@ name: Workflow Name
 on:
   # GitHubへのプッシュイベント時
   push:
-    # トリガ対象ファイルの指定(Markdownファイルの場合)
-    paths: 
-      - '**.md'
-  # ブラウザからの手動実行可能にする
-  workflow_dispatch:
+    # トリガ対象ブランチの指定
+    branches: [ main ]
+
+# ワークフロー内で利用できる環境変数を定義
+env:
+  SAMPLE_NAME: "Alice"
 
 # 実行する処理
 jobs:
@@ -88,16 +96,24 @@ jobs:
       - name: Sample Step1
         run: |
           # 実行する処理を記載
-          echo "Hello World"
+          echo "Hello ${{ env.SAMPLE_NAME }}"
       - name: Sample Step2
         run: |
           # 1つのステップで実行する処理は複数記載可能
-          echo "Hello Alice"
-          echo "Hello Bob"
+          date
+          curl -s 'wttr.in/osaka?lang=ja&1'
 ```
 
 <br />
 
+アクションでの出力結果はブラウザから確認できます。  
+例えば、サンプルコードの出力結果は以下のようになります。
+
+![sample-workflow](https://user-images.githubusercontent.com/76457573/111557943-0fec6f80-87d1-11eb-8802-4065c2c3e1fa.png)
+
+GitHub Actionsの詳細については、[公式ドキュメント](https://docs.github.com/ja/actions/learn-github-actions)を参照して下さい。
+
+<br />
 
 ## 3. 本リポジトリのアクション
 前述のように、本リポジトリでは、以下の処理を行うGitHub Actionsを用意しています。
@@ -117,7 +133,7 @@ jobs:
 <br />
 
 ## 4. ドキュメント(mdファイル)の目次更新
-Startup Guideと本ドキュメントの目次はGitHubにファイルをプッシュした際に自動で作成しています。
+[Startup Guide](STARTUP_GUIDE.md)と本ドキュメントの目次はGitHubにファイルをプッシュした際に自動で作成しています。
 
 該当のワーフローは、`.github/workflows/update_toc.yml`に記載しています。
 
@@ -128,7 +144,7 @@ Startup Guideと本ドキュメントの目次はGitHubにファイルをプッ�
 
 ### 4.1 対象ファイルを追加する場合
 ------------------------------------------------------------------------------
-まず、目次を自動作成したいMarkdownファイルの、目次を追加したい箇所に、以下のコードを追加して下さい。
+まず最初に、Markdownファイルの目次を追加したい箇所に、以下のコードを追加して下さい。
 
 ```md
 <!-- START doctoc -->
@@ -257,3 +273,23 @@ GitHub Actions上では、コンテナ起動時のマウントポイントが`$H
 <br />
 
 ## その他
+### A. GitHub Actionsドキュメントリンク集
+-------------------------------------------------------------------------------
+はじめに読んでおいたほうが良い公式ドキュメントへのリンク集です。
+
+1. GitHub Action入門
+    - [GitHub Actions入門](https://docs.github.com/ja/actions/learn-github-actions/introduction-to-github-actions)： GitHub Actionsの概要・構成要素など
+    - [GitHub Actions の重要な機能](https://docs.github.com/ja/actions/learn-github-actions/essential-features-of-github-actions)： 環境変数やArtifactsの利用方法など
+      - [GitHub Actionsのワークフロー構文](https://docs.github.com/ja/actions/reference/workflow-syntax-for-github-actions)： ワークフローに使うYAMLの要素
+      - [ワークフローをトリガーするイベント](https://docs.github.com/ja/actions/reference/events-that-trigger-workflows)： トリガイベントのリスト
+      - [環境変数](https://docs.github.com/ja/actions/reference/environment-variables)： デフォルトの環境変数リストなど
+      - [ワークフロー データを成果物として保存する](https://docs.github.com/ja/actions/guides/storing-workflow-data-as-artifacts)： Artifactsの詳細
+    - [アクションの検索とカスタマイズ](https://docs.github.com/ja/actions/learn-github-actions/finding-and-customizing-actions)： アクションの検索/使用/カスタマイズ方法など
+    - [複雑なワークフローを管理する](https://docs.github.com/ja/actions/learn-github-actions/managing-complex-workflows)： 依存ジョブやビルドマトリックス、サービスコンテナの利用方法など
+2. 仕事で使う場合
+    - [利用規約](https://docs.github.com/ja/github/site-policy/github-terms-of-service)
+    - [GitHub Actionsの支払いについて](https://docs.github.com/ja/github/setting-up-and-managing-billing-and-payments-on-github/about-billing-for-github-actions)： 利用料金など
+    - [JenkinsからGitHub Actionsへの移行](https://docs.github.com/ja/actions/learn-github-actions/migrating-from-jenkins-to-github-actions)： JenkinsとGitHub Actionsの比較
+    - [ワークフローを Organization と共有する](https://docs.github.com/ja/actions/learn-github-actions/sharing-workflows-with-your-organization)： Organizationでのワークフローやシークレットなどの共有方法
+    - [自分のランナーをホストする](https://docs.github.com/ja/actions/hosting-your-own-runners)： 独自のランナーの利用方法
+    - [GitHub Actions のセキュリティ強化](https://docs.github.com/ja/actions/learn-github-actions/security-hardening-for-github-actions)： シークレットの利用方法やセキュリティ対策
