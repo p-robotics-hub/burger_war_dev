@@ -132,6 +132,8 @@ jobs:
           docker exec -u developer -t ${{ env.IMAGE_NAME_CORE }} bash -l -c "cd src/burger_war_kit && bash scripts/sim_run_test.sh" \
             && echo "::set-output name=test_result::0" \
             || echo "::set-output name=test_result::1"
+          ls -la ${{ env.WORKSPACE_DIR }}/logs/
+          ls -la ${{ env.WORKSPACE_DIR }}/logs/*
 
       # テスト結果をArtifactにアップロードする
       - name: Upload Artifact
