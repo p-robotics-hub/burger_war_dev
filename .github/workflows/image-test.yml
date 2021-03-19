@@ -54,14 +54,14 @@ jobs:
       - name: Checkout Dev Repository
         uses: actions/checkout@v2
         with:
-          path: ${HOME}/catkin_ws/src/burger_war_dev
+          path: ../../../catkin_ws/src/burger_war_dev
 
       # burger_war_kitのチェックアウト
       - name: Checkout Kit Repository
         uses: actions/checkout@v2
         with:
           repository: p-robotics-hub/burger_war_kit
-          path: ${HOME}/catkin_ws/src/burger_war_kit
+          path: ../../../catkin_ws/src/burger_war_kit
 
       # burger-warのソースリストの確認(ホスト側)
       - name: Source Package List(Host)
