@@ -44,9 +44,30 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      # 環境準備
-      - name: Checkout repository
+      # ディレクトリの準備
+      - name: Create Workspace
+        run: |
+          mkdir -p ${HOME}/catkin_ws/logs
+          mkdir -p ${HOME}/catkin_ws/src
+
+      # burger_war_devのチェックアウト
+      - name: Checkout Dev Repository
         uses: actions/checkout@v2
+        with:
+          path: ${HOME}/catkin_ws/src/burger_war_dev
+
+      # burger_war_kitのチェックアウト
+      - name: Checkout Kit Repository
+        uses: actions/checkout@v2
+        with:
+          repository: p-robotics-hub/burger_war_kit
+          path: ${HOME}/catkin_ws/src/burger_war_kit
+
+      # burger-warのソースリスト表示
+      - name: Show Workspace
+        run: |
+          echo "catkin_ws/src ======================================================"
+          ls -la ${HOME}/catkin_ws
 
       # Dockerのversion確認
       - name: Print Docker Version
@@ -72,18 +93,6 @@ jobs:
           sudo apt-get install -y xvfb
           Xvfb -ac ${{ env.DISPLAY }} -screen 0 1280x780x24 &
 
-      # burger-warのファイル準備
-      - name: Create Workspace
-        run: |
-          mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/logs
-          mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
-          cp -r ./burger_navigation ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
-          cp -r ./burger_war_dev ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
-          echo "catkin_ws/ ======================================================"
-          ls -la ${GITHUB_WORKSPACE}/catkin_ws
-          echo "catkin_ws/src/burger_war_dev/ ==================================="
-          ls -la ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
-
       # burger-warコンテナ起動
       - name: Launch Docker Container
         run: |
@@ -92,8 +101,8 @@ jobs:
             -d \
             --privileged \
             --net host \
-            --mount type=bind,src=${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev,dst=/home/developer/catkin_ws/src/burger_war_dev \
-            --mount type=bind,src=${GITHUB_WORKSPACE}/catkin_ws/logs,dst=/home/developer/catkin_ws/logs \
+            --mount type=bind,src=${HOME}/catkin_ws/src,dst=/home/developer/catkin_ws/src \
+            --mount type=bind,src=${HOME}/catkin_ws/logs,dst=/home/developer/catkin_ws/logs \
             --device /dev/snd \
             -v /dev/shm \
             -e DISPLAY=${{ env.DISPLAY }} \
@@ -127,7 +136,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.TEST_LOG_ARCHIVE }}
-          path: ${{ github.WORKSPACE }}/catkin_ws/logs/test_logs.tgz
+          path: ${HOME}/catkin_ws/logs/test_logs.tgz
           retention-days: 90
 
       # ghcr.ioにログイン
