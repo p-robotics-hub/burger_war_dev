@@ -134,13 +134,14 @@ jobs:
             || echo "::set-output name=test_result::1"
           ls -la ${{ env.WORKSPACE_DIR }}/logs/
           ls -la ${{ env.WORKSPACE_DIR }}/logs/*
+          ls -la /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/logs/test_logs.tgz
 
       # テスト結果をArtifactにアップロードする
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.TEST_LOG_ARCHIVE }}
-          path: ${{ env.WORKSPACE_DIR }}/logs/test_logs.tgz
+          path: /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/logs/test_logs.tgz
           retention-days: 90
 
       # ghcr.ioにログイン
