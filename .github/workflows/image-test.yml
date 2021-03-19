@@ -28,10 +28,11 @@ env:
   IMAGE_NAME_CORE: burger-war-core
   IMAGE_NAME_SIM: burger-war-sim
   IMAGE_NAME_ROBO: burger-war-robo
-  DOCKER_ROOT_DIR: /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker
-  DOCKER_FILE_CORE: /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker/core/Dockerfile
-  DOCKER_FILE_SIM: /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker/sim/Dockerfile
-  DOCKER_FILE_ROBO: /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker/robo/Dockerfile
+  WORKSPACE_DIR: /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws
+  DOCKER_ROOT_DIR: ${{ env.WORKSPACE_DIR }}/src/burger_war_dev/docker
+  DOCKER_FILE_CORE: ${{ env.WORKSPACE_DIR }}/src/burger_war_dev/docker/core/Dockerfile
+  DOCKER_FILE_SIM: ${{ env.WORKSPACE_DIR }}/src/burger_war_dev/docker/sim/Dockerfile
+  DOCKER_FILE_ROBO: ${{ env.WORKSPACE_DIR }}/src/burger_war_dev/docker/robo/Dockerfile
   TEST_LOG_ARCHIVE: test_logs-${{ github.run_number }}
   DISPLAY: ':99'
   KIT_VERSION: latest
@@ -47,8 +48,8 @@ jobs:
       # ディレクトリの準備
       - name: Create Workspace
         run: |
-          mkdir -p /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/logs
-          mkdir -p /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/src
+          mkdir -p ${{ env.WORKSPACE_DIR }}/logs
+          mkdir -p ${{ env.WORKSPACE_DIR }}/src
 
       # burger_war_kitのチェックアウト
       - name: Checkout Kit Repository
@@ -67,7 +68,7 @@ jobs:
       - name: Source Package List(Host)
         run: |
           echo "catkin_ws/src ======================================================"
-          ls -la /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/src
+          ls -la ${{ env.WORKSPACE_DIR }}/src
           echo "${GITHUB_WORKSPACE} ======================================================"
           ls -la ${GITHUB_WORKSPACE}
 
@@ -103,8 +104,7 @@ jobs:
             -d \
             --privileged \
             --net host \
-            --mount type=bind,src=${HOME}/catkin_ws/src,dst=/home/developer/catkin_ws/src \
-            --mount type=bind,src=${HOME}/catkin_ws/logs,dst=/home/developer/catkin_ws/logs \
+            --mount type=bind,src=${{ env.WORKSPACE_DIR }},dst=/home/developer/catkin_ws
             --device /dev/snd \
             -v /dev/shm \
             -e DISPLAY=${{ env.DISPLAY }} \
