@@ -28,10 +28,11 @@ env:
   IMAGE_NAME_CORE: burger-war-core
   IMAGE_NAME_SIM: burger-war-sim
   IMAGE_NAME_ROBO: burger-war-robo
-  DOCKER_ROOT_DIR: ./docker
-  DOCKER_FILE_CORE: ./docker/core/Dockerfile
-  DOCKER_FILE_SIM: ./docker/sim/Dockerfile
-  DOCKER_FILE_ROBO: ./docker/robo/Dockerfile
+  WORKSPACE_DIR: ${HOME}/work/burger_war_dev/burger_war_dev/catkin_ws
+  DOCKER_ROOT_DIR: ${HOME}/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker
+  DOCKER_FILE_CORE: ${HOME}/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker/core/Dockerfile
+  DOCKER_FILE_SIM: ${HOME}/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker/sim/Dockerfile
+  DOCKER_FILE_ROBO: ${HOME}/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker/robo/Dockerfile
   TEST_LOG_ARCHIVE: test_logs-${{ github.run_number }}
   DISPLAY: ':99'
   KIT_VERSION: latest
@@ -44,9 +45,39 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      # 環境準備
-      - name: Checkout repository
+      # ディレクトリの準備
+      - name: Create Workspace
+        run: |
+          mkdir -p ${{ env.WORKSPACE_DIR }}/logs
+          mkdir -p ${{ env.WORKSPACE_DIR }}/src
+
+      # burger_war_kitのチェックアウト
+      - name: Checkout Kit Repository
         uses: actions/checkout@v2
+        with:
+          repository: p-robotics-hub/burger_war_kit
+          path: catkin_ws/src/burger_war_kit
+
+      # burger_war_devのチェックアウト
+      - name: Checkout Dev Repository
+        uses: actions/checkout@v2
+        with:
+          path: catkin_ws/src/burger_war_dev
+
+      # # 追加ライブラリのチェックアウト
+      # - name: Checkout Library Repository
+      #   uses: actions/checkout@v2
+      #   with:
+      #     repository: tysik/obstacle_detector
+      #     path: catkin_ws/src/obstacle_detector
+
+      # burger-warのソースリストの確認(ホスト側)
+      - name: Source Package List(Host)
+        run: |
+          echo "catkin_ws/src ======================================================"
+          ls -la ${{ env.WORKSPACE_DIR }}/src/*
+          echo "${GITHUB_WORKSPACE} ======================================================"
+          ls -la ${GITHUB_WORKSPACE}
 
       # Dockerのversion確認
       - name: Print Docker Version
@@ -72,18 +103,6 @@ jobs:
           sudo apt-get install -y xvfb
           Xvfb -ac ${{ env.DISPLAY }} -screen 0 1280x780x24 &
 
-      # burger-warのファイル準備
-      - name: Create Workspace
-        run: |
-          mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/logs
-          mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
-          cp -r ./burger_navigation ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
-          cp -r ./burger_war_dev ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
-          echo "catkin_ws/ ======================================================"
-          ls -la ${GITHUB_WORKSPACE}/catkin_ws
-          echo "catkin_ws/src/burger_war_dev/ ==================================="
-          ls -la ${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev/
-
       # burger-warコンテナ起動
       - name: Launch Docker Container
         run: |
@@ -92,8 +111,7 @@ jobs:
             -d \
             --privileged \
             --net host \
-            --mount type=bind,src=${GITHUB_WORKSPACE}/catkin_ws/src/burger_war_dev,dst=/home/developer/catkin_ws/src/burger_war_dev \
-            --mount type=bind,src=${GITHUB_WORKSPACE}/catkin_ws/logs,dst=/home/developer/catkin_ws/logs \
+            --mount type=bind,src=${{ env.WORKSPACE_DIR }},dst=/home/developer/catkin_ws \
             --device /dev/snd \
             -v /dev/shm \
             -e DISPLAY=${{ env.DISPLAY }} \
@@ -104,8 +122,8 @@ jobs:
           docker ps -a
           docker logs ${{ env.IMAGE_NAME_CORE }}
 
-      # ロボコンプロジェクトのパッケージリスト
-      - name: Source Package List
+      # burger-warのソースリストの確認(コンテナ側)
+      - name: Source Package List(Container)
         run: |
           docker exec -u developer -t ${{ env.IMAGE_NAME_CORE }} bash -l -c "ls -la /home/developer/catkin_ws/src/*"
 
@@ -127,7 +145,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.TEST_LOG_ARCHIVE }}
-          path: ${{ github.WORKSPACE }}/catkin_ws/logs/test_logs.tgz
+          path: /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/logs/test_logs.tgz
           retention-days: 90
 
       # ghcr.ioにログイン
