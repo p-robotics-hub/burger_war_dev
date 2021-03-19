@@ -28,11 +28,11 @@ env:
   IMAGE_NAME_CORE: burger-war-core
   IMAGE_NAME_SIM: burger-war-sim
   IMAGE_NAME_ROBO: burger-war-robo
-  WORKSPACE_DIR: /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws
-  DOCKER_ROOT_DIR: ${{ env.WORKSPACE_DIR }}/src/burger_war_dev/docker
-  DOCKER_FILE_CORE: ${{ env.WORKSPACE_DIR }}/src/burger_war_dev/docker/core/Dockerfile
-  DOCKER_FILE_SIM: ${{ env.WORKSPACE_DIR }}/src/burger_war_dev/docker/sim/Dockerfile
-  DOCKER_FILE_ROBO: ${{ env.WORKSPACE_DIR }}/src/burger_war_dev/docker/robo/Dockerfile
+  WORKSPACE_DIR: ${HOME}/work/burger_war_dev/burger_war_dev/catkin_ws
+  DOCKER_ROOT_DIR: ${HOME}/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker
+  DOCKER_FILE_CORE: ${HOME}/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker/core/Dockerfile
+  DOCKER_FILE_SIM: ${HOME}/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker/sim/Dockerfile
+  DOCKER_FILE_ROBO: ${HOME}/work/burger_war_dev/burger_war_dev/catkin_ws/src/burger_war_dev/docker/robo/Dockerfile
   TEST_LOG_ARCHIVE: test_logs-${{ github.run_number }}
   DISPLAY: ':99'
   KIT_VERSION: latest
