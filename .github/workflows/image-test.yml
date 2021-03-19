@@ -68,7 +68,7 @@ jobs:
       - name: Source Package List(Host)
         run: |
           echo "catkin_ws/src ======================================================"
-          ls -la ${{ env.WORKSPACE_DIR }}/src
+          ls -la ${{ env.WORKSPACE_DIR }}/src/*
           echo "${GITHUB_WORKSPACE} ======================================================"
           ls -la ${GITHUB_WORKSPACE}
 
