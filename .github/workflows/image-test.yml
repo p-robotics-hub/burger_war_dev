@@ -64,12 +64,12 @@ jobs:
         with:
           path: catkin_ws/src/burger_war_dev
 
-      # 追加ライブラリのチェックアウト
-      - name: Checkout Library Repository
-        uses: actions/checkout@v2
-        with:
-          repository: tysik/obstacle_detector
-          path: catkin_ws/src/obstacle_detector
+      # # 追加ライブラリのチェックアウト
+      # - name: Checkout Library Repository
+      #   uses: actions/checkout@v2
+      #   with:
+      #     repository: tysik/obstacle_detector
+      #     path: catkin_ws/src/obstacle_detector
 
       # burger-warのソースリストの確認(ホスト側)
       - name: Source Package List(Host)

@@ -321,10 +321,10 @@ burger_war_kitのソースコードついては、リポジトリから毎回チ
     path: catkin_ws/src/obstacle_detector
 ```
 
-`repository`には、追加したいライブラリのGitHubリポジトリのパスを指定して下さい。
+`repository`には、追加したいパッケージのGitHubリポジトリのパスを指定して下さい。
 
 `path`には、チェックアウトしたディレクトリ名を指定して下さい。  
-※親ディレクトリは`catkin_ws/src/`から変更しないで下さい
+※親ディレクトリは`catkin_ws/src/`から変更しないように注意して下さい
 
 <br />
 
