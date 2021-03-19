@@ -28,10 +28,10 @@ env:
   IMAGE_NAME_CORE: burger-war-core
   IMAGE_NAME_SIM: burger-war-sim
   IMAGE_NAME_ROBO: burger-war-robo
-  DOCKER_ROOT_DIR: ./docker
-  DOCKER_FILE_CORE: ./docker/core/Dockerfile
-  DOCKER_FILE_SIM: ./docker/sim/Dockerfile
-  DOCKER_FILE_ROBO: ./docker/robo/Dockerfile
+  DOCKER_ROOT_DIR: ${HOME}/catkin_ws/src/burger_war_dev/docker
+  DOCKER_FILE_CORE: ${HOME}/catkin_ws/src/burger_war_dev/docker/core/Dockerfile
+  DOCKER_FILE_SIM: ${HOME}/catkin_ws/src/burger_war_dev/docker/sim/Dockerfile
+  DOCKER_FILE_ROBO: ${HOME}/catkin_ws/src/burger_war_dev/docker/robo/Dockerfile
   TEST_LOG_ARCHIVE: test_logs-${{ github.run_number }}
   DISPLAY: ':99'
   KIT_VERSION: latest
@@ -63,11 +63,11 @@ jobs:
           repository: p-robotics-hub/burger_war_kit
           path: ${HOME}/catkin_ws/src/burger_war_kit
 
-      # burger-warのソースリスト表示
-      - name: Show Workspace
+      # burger-warのソースリストの確認(ホスト側)
+      - name: Source Package List(Host)
         run: |
           echo "catkin_ws/src ======================================================"
-          ls -la ${HOME}/catkin_ws
+          ls -la ${HOME}/catkin_ws/src
 
       # Dockerのversion確認
       - name: Print Docker Version
@@ -113,8 +113,8 @@ jobs:
           docker ps -a
           docker logs ${{ env.IMAGE_NAME_CORE }}
 
-      # ロボコンプロジェクトのパッケージリスト
-      - name: Source Package List
+      # burger-warのソースリストの確認(コンテナ側)
+      - name: Source Package List(Container)
         run: |
           docker exec -u developer -t ${{ env.IMAGE_NAME_CORE }} bash -l -c "ls -la /home/developer/catkin_ws/src/*"
 
