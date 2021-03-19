@@ -4,13 +4,11 @@ name: Burger-War Image Build & Test
 on:
   # 指定ブランチで指定ファイルがPUSHされたときに実行する
   push:
-    paths:
-      - 'docker/core/**'
-      - 'docker/sim/**'
-      - 'docker/robo/**'
-      - 'burger_navigation/**'
-      - 'burger_war_dev/**'
-      - '.github/workflows/image-test.yml'
+    paths-ignore:
+      - 'commands/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - '**.md'
 
   # ブラウザ上からの手動実行設定
   workflow_dispatch:
