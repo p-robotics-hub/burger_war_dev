@@ -293,22 +293,41 @@ GitHub Actionsの自動テストで行っている主な処理は以下になり
 #### GitHub Actions環境
 以下、GitHub Actionsでの実行環境のイメージです。
 
-![テスト実施環境](https://user-images.githubusercontent.com/76457573/111599051-36cb9580-8813-11eb-8d26-1ee8d9947f20.png)
+![テスト実施環境](https://user-images.githubusercontent.com/76457573/111746658-aef89080-88d1-11eb-937d-8b9863d8f9e1.png)
 
-GitHub Actions上では、コンテナ起動時のマウントポイントが`$HOME/catkin_ws/`から`$HOME/catkin_ws/src/burger_war_dev/`に変わります。
+GitHub ActionsではGUIを表示するディスプレイがない為、`Xvfb`という仮想ディスプレイを使用しているという違いがあります。
 
-また、上記ディレクトリには以下のディレクトリのみコピーします。
+burger_war_kitのソースコードついては、リポジトリから毎回チェックアウトを行います。  
+※burger-war-kitイメージはghcr.ioにプッシュされているlatest版を利用します
 
-- `burger_navigation/`
-- `burger_war_dev/`
+もし、`catkin_ws/src/`以下にburger_war_kit/burger_war_dev以外のcatkinパッケージを追加する場合は、`.github/workflows/image-test.yml`に追記するようにして下さい。
 
-`burger_war_kit`については、latest版のburger-war-kitイメージ作成時に予め埋め込まれたソースコードを参照します。
- 
-その他、GitHub ActionsではGUIを表示するディスプレイがない為、`Xvfb`という仮想ディスプレイを使用しているという違いがあります。
+具体的な手順は次節で説明します。
 
 <br />
 
-### 5.6 ビルドコマンドを変更したい場合
+### 5.6 GitHubからcatkinパッケージを追加する場合
+-------------------------------------------------------------------------------
+`catkin_ws/src/`以下にburger_war_kit/burger_war_dev以外のcatkinパッケージを追加する場合は、`.github/workflows/image-test.yml`に以下のように追記して下さい。  
+※追記場所は、burger_war_kit/burger_war_devをチェックアウトしている前後に追記して下さい
+
+```yml
+# 追加ライブラリのチェックアウト
+- name: Checkout Library Repository
+  uses: actions/checkout@v2
+  with:
+    repository: tysik/obstacle_detector
+    path: catkin_ws/src/obstacle_detector
+```
+
+`repository`には、追加したいライブラリのGitHubリポジトリのパスを指定して下さい。
+
+`path`には、チェックアウトしたディレクトリ名を指定して下さい。  
+※親ディレクトリは`catkin_ws/src/`から変更しないで下さい
+
+<br />
+
+### 5.7 ビルドコマンドを変更したい場合
 -------------------------------------------------------------------------------
 作成したロボットプログラムをビルドするコマンドは、デフォルトでは`catkin build`です。
 
