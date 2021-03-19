@@ -104,7 +104,7 @@ jobs:
             -d \
             --privileged \
             --net host \
-            --mount type=bind,src=${{ env.WORKSPACE_DIR }},dst=/home/developer/catkin_ws
+            --mount type=bind,src=/home/runner/work/burger_war_dev/burger_war_dev/catkin_ws,dst=/home/developer/catkin_ws
             --device /dev/snd \
             -v /dev/shm \
             -e DISPLAY=${{ env.DISPLAY }} \
