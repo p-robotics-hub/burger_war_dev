@@ -185,14 +185,12 @@ GitHub Actionsの詳細については、[公式ドキュメント](https://docs
 
 ### 5.1 プッシュによる自動実行
 -------------------------------------------------------------------------------
-以下のファイルの修正をGitHubにプッシュすると、自動でビルドとテストを実行します。
+以下のファイル以外の修正をGitHubにプッシュすると、自動でビルドとテストを実行します。
 
-- `docker/core/**`
-- `docker/sim/**`
-- `docker/robo/**`
-- `burger_navigation/**`
-- `burger_war_dev/**`
-- `.github/workflows/image-test.yml`
+- 'commands/**'
+- '.gitignore'
+- 'LICENSE'
+- '**.md'
 
 <br />
 
