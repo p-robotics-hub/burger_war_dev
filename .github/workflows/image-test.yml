@@ -67,7 +67,7 @@ jobs:
       - name: Source Package List(Host)
         run: |
           echo "catkin_ws/src ======================================================"
-          ls -la ${HOME}/catkin_ws/src
+          ls -la /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/src
           echo "${GITHUB_WORKSPACE} ======================================================"
           ls -la ${GITHUB_WORKSPACE}
 
