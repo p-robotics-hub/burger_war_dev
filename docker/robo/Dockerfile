@@ -1,4 +1,6 @@
-FROM burger-war-core:latest
+ARG CORE_VERSION=latest
+FROM burger-war-core:$CORE_VERSION
+
 
 #-------------------------------------------------------------------------------------------------
 # 実機環境での実行に必要なパッケージをインストールする

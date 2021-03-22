@@ -3,7 +3,7 @@ burger_warの開発環境をDocker上に構築する手順について説明し�
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**
+**目次**
 
 - [0. Dockerとは](#0-docker%E3%81%A8%E3%81%AF)
 - [1. ホストPCで必要なツールのインストール](#1-%E3%83%9B%E3%82%B9%E3%83%88pc%E3%81%A7%E5%BF%85%E8%A6%81%E3%81%AA%E3%83%84%E3%83%BC%E3%83%AB%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
@@ -35,6 +35,7 @@ burger_warの開発環境をDocker上に構築する手順について説明し�
   - [8.3 VNCで接続](#83-vnc%E3%81%A7%E6%8E%A5%E7%B6%9A)
   - [8.4 VNCでのシミュレーション実行](#84-vnc%E3%81%A7%E3%81%AE%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E5%AE%9F%E8%A1%8C)
   - [8.5 VNCの設定](#85-vnc%E3%81%AE%E8%A8%AD%E5%AE%9A)
+- [9. GitHub Actionsによる自動ビルドとテスト](#9-github-actions%E3%81%AB%E3%82%88%E3%82%8B%E8%87%AA%E5%8B%95%E3%83%93%E3%83%AB%E3%83%89%E3%81%A8%E3%83%86%E3%82%B9%E3%83%88)
 - [その他](#%E3%81%9D%E3%81%AE%E4%BB%96)
   - [A 短縮コマンドの設定例](#a-%E7%9F%AD%E7%B8%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E8%A8%AD%E5%AE%9A%E4%BE%8B)
   - [B グラフィックボードのドライバのインストール手順補足](#b-%E3%82%B0%E3%83%A9%E3%83%95%E3%82%A3%E3%83%83%E3%82%AF%E3%83%9C%E3%83%BC%E3%83%89%E3%81%AE%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E6%89%8B%E9%A0%86%E8%A3%9C%E8%B6%B3)
@@ -420,7 +421,7 @@ burger-war-dev   latest    025983ca7e90   25 hours ago     4.18GB
 <br />
 
 ## 4. ワークスペースのビルド
-コンテナの起動ができたら、ワークスペースをビルドしてみましょう。
+コンテナの起動ができたら、ワークスペースをビルドしてみましょう。  
 以下のように、`kit.sh -c`の引数にビルド用のコマンド`catkin build`を渡して実行します。
 
 ```
@@ -903,7 +904,7 @@ bash commands/kit.sh -t vnc -s start.sh             # シミュレーション�
 <br />
 
 ### 8.5 VNCの設定
-`commands/config.h`にVNCに関連する設定を変更することができます。  
+`commands/config.sh`にVNCに関連する設定を変更することができます。  
 必要であれば変更して下さい。
 
 ```
@@ -922,6 +923,13 @@ VNC_OPENBOX_ARGS=
 設定が反映されるのは、`commands/docker-launch.sh`を実行してコンテナを起動したときになります。
 
 <br />
+
+## 9. GitHub Actionsによる自動ビルドとテスト
+本リポジトリでは、GitHub Actionsで動作するDockerイメージの自動ビルドとロボットプログラムの自動テストを用意しています。
+
+詳細は、以下のファイルをご参照下さい。
+
+[CI/CD Guide (by GitHub Actions)](CICD_GUIDE.md)
 
 ## その他
 
