@@ -270,6 +270,7 @@ else
   docker run \
     --name ${RUN_DOCKER_CONTAINER_NAME} \
     -d \
+    --init \
     --privileged \
     --net host \
     --mount type=bind,src=/tmp/.X11-unix/,dst=/tmp/.X11-unix \
