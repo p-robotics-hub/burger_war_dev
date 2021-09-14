@@ -3,14 +3,14 @@
 #-burger-war-core/burger-war-devのDockerfileをビルドする
 #-
 #+[USAGE]
-#+  $0 [-a BUILDオプション(core/dev)] [-c BUILDオプション(core)] [-d BUILDオプション(dev)] [-k kitイメージのバージョン] [-t BUILDターゲット][-v 作成イメージのバージョン] [-h]
+#+  $0 [-a BUILDオプション(core/dev)] [-b ベースイメージ] [-c BUILDオプション(core)] [-d BUILDオプション(dev)] [-k ベースイメージのバージョン] [-t BUILDターゲット][-v 作成イメージのバージョン] [-h]
 #+
 #-[OPTIONS]
 #-  -a options    burger-war-core/burger-war-devの'docker build'に追加で渡す引数を指定（複数回指定可能）
 #-  -b options    ベースイメージの指定 (default: ghcr.io/p-robotics-hub/burger-war-kit)
 #-  -c options    burger-war-coreの'docker build'に追加で渡す引数を指定（複数回指定可能）
 #-  -d options    burger-war-devの'docker build'に追加で渡す引数を指定（複数回指定可能）
-#-  -k version    利用するburger-war-kitのバージョンを指定
+#-  -k version    利用するベースイメージのバージョンを指定 (default: latest)
 #-  -t target     ビルドするターゲットの指定(dev|robo|sim|vnc) *coreは常にビルドされる
 #-  -v version    'docker build -t'で指定するイメージのバージョンを指定 (default: latest)
 #-  -h            このヘルプを表示
