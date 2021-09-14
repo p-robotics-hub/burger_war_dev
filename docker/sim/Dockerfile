@@ -98,6 +98,8 @@ RUN apt-get update -q && apt-get install -y --no-install-recommends \
         xdotool \
         gstreamer1.0-tools \
         gstreamer1.0-plugins-good \
+        openssh-server \
+        connect-proxy \
     && rm -rf /var/lib/apt/lists/*
 
 #-------------------------------------------------------------------------------------------------
@@ -109,7 +111,7 @@ RUN echo "export LANG=ja_JP.UTF-8" >> /home/developer/.bashrc \
     && echo "export LC_ALL=ja_JP.UTF-8" >> /home/developer/.bashrc \
     && echo "export GTK_IM_MODULE=ibus" >> /home/developer/.bashrc \
     && echo "export QT_IM_MODULE=ibus" >> /home/developer/.bashrc \
-    && echo "export XMODIFIERS='@im=ibus'" >> /home/developer/.bashrc 
+    && echo "export XMODIFIERS='@im=ibus'" >> /home/developer/.bashrc
 
 # gnome-terminal起動時の以下の警告対策
 # Couldn't register with accessibility busµ
