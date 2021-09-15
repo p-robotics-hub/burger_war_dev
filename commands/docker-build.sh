@@ -3,13 +3,14 @@
 #-burger-war-core/burger-war-devのDockerfileをビルドする
 #-
 #+[USAGE]
-#+  $0 [-a BUILDオプション(core/dev)] [-c BUILDオプション(core)] [-d BUILDオプション(dev)] [-k kitイメージのバージョン] [-t BUILDターゲット][-v 作成イメージのバージョン] [-h]
+#+  $0 [-a BUILDオプション(core/dev)] [-b ベースイメージ] [-c BUILDオプション(core)] [-d BUILDオプション(dev)] [-k ベースイメージのバージョン] [-t BUILDターゲット][-v 作成イメージのバージョン] [-h]
 #+
 #-[OPTIONS]
 #-  -a options    burger-war-core/burger-war-devの'docker build'に追加で渡す引数を指定（複数回指定可能）
+#-  -b options    ベースイメージの指定 (default: ghcr.io/p-robotics-hub/burger-war-kit)
 #-  -c options    burger-war-coreの'docker build'に追加で渡す引数を指定（複数回指定可能）
 #-  -d options    burger-war-devの'docker build'に追加で渡す引数を指定（複数回指定可能）
-#-  -k version    利用するburger-war-kitのバージョンを指定
+#-  -k version    利用するベースイメージのバージョンを指定 (default: latest)
 #-  -t target     ビルドするターゲットの指定(dev|robo|sim|vnc) *coreは常にビルドされる
 #-  -v version    'docker build -t'で指定するイメージのバージョンを指定 (default: latest)
 #-  -h            このヘルプを表示
@@ -64,12 +65,15 @@ CORE_BUILD_OPTION=
 IMAGE_VERSION=latest
 BUILD_TARGET=dev
 BUILD_DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${BUILD_TARGET}
-while getopts a:c:d:k:t:v:h OPT
+while getopts a:b:c:d:k:t:v:h OPT
 do
   case $OPT in
     a  ) # burger-war-core/burger-war-devのdocker buildへの追加オプション引数指定
       CORE_BUILD_OPTION="${CORE_BUILD_OPTION} ${OPTARG}"
       DEV_BUILD_OPTION="${DEV_BUILD_OPTION} ${OPTARG}"
+      ;;
+    b  ) # kitのイメージリポジトリを指定してビルド
+      KIT_IMAGE="${OPTARG}"
       ;;
     c  ) # burger-war-coreのdocker buildへの追加オプション引数指定
       CORE_BUILD_OPTION="${CORE_BUILD_OPTION} ${OPTARG}"
@@ -107,7 +111,7 @@ shift $((OPTIND - 1))
 # burger-war-kitのイメージを取得
 #------------------------------------------------
 set -x
-docker pull ghcr.io/p-robotics-hub/burger-war-kit:${KIT_VERSION}
+docker pull ${KIT_IMAGE}:${KIT_VERSION}
 set +x
 
 # コアイメージ用のDockerfileのビルド
@@ -115,6 +119,7 @@ set +x
 set -x
 docker build \
   ${CORE_BUILD_OPTION} \
+  --build-arg KIT_IMAGE=${KIT_IMAGE} \
   --build-arg KIT_VERSION=${KIT_VERSION} \
   ${PROXY_OPTION} \
   -f "${CORE_DOCKER_FILE_PATH}" \
