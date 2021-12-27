@@ -2,7 +2,17 @@ name: Burger-War Image Build & Test
 
 # トリガーイベントの指定
 on:
-  # 指定ブランチで指定ファイルがPUSHされたときに実行する
+  # mainブランチにprが発行されたきに実行する
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - 'commands/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - '**.md'
+      
+    # mainブランチにpushされたきに実行する 
   push:
     branches:
       - main
