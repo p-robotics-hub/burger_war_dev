@@ -112,6 +112,15 @@ print_run_message() {
 SCRIPT_DIR=$(cd "$(dirname $0)"; pwd)
 source "${SCRIPT_DIR}/config.sh"
 
+# Proxy設定
+PROXY_OPTION=
+[ -n "${HOST_HTTP_PROXY}"  ] && PROXY_OPTION="${PROXY_OPTION} -e HTTP_PROXY=${HOST_HTTP_PROXY}"
+[ -n "${HOST_HTTPS_PROXY}" ] && PROXY_OPTION="${PROXY_OPTION} -e HTTPS_PROXY=${HOST_HTTPS_PROXY}"
+[ -n "${HOST_FTP_PROXY}"   ] && PROXY_OPTION="${PROXY_OPTION} -e FTP_PROXY=${HOST_FTP_PROXY}"
+[ -n "${HOST_http_proxy}"  ] && PROXY_OPTION="${PROXY_OPTION} -e http_proxy=${HOST_http_proxy}"
+[ -n "${HOST_https_proxy}" ] && PROXY_OPTION="${PROXY_OPTION} -e https_proxy=${HOST_https_proxy}"
+[ -n "${HOST_ftp_proxy}"   ] && PROXY_OPTION="${PROXY_OPTION} -e ftp_proxy=${HOST_ftp_proxy}"
+
 # オプション・引数解析
 #------------------------------------------------
 RUN_OPTION=
@@ -233,7 +242,7 @@ if [ -n "${RESTART_CONTAINER_REQUEST}" ]; then
   set -x
   docker start ${RUN_DOCKER_CONTAINER_NAME}
   set +x
-elif [ "${RUN_TARGET}" == "vnc" ]; then
+elif [ "${RUN_TARGET}" == "vnc" -o "${RUN_TARGET}" == "sim" ]; then
   # 新しくVNC版コンテナを起動
   set -x
   docker run \
@@ -247,9 +256,10 @@ elif [ "${RUN_TARGET}" == "vnc" ]; then
     -e HOST_GROUP_ID=$(id -g) \
     -e PASSWORD=${VNC_PASSWORD} \
     -e RESOLUTION=${VNC_RESOLUTION} \
-    -e X11VNC_ARGS=${VNC_X11VNC_ARGS} \
-    -e OPENBOX_ARGS=${VNC_OPENBOX_ARGS} \
+    -e X11VNC_ARGS="${VNC_X11VNC_ARGS}" \
+    -e OPENBOX_ARGS="${VNC_OPENBOX_ARGS}" \
     -p ${VNC_PORT}:5900 \
+    ${PROXY_OPTION} \
     ${RUN_OPTION} \
     ${RUN_DOCKER_IMAGE_NAME_FULL} \
     tail -f /dev/null
@@ -260,6 +270,7 @@ else
   docker run \
     --name ${RUN_DOCKER_CONTAINER_NAME} \
     -d \
+    --init \
     --privileged \
     --net host \
     --mount type=bind,src=/tmp/.X11-unix/,dst=/tmp/.X11-unix \
@@ -269,6 +280,7 @@ else
     -e DISPLAY=${DISPLAY} \
     -e HOST_USER_ID=$(id -u) \
     -e HOST_GROUP_ID=$(id -g) \
+    ${PROXY_OPTION} \
     ${RUN_OPTION} \
     ${RUN_DOCKER_IMAGE_NAME_FULL} \
     tail -f /dev/null

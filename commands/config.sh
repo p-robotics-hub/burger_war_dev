@@ -2,6 +2,7 @@
 # Repository config values
 #----------------------------------------------------------
 # 使用するburger-war-kitイメージのバージョン
+KIT_IMAGE=ghcr.io/p-robotics-hub/burger-war-kit
 KIT_VERSION=latest
 
 # Dockerイメージ名(公開パッケージ名)
