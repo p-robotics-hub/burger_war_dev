@@ -32,8 +32,7 @@ PI = 3.1416
 class NaviBasic():
     def __init__(self):
 
-        # self.path = os.environ['HOME'] + '/catkin_ws/src/burger_war_dev/burger_war_dev/scripts/navi/waypoints/waypoints.csv'
-        self.path = os.environ['HOME'] + '/catkin_ws_robohub/src/burger_war_dev/burger_war_dev/scripts/navi/waypoints/waypoints.csv'
+        self.path = os.environ['HOME'] + '/catkin_ws/src/burger_war_dev/burger_war_dev/scripts/waypoints.csv'
         self.waypoints = Waypoint(self.path)
         
         # velocity publisher
@@ -79,41 +78,43 @@ class NaviBasic():
         self.waypoint = self.waypoints.get_current_waypoint()
         self.setGoal(self.waypoint)
 
-        pre_status = self.status
-        self.status = self.client.get_state()
+        while not rospy.is_shutdown():
 
-        if pre_status != self.status:
-            rospy.loginfo(self.client.get_goal_status_text())
+            pre_status = self.status
+            self.status = self.client.get_state()
 
-        if self.status == actionlib.GoalStatus.ACTIVE:
-            print('ACTIVE')    
-        
-        elif self.status == actionlib.GoalStatus.SUCCEEDED:
-            print('SUCCEEDED')
-            self.waypoint = self.waypoints.get_next_waypoint()
-            self.setGoal(self.waypoint)
-        
-        # 本来は今回の競技に適したRecovery Behaviorを設計すべき
-        # 現段階では，目標地点を次に設定して，強引にDeadrockを突破する
-        elif self.status == actionlib.GoalStatus.ABORTED:
-            print('ABORTED')
-            self.waypoint = self.waypoints.get_next_waypoint()
-            self.setGoal(self.waypoint)
+            if pre_status != self.status:
+                rospy.loginfo(self.client.get_goal_status_text())
 
-        elif self.status == actionlib.GoalStatus.PENDING:
-            print('PENDING')
-            self.waypoint = self.waypoints.get_current_waypoint()
-            self.setGoal(self.waypoint)
+            if self.status == actionlib.GoalStatus.ACTIVE:
+                print('ACTIVE')    
+            
+            elif self.status == actionlib.GoalStatus.SUCCEEDED:
+                print('SUCCEEDED')
+                self.waypoint = self.waypoints.get_next_waypoint()
+                self.setGoal(self.waypoint)
+            
+            # 本来は今回の競技に適したRecovery Behaviorを設計すべき
+            # 現段階では，目標地点を次に設定して，強引にDeadrockを突破する
+            elif self.status == actionlib.GoalStatus.ABORTED:
+                print('ABORTED')
+                self.waypoint = self.waypoints.get_next_waypoint()
+                self.setGoal(self.waypoint)
 
-        # 敵追従を終えた場合に，元の周回コースに復帰するため
-        # Navigationで敵追従するなら，要らないかも
-        elif self.status == actionlib.GoalStatus.PREEMPTING or self.status == actionlib.GoalStatus.PREEMPTED:
-            print('PREEMPTING or PREEMPTED')    
-            self.waypoint = self.waypoints.get_current_waypoint()
-            self.setGoal(self.waypoint)    
+            elif self.status == actionlib.GoalStatus.PENDING:
+                print('PENDING')
+                self.waypoint = self.waypoints.get_current_waypoint()
+                self.setGoal(self.waypoint)
+
+            # 敵追従を終えた場合に，元の周回コースに復帰するため
+            # Navigationで敵追従するなら，要らないかも
+            elif self.status == actionlib.GoalStatus.PREEMPTING or self.status == actionlib.GoalStatus.PREEMPTED:
+                print('PREEMPTING or PREEMPTED')    
+                self.waypoint = self.waypoints.get_current_waypoint()
+                self.setGoal(self.waypoint)    
 
 
-# if __name__ == '__main__':
-#     rospy.init_node('navirun')
-#     bot = NaviBase()
-#     bot.strategy()
+if __name__ == '__main__':
+    rospy.init_node('navirun')
+    bot = NaviBasic()
+    bot.main()
