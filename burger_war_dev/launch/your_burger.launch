@@ -11,15 +11,17 @@
     <node pkg="burger_war_dev" type="WarStateWatcher.py" name="warStateWatcher" output="screen"/>   
     <node pkg="burger_war_dev" type="ImageProcessor.py" name="imageProcessor" output="screen"/>
     <node pkg="burger_war_dev" type="ScanEnemyDetector.py" name="scanEnemyDetector" output="screen"/>
-    <node pkg="burger_war_dev" type="RosbagLogger.py" name="rosbagLogger"/>
     <!-- <include file="$(find obstacle_detector)/launch/nodes.launch" /> -->
 
 
     <!-- END sample program node -->
 
     <!-- Navigation sample program  -->
-    
     <include file="$(find burger_navigation)/launch/burger_navigation.launch" />
+    
+    <!-- Record bag -->
+    <node name="bag_record" pkg="rosbag" type="record" args="record -O $(find burger_war_dev)/data/rosbag/bag.bag 
+    /limited_cmd_vel /enemy_bot/limited_cmd_vel /war_state"/>
 
     <!-- <include file="$(find burger_navigation)/launch/burger_slam.launch" /> -->
    
