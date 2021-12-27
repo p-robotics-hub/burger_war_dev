@@ -4,6 +4,8 @@ name: Burger-War Image Build & Test
 on:
   # 指定ブランチで指定ファイルがPUSHされたときに実行する
   push:
+    branches:
+      - main
     paths-ignore:
       - 'commands/**'
       - '.gitignore'
