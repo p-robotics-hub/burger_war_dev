@@ -12,7 +12,7 @@ on:
       - 'LICENSE'
       - '**.md'
       
-    # mainブランチにpushされたきに実行する 
+  # mainブランチにpushされたきに実行する 
   push:
     branches:
       - main
