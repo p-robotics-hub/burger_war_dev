@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Record bag -->
+    <arg name="topics" default="/limited_cmd_vel /war_state /gazebo/model_states /odom /enemy_bot/limited_cmd_vel /enemy_bot/odom"/>
+    <arg name="output_setting" default="-o burger_war_dev/data/rosbag/rosbag"/>
+    <node pkg="burger_war_dev" type="record" name="bag_record" args="record  $(arg output_setting) $(arg topics)"/>
+</launch>
