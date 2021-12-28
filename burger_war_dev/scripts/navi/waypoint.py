@@ -8,12 +8,12 @@ import math
 
 class Waypoint:
 
-    way_point = 0
+    count_waypoint = 0
 
     def __init__(self, path):
 
         self.points = []
-        # self.way_point = 0
+        # self.count_waypoint = 0
 
         with open(path) as f:
             lines = csv.reader(f)
@@ -23,17 +23,17 @@ class Waypoint:
                 self.points.append(point[0:3])
 
     def get_next_waypoint(self):
-        Waypoint.way_point = Waypoint.way_point + 1
+        Waypoint.count_waypoint = Waypoint.count_waypoint + 1
 
         # 出来れば2週目からは，相手に奪われているところを狙いたい．
-        if Waypoint.way_point == len(self.points):
-            Waypoint.way_point = 0
+        if Waypoint.count_waypoint == len(self.points):
+            Waypoint.count_waypoint = 0
             print('Next Lap')
          
-        return self.points[Waypoint.way_point][0:3]
+        return self.points[Waypoint.count_waypoint][0:3]
     
     def get_current_waypoint(self):
-        return self.points[Waypoint.way_point][0:3]
+        return self.points[Waypoint.count_waypoint][0:3]
     
     # 敵が近くにいると判断できたときだけ，以下の行動を行う
     # 事前設定のルートへの復帰どうする？？
