@@ -27,6 +27,7 @@ class WarStateWatcher():
         self.warState.is_enem_left_marker_gotten = False
         self.warState.is_enem_right_marker_gotten = False
         self.warState.is_enem_back_marker_gotten = False
+        self.warState.enem_get_wall_marker_no = 0
 
         self.game_timestamp = 0
         self.my_score = 0
@@ -82,7 +83,8 @@ class WarStateWatcher():
             if self.all_field_score[idx] != self.all_field_score_prev[idx]:
                 if self.all_field_score[idx] == 2:
                     # print(idx, self.game_timestamp)
-                    self.enemy_get_target_no = idx
+                    # self.enemy_get_target_no = idx
+                    self.warState.enem_get_wall_marker_no = idx
                     self.enemy_get_target_no_timestamp = self.game_timestamp
         # update body AR marker point
         if self.my_side == "b":
@@ -103,6 +105,8 @@ class WarStateWatcher():
         else:
             self.Is_lowwer_score = False
         #print("Is_lowwer_score", self.Is_lowwer_score)
+        
+        # print(self.enemy_get_target_no)
 
     def strategy(self):
         r = rospy.Rate(1) # change speed 1fps
