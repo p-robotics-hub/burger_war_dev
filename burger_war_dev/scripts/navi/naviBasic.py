@@ -32,8 +32,8 @@ PI = 3.1416
 class NaviBasic():
     def __init__(self):
 
-        self.path = os.environ['HOME'] + '/catkin_ws/src/burger_war_dev/burger_war_dev/scripts/navi/waypoints/waypoints.csv'
-        # self.path = os.environ['HOME'] + '/catkin_ws_robohub/src/burger_war_dev/burger_war_dev/scripts/navi/waypoints/waypoints.csv'
+        # self.path = os.environ['HOME'] + '/catkin_ws/src/burger_war_dev/burger_war_dev/scripts/navi/waypoints/waypoints.csv'
+        self.path = os.environ['HOME'] + '/catkin_ws_robohub/src/burger_war_dev/burger_war_dev/scripts/navi/waypoints/waypoints.csv'
         self.waypoints = Waypoint(self.path)
         
         # velocity publisher
