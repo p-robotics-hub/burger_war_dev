@@ -62,6 +62,8 @@ class WarStateWatcher():
         else:  # blue_bot
             self.my_score = int(dic["scores"]["b"])
             self.enemy_score = int(dic["scores"]["r"])
+        
+        # print(self.my_score)
 
         self.game_timestamp = int(dic["time"])
 
@@ -85,14 +87,14 @@ class WarStateWatcher():
         # update body AR marker point
         if self.my_side == "b":
             self.enemy_body_remain = np.sum(self.all_field_score[3:6])
-            self.warState.is_enem_left_marker_gotten = True if self.all_field_score[3]==0 else False
-            self.warState.is_enem_back_marker_gotten = True if self.all_field_score[4]==0 else False
+            self.warState.is_enem_back_marker_gotten = True if self.all_field_score[3]==0 else False
+            self.warState.is_enem_left_marker_gotten = True if self.all_field_score[4]==0 else False
             self.warState.is_enem_right_marker_gotten = True if self.all_field_score[5]==0 else False
 
         elif self.my_side == "r":
             self.enemy_body_remain = np.sum(self.all_field_score[0:3])
-            self.warState.is_enem_left_marker_gotten = True if self.all_field_score[0]==0 else False
-            self.warState.is_enem_back_marker_gotten = True if self.all_field_score[1]==0 else False
+            self.warState.is_enem_back_marker_gotten = True if self.all_field_score[0]==0 else False
+            self.warState.is_enem_left_marker_gotten = True if self.all_field_score[1]==0 else False
             self.warState.is_enem_right_marker_gotten = True if self.all_field_score[2]==0 else False
 
         # update which bot is higher score
