@@ -1,6 +1,6 @@
 # Rosbagを使ったlog出力
 
-経緯はgithubのissueに全部書いてる→https://github.com/EndoNrak/burger_war_dev/issues/48
+経緯はgithubのissueに全部書いてる→ https://github.com/EndoNrak/burger_war_dev/issues/48
 
 ## 使い時
 通常のシミュレーション実行中にburger_war_dev/launch/rosbag.launchをlaunchする  
