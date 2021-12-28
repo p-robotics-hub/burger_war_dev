@@ -17,9 +17,8 @@
     <!-- END sample program node -->
 
     <!-- Navigation sample program  -->
-    
     <include file="$(find burger_navigation)/launch/burger_navigation.launch" />
-
+    
     <!-- <include file="$(find burger_navigation)/launch/burger_slam.launch" /> -->
    
     <!-- END Navigation sample program node -->
