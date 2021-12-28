@@ -20,8 +20,9 @@
     <include file="$(find burger_navigation)/launch/burger_navigation.launch" />
     
     <!-- Record bag -->
-    <node name="bag_record" pkg="rosbag" type="record" args="record -o $(find burger_war_dev)/data/rosbag/rosbag 
-    /limited_cmd_vel /enemy_bot/limited_cmd_vel /war_state"/>
+    <arg name="topics" default="/limited_cmd_vel /enemy_bot/limited_cmd_vel /war_state /gazebo/model_states /odom"/>
+    <arg name="output_setting" default="-o $(find burger_war_dev)/data/rosbag/rosbag"/>
+    <node name="bag_record" pkg="rosbag" type="record" args="record  $(arg output_setting) $(arg topics)"/>
 
     <!-- <include file="$(find burger_navigation)/launch/burger_slam.launch" /> -->
    
