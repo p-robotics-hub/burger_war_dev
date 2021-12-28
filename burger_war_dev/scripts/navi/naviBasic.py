@@ -35,7 +35,7 @@ class NaviBasic():
         # self.path_header = os.environ['HOME'] + '/catkin_ws/src/burger_war_dev/burger_war_dev/scripts/navi/waypoints'
         self.path_header = os.environ['HOME'] + '/catkin_ws_robohub/src/burger_war_dev/burger_war_dev/scripts/navi/waypoints'
         self.path_waypoints = self.path_header + '/waypoints.csv'
-        self.path_waypoints_depending_on_score = self.path_header + '/waypoints.csv'
+        self.path_waypoints_depending_on_score = self.path_header + '/waypoints_depending_on_score.csv'
         self.waypoints = Waypoint(self.path_waypoints)
         
         # velocity publisher
