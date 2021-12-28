@@ -20,7 +20,7 @@
     <include file="$(find burger_navigation)/launch/burger_navigation.launch" />
     
     <!-- Record bag -->
-    <node name="bag_record" pkg="rosbag" type="record" args="record -O $(find burger_war_dev)/data/rosbag/bag.bag 
+    <node name="bag_record" pkg="rosbag" type="record" args="record -o $(find burger_war_dev)/data/rosbag/rosbag 
     /limited_cmd_vel /enemy_bot/limited_cmd_vel /war_state"/>
 
     <!-- <include file="$(find burger_navigation)/launch/burger_slam.launch" /> -->

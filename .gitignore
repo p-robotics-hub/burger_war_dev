@@ -8,6 +8,11 @@ judge/log/*
 # for ignore robot model
 *.urdf
 
+# ignore rosbag files except for sample*.bag
+*.bag
+!sample*.bag
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
