@@ -80,12 +80,19 @@ class WarStateWatcher():
                 self.all_field_score[idx] = 2  # enemy get this target
 
             # check if field score is updated.
-            if self.all_field_score[idx] != self.all_field_score_prev[idx]:
-                if self.all_field_score[idx] == 2:
-                    # print(idx, self.game_timestamp)
-                    # self.enemy_get_target_no = idx
-                    self.warState.enem_get_wall_marker_no = idx
-                    self.enemy_get_target_no_timestamp = self.game_timestamp
+            # update を check するのは壁マーカのみ
+            if idx >= 6 and idx < 18:
+                if self.all_field_score[idx] != self.all_field_score_prev[idx]:
+                    if self.all_field_score[idx] == 2:
+                        # print(idx, self.game_timestamp)
+                        # self.enemy_get_target_no = idx
+                        self.warState.enem_get_wall_marker_no = idx
+                        self.enemy_get_target_no_timestamp = self.game_timestamp
+        
+        # フィールドのマーカが一つも奪われていないとき
+        if sum(self.all_field_score[6:18]) == 0:
+            self.warState.enem_get_wall_marker_no = 0
+            
         # update body AR marker point
         if self.my_side == "b":
             self.enemy_body_remain = np.sum(self.all_field_score[3:6])
