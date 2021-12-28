@@ -25,11 +25,11 @@ class PupeBot():
         self.modeDecider = ModeDecider()
 
         # subscriber
-        self.imgInfo_sub = rospy.Subscriber('/img_info', ImgInfo, self.imgInfoCallBack)
+        self.imgInfo_sub = rospy.Subscriber('img_info', ImgInfo, self.imgInfoCallBack)
         self.imgInfo = ImgInfo()
-        self.warState_sub = rospy.Subscriber('/war_state', WarState, self.warStateCallBack)
+        self.warState_sub = rospy.Subscriber('war_state', WarState, self.warStateCallBack)
         self.warState = WarState()
-        self.scanInfo_sub = rospy.Subscriber('/scan_enemy_pose', ScanInfo, self.scanInfoCallBack)
+        self.scanInfo_sub = rospy.Subscriber('scan_enemy_pose', ScanInfo, self.scanInfoCallBack)
         self.scanInfo = ScanInfo()
 
         rospy.Timer(rospy.Duration(0.1), self.selectModeCallBack)
