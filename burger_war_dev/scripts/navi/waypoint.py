@@ -48,7 +48,8 @@ class Waypoint:
         print(self.warState.enem_get_wall_marker_no)
         
         if Waypoint.waypoint_reverse_flag_for_blue:
-            if self.warState.my_side == 'r':
+            # blue side の場合は，180度ひっくり返す
+            if self.warState.my_side == 'b':
                 for i in range(len(self.points_depending_on_score)):
                     self.points_depending_on_score[i][0] = - self.points_depending_on_score[i][0]
                     self.points_depending_on_score[i][1] = - self.points_depending_on_score[i][1]
