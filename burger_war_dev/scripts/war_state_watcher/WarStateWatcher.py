@@ -19,11 +19,12 @@ class WarStateWatcher():
     def __init__(self):
         # set rosparams
         self.judge_url = rospy.get_param('/send_id_to_judge/judge_url')
-        self.my_side = rospy.get_param('/send_id_to_judge/side')
+        # self.my_side = rospy.get_param('/send_id_to_judge/side')
 
         # warstate publisher
         self.warState_pub = rospy.Publisher('war_state', WarState, queue_size=1)
         self.warState = WarState()
+        self.warState.my_side = rospy.get_param('/send_id_to_judge/side')
         self.warState.is_enem_left_marker_gotten = False
         self.warState.is_enem_right_marker_gotten = False
         self.warState.is_enem_back_marker_gotten = False
@@ -57,7 +58,7 @@ class WarStateWatcher():
         resp = requests.get(self.judge_url + "/warState")
         dic = resp.json()
         # get score
-        if self.my_side == "r":  # red_bot
+        if self.warState.my_side == "r":  # red_bot
             self.my_score = int(dic["scores"]["r"])
             self.enemy_score = int(dic["scores"]["b"])
         else:  # blue_bot
@@ -74,7 +75,7 @@ class WarStateWatcher():
             target_state = dic["targets"][idx]["player"]
             if target_state == "n":
                 self.all_field_score[idx] = 1  # no one get this target
-            elif target_state == self.my_side:
+            elif target_state == self.warState.my_side:
                 self.all_field_score[idx] = 0  # my_bot get this target
             else:
                 self.all_field_score[idx] = 2  # enemy get this target
@@ -94,13 +95,13 @@ class WarStateWatcher():
             self.warState.enem_get_wall_marker_no = 0
             
         # update body AR marker point
-        if self.my_side == "b":
+        if self.warState.my_side == "b":
             self.enemy_body_remain = np.sum(self.all_field_score[3:6])
             self.warState.is_enem_back_marker_gotten = True if self.all_field_score[3]==0 else False
             self.warState.is_enem_left_marker_gotten = True if self.all_field_score[4]==0 else False
             self.warState.is_enem_right_marker_gotten = True if self.all_field_score[5]==0 else False
 
-        elif self.my_side == "r":
+        elif self.warState.my_side == "r":
             self.enemy_body_remain = np.sum(self.all_field_score[0:3])
             self.warState.is_enem_back_marker_gotten = True if self.all_field_score[0]==0 else False
             self.warState.is_enem_left_marker_gotten = True if self.all_field_score[1]==0 else False

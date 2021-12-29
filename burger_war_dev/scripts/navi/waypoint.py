@@ -13,6 +13,7 @@ from burger_war_dev.msg import WarState
 class Waypoint:
 
     count_waypoint = 0
+    waypoint_reverse_flag_for_blue = True
 
     def __init__(self, path_waypoints, path_waypoints_depending_on_score):
 
@@ -23,6 +24,9 @@ class Waypoint:
         self.next_lap_flag = False
         self.watch_score_flag = False
         self.marker_no_offset = 6
+        
+        self.warState_sub = rospy.Subscriber('war_state', WarState, self.warStateCallBack)
+        self.warState = WarState()
 
         with open(path_waypoints) as f:
             lines = csv.reader(f)
@@ -37,14 +41,22 @@ class Waypoint:
                 point_depending_on_score = [float(i_score) for i_score in l_score]
                 # print(point)
                 self.points_depending_on_score.append(point_depending_on_score[0:3])
-
-        self.warState_sub = rospy.Subscriber('war_state', WarState, self.warStateCallBack)
-        self.warState = WarState()
     
     def warStateCallBack(self, data):
         self.warState = data
         print('get data!')
         print(self.warState.enem_get_wall_marker_no)
+        
+        if Waypoint.waypoint_reverse_flag_for_blue:
+            if self.warState.my_side == 'r':
+                for i in range(len(self.points_depending_on_score)):
+                    self.points_depending_on_score[i][0] = - self.points_depending_on_score[i][0]
+                    self.points_depending_on_score[i][1] = - self.points_depending_on_score[i][1]
+                    self.points_depending_on_score[i][2] = self.points_depending_on_score[i][2] - 3.141592654
+                 
+                print('my side:', self.warState.my_side)
+                print(self.points_depending_on_score)
+            Waypoint.waypoint_reverse_flag_for_blue = False
 
     def get_next_waypoint(self):
         Waypoint.count_waypoint = Waypoint.count_waypoint + 1
