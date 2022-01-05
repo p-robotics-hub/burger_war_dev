@@ -12,6 +12,7 @@ from burger_war_dev.msg import WarState
 
 class Waypoint:
 
+    next_lap_flag = False
     count_waypoint = 0
     waypoint_reverse_flag_for_blue = True
 
@@ -19,10 +20,7 @@ class Waypoint:
 
         self.points = []
         self.points_depending_on_score = []
-        # self.count_waypoint = 0
         
-        self.next_lap_flag = False
-        self.watch_score_flag = False
         self.marker_no_offset = 6
         
         self.warState_sub = rospy.Subscriber('war_state', WarState, self.warStateCallBack)
@@ -60,6 +58,7 @@ class Waypoint:
             Waypoint.waypoint_reverse_flag_for_blue = False
 
     def get_next_waypoint(self):
+        print(self.warState.enem_get_wall_marker_flag)
         Waypoint.count_waypoint = Waypoint.count_waypoint + 1
 
         # 2週目からは，相手に奪われているところを狙う
@@ -68,22 +67,18 @@ class Waypoint:
             Waypoint.count_waypoint = 0
             
             # 2週目開始のフラグを立てる
-            self.next_lap_flag = True
+            Waypoint.next_lap_flag = True
         
-        # フィールドのマーカを一つも奪われていないときはまた周回コースに戻る
-        if self.warState.enem_get_wall_marker_no == 0:
-            self.watch_score_flag = False
-        else:
-            self.watch_score_flag = True
-        
-        if self.next_lap_flag and self.watch_score_flag:
+        # フィールドのマーカを（新たに）一つも奪われていないときはまた周回コースに戻る
+        if Waypoint.next_lap_flag and self.warState.enem_get_wall_marker_flag:
             # print('Waypoint.watch_score_flag')
+            Waypoint.count_waypoint = Waypoint.count_waypoint - 1
             return self.points_depending_on_score[self.warState.enem_get_wall_marker_no - self.marker_no_offset][0:3]
         else:
             return self.points[Waypoint.count_waypoint][0:3]
     
     def get_current_waypoint(self):
-        if self.next_lap_flag and self.watch_score_flag:
+        if Waypoint.next_lap_flag and self.warState.enem_get_wall_marker_flag:
             # print('Waypoint.watch_score_flag')
             return self.points_depending_on_score[self.warState.enem_get_wall_marker_no - self.marker_no_offset][0:3]
         else:

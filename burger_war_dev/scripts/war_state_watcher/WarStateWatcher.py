@@ -28,6 +28,7 @@ class WarStateWatcher():
         self.warState.is_enem_left_marker_gotten = False
         self.warState.is_enem_right_marker_gotten = False
         self.warState.is_enem_back_marker_gotten = False
+        self.warState.enem_get_wall_marker_flag = False
         self.warState.enem_get_wall_marker_no = 0
 
         self.game_timestamp = 0
@@ -37,7 +38,7 @@ class WarStateWatcher():
         # self.all_field_score = np.ones([18])  # field score state
         self.all_field_score = [1]*18
         # self.all_field_score_prev = np.ones([18])  # field score state (previous)
-        self.all_field_score_prev = [1]*18 
+        self.all_field_score_prev = [1]*18
         self.enemy_get_target_no = -1
         self.enemy_get_target_no_timestamp = -1
         self.enemy_body_remain = 3
@@ -87,12 +88,14 @@ class WarStateWatcher():
                     if self.all_field_score[idx] == 2:
                         # print(idx, self.game_timestamp)
                         # self.enemy_get_target_no = idx
+                        self.warState.enem_get_wall_marker_flag = True
                         self.warState.enem_get_wall_marker_no = idx
                         self.enemy_get_target_no_timestamp = self.game_timestamp
+            
+        # フィールドのマーカが（新たに）一つも奪われていないとき
+        if self.all_field_score[self.warState.enem_get_wall_marker_no] == 0:
+            self.warState.enem_get_wall_marker_flag = False
         
-        # フィールドのマーカが一つも奪われていないとき
-        if sum(self.all_field_score[6:18]) == 0:
-            self.warState.enem_get_wall_marker_no = 0
             
         # update body AR marker point
         if self.warState.my_side == "b":
