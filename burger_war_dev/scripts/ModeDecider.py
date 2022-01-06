@@ -9,8 +9,6 @@ class ModeDecider:
         if current_mode == ActMode.attack:
             gotten_enem_marker_num = sum([war_state.is_enem_left_marker_gotten, war_state.is_enem_back_marker_gotten, war_state.is_enem_right_marker_gotten])
             if gotten_enem_marker_num>=2:
-                # 理想は Defense Mode 
-                # 壁に背を向けて張り付いて，自マーカを見せないなど
                 return ActMode.basic
             if not (scan_info.is_enemy_recognized or img_info.is_enemy_marker_recognized):
                 return ActMode.basic
