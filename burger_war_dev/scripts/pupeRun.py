@@ -65,7 +65,6 @@ class PupeBot():
             if self.mode==ActMode.basic:
                 self.navi = self.navi_basic
             elif self.mode==ActMode.attack:
-                # self.navi = NaviAttack()
                 print("select attack mode")
                 self.navi = self.navi_attack
         

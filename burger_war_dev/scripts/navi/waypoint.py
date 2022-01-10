@@ -14,7 +14,6 @@ class Waypoint:
 
     next_lap_flag = False
     count_waypoint = 0
-    waypoint_reverse_flag_for_blue = True
 
     def __init__(self, path_waypoints, path_waypoints_depending_on_score):
 
@@ -30,33 +29,29 @@ class Waypoint:
             lines = csv.reader(f)
             for l in lines:
                 point = [float(i) for i in l]
-                # print(point)
                 self.points.append(point[0:3])
                 
         with open(path_waypoints_depending_on_score) as f_score:
             lines_score = csv.reader(f_score)
             for l_score in lines_score:
                 point_depending_on_score = [float(i_score) for i_score in l_score]
-                # print(point)
                 self.points_depending_on_score.append(point_depending_on_score[0:3])
-    
-    def warStateCallBack(self, data):
-        self.warState = data
-        print('get data!')
-        print(self.warState.enem_get_wall_marker_no)
         
-        if Waypoint.waypoint_reverse_flag_for_blue:
-            # blue side の場合は，180度ひっくり返す
-            if self.warState.my_side == 'b':
-                for i, point in enumerate(self.points_depending_on_score):
+        self.side = rospy.get_param('/send_id_to_judge/side')
+        self.change_points_depending_on_score_with_side()
+
+    
+    def change_points_depending_on_score_with_side(self):
+        if self.side == "b":
+         # blue side の場合は，180度ひっくり返す
+            for i, _ in enumerate(self.points_depending_on_score):
                     self.points_depending_on_score[i][0] *= -1
                     self.points_depending_on_score[i][1] *= -1
                     self.points_depending_on_score[i][2] -= 3.141592654
-                
-                print('my side:', self.warState.my_side)
-                print(self.points_depending_on_score)
-            Waypoint.waypoint_reverse_flag_for_blue = False
 
+    def warStateCallBack(self, data):
+        self.warState = data
+    
     def get_next_waypoint(self):
         print(self.warState.enem_get_wall_marker_flag)
         Waypoint.count_waypoint = Waypoint.count_waypoint + 1
