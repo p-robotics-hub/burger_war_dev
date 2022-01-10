@@ -46,7 +46,7 @@ class EnemyDetector:
         self.th = rpy[2]
         self.is_initialized_pose = True
         self.updateScanInfo()
-        print(self.pose_x, self.pose_y, self.th)
+        # print(self.pose_x, self.pose_y, self.th)
 
     def updateScanInfo(self):
         if not len(self.scan) == 360:
@@ -71,8 +71,8 @@ class EnemyDetector:
             enemy_direction = 0
             enemy_dist = 0
 
-        print("Enemy: {}, Direction: {}".format(is_near_enemy, enemy_direction))
-        print("enemy points {}".format(sum(enemy_scan)))
+        # print("Enemy: {}, Direction: {}".format(is_near_enemy, enemy_direction))
+        # print("enemy points {}".format(sum(enemy_scan)))
 
         self.scanInfo.is_enemy_recognized = is_near_enemy
         self.scanInfo.enemy_dist = enemy_dist
@@ -109,6 +109,9 @@ class EnemyDetector:
             #print(point_x, point_y, self.pose_x, self.pose_y, self.th, dist, ang_deg, ang_rad)
             #print(len_p1, len_p2, len_p3, len_p4, len_p5)
             return True
+    
+    def isNearWall(self,scan):
+        pass
 
     def strategy(self):
         r = rospy.Rate(10) # change speed 5fps

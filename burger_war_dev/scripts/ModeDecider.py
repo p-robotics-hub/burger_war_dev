@@ -15,7 +15,7 @@ class ModeDecider:
             return ActMode.attack
 
         elif current_mode == ActMode.basic:
-            print(scan_info)
+            # print(scan_info)
             if scan_info.is_enemy_recognized and scan_info.enemy_dist < self.enemy_dist_min:
                 return ActMode.attack
             else:
