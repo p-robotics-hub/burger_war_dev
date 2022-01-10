@@ -61,12 +61,15 @@ class EnemyDetector:
         if is_near_enemy:
             idx_l = [i for i, x in enumerate(enemy_scan) if x == 1]
             idx = idx_l[len(idx_l)/2]
-            if idx<=180:
-                enemy_direction = idx
-            else:
-                enemy_direction = idx-360
-            
             enemy_dist = near_scan[idx]
+            enemy_direction = idx / 360.0 * 2*PI
+            
+            while not PI >= enemy_direction >= -PI:
+                if enemy_direction > 0:
+                    enemy_direction -= 2*PI
+                elif enemy_direction < 0:
+                    enemy_direction += 2*PI
+                        
         else:
             enemy_direction = 0
             enemy_dist = 0
