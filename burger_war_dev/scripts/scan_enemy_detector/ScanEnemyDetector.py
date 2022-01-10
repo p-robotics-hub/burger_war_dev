@@ -55,7 +55,7 @@ class EnemyDetector:
         # drop too big and small value ex) 0.0 , 2.0 
         near_scan = [x if self.max_distance > x > 0.1 else 0.0 for x in self.scan]
 
-        enemy_scan = [1 if self.is_point_emnemy(x,i) else 0 for i,x in  enumerate(near_scan)]
+        enemy_scan = [1 if self.is_point_emnemy(x,i) else 0 for i,x in enumerate(near_scan)]
 
         is_near_enemy = sum(enemy_scan) > 5  # if less than 5 points, maybe noise
         if is_near_enemy:
