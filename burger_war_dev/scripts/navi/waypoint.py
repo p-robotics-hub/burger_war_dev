@@ -38,11 +38,14 @@ class Waypoint:
                 self.points_depending_on_score.append(point_depending_on_score[0:3])
         
         self.side = rospy.get_param('/send_id_to_judge/side')
-        self.change_points_depending_on_score_with_side()
+        self.change_points_depending_on_score_with_side(self.side)
 
     
-    def change_points_depending_on_score_with_side(self):
-        if self.side == "b":
+    def change_points_depending_on_score_with_side(self, side):
+        if side not in ['r', 'b']:
+            raise ValueError("'side' param must be in ['r', 'b'], given: {}\n\
+            please confirm with 'rosparam get /send_id_to_judge/side'".format(side))
+        if side == "b":
          # blue side の場合は，180度ひっくり返す
             for i, _ in enumerate(self.points_depending_on_score):
                     self.points_depending_on_score[i][0] *= -1
