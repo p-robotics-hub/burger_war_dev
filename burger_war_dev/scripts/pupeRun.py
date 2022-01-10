@@ -67,6 +67,7 @@ class PupeBot():
                 self.navi = self.navi_basic
             elif self.mode==ActMode.attack:
                 print("select attack mode")
+                self.navi_basic.cancelGoal()
                 self.navi = self.navi_attack
         
         self.mode_prev = self.mode
