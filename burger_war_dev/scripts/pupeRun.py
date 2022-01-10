@@ -21,8 +21,12 @@ class PupeBot():
         # mode
         self.mode = ActMode.basic
         self.mode_prev = ActMode.basic
-        self.navi = NaviBasic()
         self.modeDecider = ModeDecider()
+
+        #initialize navis
+        self.navi_basic = NaviBasic()
+        self.navi_attack = NaviAttack2()
+        self.navi = self.navi_basic
 
         # subscriber
         self.imgInfo_sub = rospy.Subscriber('img_info', ImgInfo, self.imgInfoCallBack)
@@ -60,11 +64,10 @@ class PupeBot():
         print(self.mode, self.mode_prev)
         if self.mode != self.mode_prev:
             if self.mode==ActMode.basic:
-                self.navi = NaviBasic()
+                self.navi = self.navi_basic
             elif self.mode==ActMode.attack:
-                # self.navi = NaviAttack()
                 print("select attack mode")
-                self.navi = NaviAttack2()
+                self.navi = self.navi_attack
         
         self.mode_prev = self.mode
 
