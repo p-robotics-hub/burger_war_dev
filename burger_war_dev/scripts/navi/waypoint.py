@@ -54,6 +54,8 @@ class Waypoint:
 
     def warStateCallBack(self, data):
         self.warState = data
+        print('get enem_get_wall_marker_no data!')
+        print(self.warState.enem_get_wall_marker_no)
     
     def get_next_waypoint(self):
         print(self.warState.enem_get_wall_marker_flag)
