@@ -45,7 +45,7 @@ class Waypoint:
         if side not in ['r', 'b']:
             raise ValueError("'side' param must be in ['r', 'b'], given: {}\n\
             please confirm with 'rosparam get /send_id_to_judge/side'".format(side))
-        if side == "b":
+        elif side == "b":
          # blue side の場合は，180度ひっくり返す
             for i, _ in enumerate(self.points_depending_on_score):
                     self.points_depending_on_score[i][0] *= -1
