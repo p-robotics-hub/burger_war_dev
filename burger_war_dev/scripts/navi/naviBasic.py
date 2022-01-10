@@ -75,6 +75,9 @@ class NaviBasic():
         else:
             return self.client.get_result()
         
+    def cancelGoal(self):
+        print('Cancel Navi Goals')
+        self.client.cancel_all_goals()
 
     def main(self):
 
