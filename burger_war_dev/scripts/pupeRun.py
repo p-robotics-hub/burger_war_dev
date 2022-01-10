@@ -51,7 +51,7 @@ class PupeBot():
         self.scanInfo = data
 
     def selectModeCallBack(self, state):
-        print()
+        # print()
         info_dict = {
             "img_info": self.imgInfo,
             "war_state": self.warState,
