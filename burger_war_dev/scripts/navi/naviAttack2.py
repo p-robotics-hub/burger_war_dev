@@ -43,6 +43,7 @@ class NaviAttack2():
         # twist.linear.x = self.scanInfo.enemy_dist - 0.5
         twist.linear.x = self.kp*(self.scanInfo.enemy_dist - 0.5) + self.kv*twist.linear.x
         print('enemy_dist:', self.scanInfo.enemy_dist)
+        print('enemy_direction:', self.scanInfo.enemy_direct)
         print('vel_x:', twist.linear.x)
         print('omega:', twist.angular.z)
         return twist

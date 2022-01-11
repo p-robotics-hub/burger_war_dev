@@ -55,18 +55,21 @@ class EnemyDetector:
         # drop too big and small value ex) 0.0 , 2.0 
         near_scan = [x if self.max_distance > x > 0.1 else 0.0 for x in self.scan]
 
-        enemy_scan = [1 if self.is_point_emnemy(x,i) else 0 for i,x in  enumerate(near_scan)]
+        enemy_scan = [1 if self.is_point_emnemy(x,i) else 0 for i,x in enumerate(near_scan)]
 
         is_near_enemy = sum(enemy_scan) > 5  # if less than 5 points, maybe noise
         if is_near_enemy:
             idx_l = [i for i, x in enumerate(enemy_scan) if x == 1]
             idx = idx_l[len(idx_l)/2]
-            if idx<=180:
-                enemy_direction = idx
-            else:
-                enemy_direction = idx-360
-            
             enemy_dist = near_scan[idx]
+            enemy_direction = idx / 360.0 * 2*PI
+            
+            while not PI >= enemy_direction >= -PI:
+                if enemy_direction > 0:
+                    enemy_direction -= 2*PI
+                elif enemy_direction < 0:
+                    enemy_direction += 2*PI
+                        
         else:
             enemy_direction = 0
             enemy_dist = 0
