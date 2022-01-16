@@ -10,8 +10,10 @@ from burger_war_dev.msg import ImgInfo, WarState, ScanInfo
 class NaviAttack2():
     def __init__(self):
         
-        self.kp = 1
-        self.kv = 1
+        self.vel_kp = 1
+        self.vel_kv = 1
+        self.ang_kp = 1
+        self.ang_kv = 1
         
         # subscliber
         self.scanInfo_sub = rospy.Subscriber('scan_enemy_pose', ScanInfo, self.scanInfoCallBack)
@@ -36,12 +38,9 @@ class NaviAttack2():
         if self.imgInfo.is_enemy_marker_recognized:
             twist.angular.z = -0.1*self.imgInfo.enemy_marker_direct
         else:
-            if self.scanInfo.enemy_direct>0:
-                twist.angular.z = 0.5
-            else:
-                twist.angular.z = -0.5
-        # twist.linear.x = self.scanInfo.enemy_dist - 0.5
-        twist.linear.x = self.kp*(self.scanInfo.enemy_dist - 0.5) + self.kv*twist.linear.x
+            twist.angular.z = self.ang_kp*self.scanInfo.enemy_direct
+    
+        twist.linear.x = self.vel_kp*(self.scanInfo.enemy_dist - 0.5) + self.vel_kv*twist.linear.x
         print('enemy_dist:', self.scanInfo.enemy_dist)
         print('enemy_direction:', self.scanInfo.enemy_direct)
         print('vel_x:', twist.linear.x)
