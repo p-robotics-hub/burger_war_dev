@@ -1,4 +1,4 @@
-image: ./map_HighResolution_ver2.pgm
+image: ./map_HighResolution_001.pgm
 resolution: 0.010000
 # origin: [-10.000000, -10.000000, 0.000000]
 origin: [-11.270000, -10.000000, 0.000000]
