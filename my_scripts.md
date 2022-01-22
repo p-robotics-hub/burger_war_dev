@@ -32,11 +32,15 @@ add-apt-repository ppa:deadsnakes/ppa -y
 apt install python3.8 -y
 
 apt install python3-pip -y
-# pip3 install pipenv
+pip3 install pipenv
+echo "export PIPENV_VENV_IN_PROJECT=true" >> ~/.bashrc
+echo "export PIPENV_VERBOSITY=-1" >> ~/.bashrc
+source ~/.bashrc
 # pipenv --python 3.8
 # pipenv install opencv-python
-python3.8 -m pip install -U pip
-python3.8 -m pip install rospkg opencv-python autopep8 pylint
+# python3.8 -m pip install -U pip
+# python3.8 -m pip install rospkg opencv-python autopep8 pylint
+pipenv install -d
 ```
 
 ## python3でcv_bridgeを使えるようにする
@@ -62,6 +66,14 @@ echo "source ~/catkin_cv_bridge/devel/setup.bash" >> ~/.bashrc
 echo "PYTHONPATH=/root/catkin_cv_bridge/devel/lib/python3.6/site-packages:$PYTHONPATH" >> ~/.bashrc
 ```
 
+<!-- # vscodeで勝手にpipenvの環境に入るのを無効化
+vscodeの `setting.json` に
+```json
+"python.terminal.activateEnvironment": false
+```
+を追加 -->
+
+
 # 参考
 - catkin_tools
     - https://catkin-tools.readthedocs.io/en/latest/index.html
@@ -69,3 +81,9 @@ echo "PYTHONPATH=/root/catkin_cv_bridge/devel/lib/python3.6/site-packages:$PYTHO
 
 - msg作成
     - http://wiki.ros.org/ja/ROS/Tutorials/CreatingMsgAndSrv
+
+# memo
+dockerでroslaunchが実行できない  
+.bashrcの  
+source /opt/ros/melodic/setup.bash  
+が実行されていない？
