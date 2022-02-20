@@ -57,7 +57,7 @@ class SampleBot():
     waypoint_list.append([0.9,0,270])
 
     # チーズ横の壁
-    waypoint_list.append([0.8,-0.5,225])
+    waypoint_list.append([0.8,-0.55,225])
     # waypoint_list.append([0.72,-0.72,225])
     waypoint_list.append([0.5,-0.85,225])
 
@@ -87,11 +87,11 @@ class SampleBot():
 
         # subscriber
         self.pose_sub = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, self.poseCallback)
-#        self.lidar_sub = rospy.Subscriber('scan', LaserScan, self.lidarCallback)
+        # self.lidar_sub = rospy.Subscriber('scan', LaserScan, self.lidarCallback)
         # self.state_sub = rospy.Subscriber('war_state', PoseWithCovarianceStamped, self.poseCallback)
 
         # 敵の緑の的の重心座標を受け取る
-        # self.enemy_green_center_sub = rospy.Subscriber('enemy_green_center', Int32MultiArray, self.enemyGreenCenterCallback)
+        self.enemy_green_center_sub = rospy.Subscriber('enemy_green_center', Int32MultiArray, self.enemyGreenCenterCallback)
 
         self.cx = 0
         self.cy = 0
@@ -112,7 +112,7 @@ class SampleBot():
 
     def isEnemyPointsCallback(self, msg):
         self.is_enemy_points = msg.data
-        rospy.loginfo("Enemy:{}".format(self.is_enemy_points))
+        # rospy.loginfo("Enemy:{}".format(self.is_enemy_points))
 
 
     def enemyDirectionCallback(self, msg):
@@ -200,9 +200,12 @@ class SampleBot():
                 anglular_z = 0
 
                 if abs(diff_pix) < 320 and diff_pix > 20:
-                    anglular_z = -0.3
+                    anglular_z = -0.5 #-0.3
                 elif abs(diff_pix) < 320 and diff_pix < -20:
-                    anglular_z = 0.3
+                    anglular_z = 0.5 #0.3
+                elif self.enemy_distance > 0.5: # 距離みて近づく（距離見れてないから動いてない）
+                    linear_x = 2.0
+                    linear_y = 2.0
                 else:
                     anglular_z = 0.0
 
@@ -225,9 +228,9 @@ class SampleBot():
 
                 # 前方189度のみ監視する版(後ろを振り向くと的が取られることがある)
                 if abs(self.enemy_direction_deg) > 10 and self.enemy_direction_deg > 270:
-                    anglular_z = -1.5
+                    anglular_z = -0.85 #-1.5
                 elif abs(self.enemy_direction_deg) > 10 and self.enemy_direction_deg < 91:
-                    anglular_z = 1.5
+                    anglular_z = 0.85 #1.5
                 elif self.enemy_distance > 0.5: # 距離みて近づく（距離見れてないから動いてない）
                     linear_x = 2.0
                     linear_y = 2.0
@@ -244,8 +247,8 @@ class SampleBot():
                     anglular_z = 0.0
                 """
 
-                rospy.loginfo("enemy_direction_deg: {}".format(self.enemy_direction_deg))
-                rospy.loginfo("enemy_distance: {}".format(self.enemy_distance))
+                # rospy.loginfo("enemy_direction_deg: {}".format(self.enemy_direction_deg))
+                # rospy.loginfo("enemy_distance: {}".format(self.enemy_distance))
 
                 twist = Twist()
                 twist.linear.x = linear_x; twist.linear.y = linear_y; twist.linear.z = 0
@@ -260,7 +263,7 @@ class SampleBot():
             # 敵がいない場合
 #            """
             else:
-                rospy.loginfo(self.client.get_state())
+                # rospy.loginfo(self.client.get_state())
                 # waypointに到達したら次のwaypointにする
                 if self.client.get_state() == GoalStatus.SUCCEEDED:
                     waypoint_num += 1
