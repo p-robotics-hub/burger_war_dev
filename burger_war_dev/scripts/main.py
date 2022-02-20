@@ -88,7 +88,7 @@ class SampleBot():
         # subscriber
         self.pose_sub = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, self.poseCallback)
 #        self.lidar_sub = rospy.Subscriber('scan', LaserScan, self.lidarCallback)
-        self.state_sub = rospy.Subscriber('war_state', PoseWithCovarianceStamped, self.poseCallback)
+        # self.state_sub = rospy.Subscriber('war_state', PoseWithCovarianceStamped, self.poseCallback)
 
         # 敵の緑の的の重心座標を受け取る
         # self.enemy_green_center_sub = rospy.Subscriber('enemy_green_center', Int32MultiArray, self.enemyGreenCenterCallback)

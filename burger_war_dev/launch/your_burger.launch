@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="side" default="r"/> <!-- "b" = blue side, "r" = red side  -->
-
+  <param name = "side" value="$(arg side)"/>
     <!-- You can change control program  -->
-
+    
     <!-- sample program node -->
 
     <!-- <node pkg="burger_war_dev" type="randomRun.py" name="randomRun" output="screen"/> -->
@@ -16,6 +16,9 @@
     <node pkg="burger_war_dev" type="main.py" name="main" output="screen"/>
     <node pkg="burger_war_dev" type="enemy_finder_lidar.py" name="enemy_finder_lidar" output="screen"/>
     <node pkg="burger_war_dev" type="enemy_finder_camera.py" name="enemy_finder_camera" output="screen"/>
+    <node pkg="burger_war_dev" type="status.py" name="status" output="screen">
+      
+    </node>
    
     <!-- END Navigation sample program node -->
 
