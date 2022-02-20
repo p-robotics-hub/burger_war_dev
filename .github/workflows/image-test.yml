@@ -130,19 +130,48 @@ jobs:
         run: |
           docker exec -u developer -t ${{ env.IMAGE_NAME_CORE }} bash -l -c "catkin build"
 
-      # burger-warのテスト
-      - name: Test Docker Image
-        id: image-test
+      # burger-warのテスト(LEVEL 1)
+      - name: Test Docker Image LEVEL1
+        id: image-test-1
         run: |
-          docker exec -u developer -t ${{ env.IMAGE_NAME_CORE }} bash -l -c "cd src/burger_war_kit && bash scripts/sim_run_test.sh" \
+          docker exec -u developer -t ${{ env.IMAGE_NAME_CORE }} bash -l -c "cd src/burger_war_kit && bash scripts/sim_run_test.sh -l 1" \
             && echo "::set-output name=test_result::0" \
             || echo "::set-output name=test_result::1"
-
       # テスト結果をArtifactにアップロードする
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.TEST_LOG_ARCHIVE }}
+          name: ${{ env.TEST_LOG_ARCHIVE }}_LEVEL1
+          path: /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/logs/test_logs.tgz
+          retention-days: 90
+
+      # burger-warのテスト(LEVEL 2)
+      - name: Test Docker Image LEVEL2
+        id: image-test-2
+        run: |
+          docker exec -u developer -t ${{ env.IMAGE_NAME_CORE }} bash -l -c "cd src/burger_war_kit && bash scripts/sim_run_test.sh -l 2" \
+            && echo "::set-output name=test_result::0" \
+            || echo "::set-output name=test_result::1"
+      # テスト結果をArtifactにアップロードする
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.TEST_LOG_ARCHIVE }}_LEVEL2
+          path: /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/logs/test_logs.tgz
+          retention-days: 90
+      
+      # burger-warのテスト(LEVEL 3)
+      - name: Test Docker Image LEVEL3
+        id: image-test-3
+        run: |
+          docker exec -u developer -t ${{ env.IMAGE_NAME_CORE }} bash -l -c "cd src/burger_war_kit && bash scripts/sim_run_test.sh -l 3" \
+            && echo "::set-output name=test_result::0" \
+            || echo "::set-output name=test_result::1"
+      # テスト結果をArtifactにアップロードする
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.TEST_LOG_ARCHIVE }}_LEVEL3
           path: /home/runner/work/burger_war_dev/burger_war_dev/catkin_ws/logs/test_logs.tgz
           retention-days: 90
 
