@@ -134,7 +134,7 @@ class EnemyPointsFinder():
             elif (pow((point_x + locate), 2) + pow((point_y + locate), 2)) < pow(radius, 2):
                 return False
             # 真ん中の大きい障害物
-            elif (pow(point_x, 2) + pow(point_y, 2)) < pow(radius, 2):
+            elif (pow(point_x, 2) + pow(point_y, 2)) < pow(large_radius, 2):
                 return False
             else:
                 return True
