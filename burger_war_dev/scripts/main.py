@@ -78,7 +78,7 @@ class SampleBot():
         self.score = []
 
         # 敵の緑の的の重心座標を受け取る
-        self.enemy_green_center_sub = rospy.Subscriber('enemy_green_center', Int32MultiArray, self.enemyGreenCenterCallback)
+        # self.enemy_green_center_sub = rospy.Subscriber('enemy_green_center', Int32MultiArray, self.enemyGreenCenterCallback)
 
         self.cx = 0
         self.cy = 0
