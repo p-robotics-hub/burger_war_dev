@@ -61,7 +61,7 @@ class WarStatus():
                         self.score_array.append(0)
         
         # print(self.score_array)
-        rospy.loginfo("SCORE: {}".format(self.score_array))
+        # rospy.loginfo("SCORE: {}".format(self.score_array))
         self.score_status.publish(Int32MultiArray(data = self.score_array))
 
 

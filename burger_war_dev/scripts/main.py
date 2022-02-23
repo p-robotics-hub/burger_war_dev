@@ -25,53 +25,37 @@ class SampleBot():
 
     waypoint_list = []
 
-    # waypoint_list.append([-1.0,0.0,300])
-    # waypoint_list.append([-1.0,0.0,70])
-
-    # # waypoint_list.append([-0.8,0.15,0])
-    # waypoint_list.append([-0.23,0.35,340])
-
-    # waypoint_list.append([0.3,0.35,320])
-    # waypoint_list.append([1.0,0.0,110])
-
     # スタート地点付近
-    waypoint_list.append([-0.95,0.0,300])
-    waypoint_list.append([-0.98,0.0,90])
+    waypoint_list.append([-0.93,0.0,300])
+    waypoint_list.append([-0.95,0.0,90])
 
     # パティ横の壁
     waypoint_list.append([-0.9,0.58,50])
-    # waypoint_list.append([-0.72,0.72,45])
-    waypoint_list.append([-0.55,0.98,45])
+    waypoint_list.append([-0.55,0.95,45])
 
-    # waypoint_list.append([0,0.9,0])
     waypoint_list.append([0,0.9,225])
     waypoint_list.append([0,0.9,30])
 
     # カレー横の壁
     waypoint_list.append([0.5,0.95,315])
-    # waypoint_list.append([0.72,0.72,315])
     waypoint_list.append([0.9,0.55,315])
 
-    # waypoint_list.append([0.9,0,270])
     waypoint_list.append([0.9,0,120])
     waypoint_list.append([0.9,0,270])
 
     # チーズ横の壁
-    waypoint_list.append([0.8,-0.55,225])
-    # waypoint_list.append([0.72,-0.72,225])
-    waypoint_list.append([0.5,-0.85,225])
+    waypoint_list.append([0.8,-0.63,225])
+    waypoint_list.append([0.5,-0.9,220])
 
-    # waypoint_list.append([0,-0.9,180])
+
     waypoint_list.append([0,-0.9,45])
     waypoint_list.append([0,-0.9,180])
 
     # トマト横の壁
-    waypoint_list.append([-0.7,-0.85,140])
-    # waypoint_list.append([-0.72,-0.72,135])
+    waypoint_list.append([-0.68,-0.85,140])
     waypoint_list.append([-0.93,-0.58,135])
 
-    # waypoint_list.append([-1.2,0,90])
-    waypoint_list.append([-1.0,0,300])
+    waypoint_list.append([-0.95,0,300])
 
     waypoint_list.extend(waypoint_list)
 
@@ -88,7 +72,10 @@ class SampleBot():
         # subscriber
         self.pose_sub = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, self.poseCallback)
         # self.lidar_sub = rospy.Subscriber('scan', LaserScan, self.lidarCallback)
-        # self.state_sub = rospy.Subscriber('war_state', PoseWithCovarianceStamped, self.poseCallback)
+        
+        # 点数
+        self.score_sub = rospy.Subscriber('score_status', Int32MultiArray, self.scoreCallback)
+        self.score = []
 
         # 敵の緑の的の重心座標を受け取る
         self.enemy_green_center_sub = rospy.Subscriber('enemy_green_center', Int32MultiArray, self.enemyGreenCenterCallback)
@@ -114,7 +101,10 @@ class SampleBot():
         self.is_enemy_points = msg.data
         # rospy.loginfo("Enemy:{}".format(self.is_enemy_points))
 
-
+    def scoreCallback(self, msg):
+        self.score = msg.data
+        rospy.loginfo("SCORE: {}".format(self.score))
+        
     def enemyDirectionCallback(self, msg):
         self.enemy_direction_deg = msg.data
     
@@ -266,6 +256,41 @@ class SampleBot():
                 # rospy.loginfo(self.client.get_state())
                 # waypointに到達したら次のwaypointにする
                 if self.client.get_state() == GoalStatus.SUCCEEDED:
+                    # if waypoint_num == 16:
+                        
+                    #     if not self.score[11] == self.score[7] == self.score[5] == 1:   # 下側
+                    #         # スタート地点付近
+                    #         self.waypoint_list.append([-0.95,0.0,300])
+                    #         self.waypoint_list.append([-0.98,0.0,90])
+
+                    #     # パティ横の壁
+                    #     self.waypoint_list.append([-0.9,0.58,50])
+                    #     self.waypoint_list.append([-0.55,0.98,45])
+
+                    #     if not self.score[1] == self.score[10] == self.score[4] == 1:   # 左側
+                    #         self.waypoint_list.append([0,0.9,225])
+                    #         self.waypoint_list.append([0,0.9,30])
+
+                    #     # カレー横の壁
+                    #     self.waypoint_list.append([0.5,0.95,315])
+                    #     self.waypoint_list.append([0.9,0.55,315])
+
+                    #     if not self.score[2] == self.score[8] == self.score[0] == 1:   # 上側
+                    #         self.waypoint_list.append([0.9,0,120])
+                    #         self.waypoint_list.append([0.9,0,270])
+
+                    #     # チーズ横の壁
+                    #     self.waypoint_list.append([0.8,-0.55,225])
+                    #     self.waypoint_list.append([0.5,-0.85,225])
+
+                    #     if not self.score[6] == self.score[9] == self.score[3] == 1:   # 右側
+                    #         self.waypoint_list.append([0,-0.9,45])
+                    #         self.waypoint_list.append([0,-0.9,180])
+
+                    #     # トマト横の壁
+                    #     self.waypoint_list.append([-0.7,-0.85,140])
+                    #     self.waypoint_list.append([-0.93,-0.58,135])
+                    
                     waypoint_num += 1
 
                 # 動いてなかったらwaypointをセット
